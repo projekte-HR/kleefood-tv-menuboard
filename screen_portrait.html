@@ -35,14 +35,34 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
                                     rgba(17,20,23,.10) 50%,rgba(17,20,23,.95) 86%);
 }
 
-/* ---------- 2. Feuer-Übergang: deckt den Screen komplett ab ---------- */
-#fire{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  z-index:9;                    /* über ALLEM – während des Feuers ist nichts anderes zu sehen */
-  opacity:0;transition:opacity .25s linear;pointer-events:none;background:#2a0a00;
-  transform:scale(1.6);         /* füllt den Screen randlos mit Flammen */
+/* ---------- 2. Übergang: Klee-Wipe ----------------------------------
+   Ein Farbbalken in Smaragdgrün/Gold fährt diagonal über den Screen und
+   deckt den Wechsel komplett ab. Reines CSS (nur transform/opacity) –
+   kein Video, kein Download, minimale Last für den Fire TV Stick.      */
+#wipe{
+  position:absolute;inset:-12% -30%;z-index:9;pointer-events:none;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#00E676 0%,#10B981 45%,#FF9F1C 100%);
+  transform:translateX(-135%) skewX(-11deg);
 }
-#fire.on{opacity:1;}
+#wipe.run{animation:wipe var(--wipe,900ms) cubic-bezier(.65,0,.35,1) forwards;}
+@keyframes wipe{
+  0%  {transform:translateX(-135%) skewX(-11deg);}
+  42% {transform:translateX(0)     skewX(-11deg);}
+  58% {transform:translateX(0)     skewX(-11deg);}   /* kurz stehen bleiben = Wechsel dahinter */
+  100%{transform:translateX(135%)  skewX(11deg);}
+}
+/* Logo im Wischer */
+#wipe span{
+  font-family:'Bebas Neue',sans-serif;font-size:120px;letter-spacing:10px;color:#0b0f11;
+  transform:skewX(11deg);opacity:0;
+}
+#wipe.run span{animation:wipeLogo var(--wipe,900ms) ease-out forwards;}
+@keyframes wipeLogo{
+  0%,20%{opacity:0;transform:skewX(11deg) scale(.9);}
+  45%,60%{opacity:1;transform:skewX(11deg) scale(1);}
+  100%{opacity:0;transform:skewX(11deg) scale(1.05);}
+}
 
 /* ---------- 3. Kopfbereich ---------- */
 #top{position:absolute;top:0;left:0;right:0;z-index:8;padding:74px 70px 0;text-align:center;}
@@ -110,8 +130,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
     <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
   </div>
 
-  <!-- Feuer liegt über allem und verdeckt den Wechsel komplett -->
-  <video id="fire" muted playsinline preload="auto"></video>
+  <!-- Wischer liegt über allem und verdeckt den Wechsel komplett -->
+  <div id="wipe"><span>KLEEFOOD</span></div>
 </div>
 
 <script>
@@ -138,24 +158,18 @@ const DISHES = [
     price:"12,90 €", vid:14010, secs:10 }
 ];
 
-/* Feuer-Clip: Flammen füllen das komplette Bild (Spiegel-Effekt, 15 s lang).
-   Immer 720p – nur eine Datei (~5 MB), dafür sichtbar schärfer als 360p. */
-const FIRE_VID   = 3767;
-const FIRE_RES   = 720;
-const FIRE_START = 1.5;    // Abschnitt, in dem der ganze Screen brennt
-const FIRE_END   = 12;
-const FIRE_MS    = 1500;   // Dauer des Feuer-Übergangs
+/* Dauer des Klee-Wipes in Millisekunden (muss zur CSS-Variable --wipe passen) */
+const WIPE_MS = 900;
 
 const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
 /* ---------- Aufbau ---------- */
 const player = document.getElementById('player');
-const fire   = document.getElementById('fire');
+const wipe   = document.getElementById('wipe');
 const bottom = document.getElementById('bottom');
 const dots   = document.getElementById('dots');
 
-fire.src = 'https://assets.mixkit.co/videos/' + FIRE_VID + '/' + FIRE_VID + '-' + FIRE_RES + '.mp4';
-fire.addEventListener('loadeddata', () => { fire.currentTime = FIRE_START; });
+wipe.style.setProperty('--wipe', WIPE_MS + 'ms');
 
 DISHES.forEach(() => {
   const d = document.createElement('div');
@@ -170,7 +184,7 @@ function show(i){
   idx = (i + DISHES.length) % DISHES.length;
   const d = DISHES[idx];
 
-  burn();                                  // Feuer an – der Wechsel passiert dahinter
+  swipe();                                 // Wischer läuft – der Wechsel passiert dahinter
 
   setTimeout(() => {
     player.src = url(d);                   // Videowechsel, während Feuer alles verdeckt
@@ -182,7 +196,7 @@ function show(i){
     document.getElementById('sub').textContent = d.sub;
     document.getElementById('price').textContent = d.price;
     bottom.classList.add('play');
-  }, FIRE_MS * 0.45);
+  }, WIPE_MS * 0.48);          // Wechsel genau dann, wenn der Balken den Screen deckt
 
   dotEls.forEach((el,n) => {
     el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
@@ -193,17 +207,11 @@ function show(i){
   timer = setTimeout(() => show(idx + 1), d.secs * 1000);
 }
 
-/* Feuer nur während des Übergangs abspielen – dazwischen steht es still,
-   das spart auf schwacher Hardware spürbar Leistung. */
-let firePos = FIRE_START;          // wandert durch den Clip, damit nicht immer dasselbe Feuer läuft
-function burn(){
-  fire.currentTime = firePos;
-  firePos += FIRE_MS / 1000;
-  if (firePos > FIRE_END) firePos = FIRE_START;
-  fire.play().catch(() => {});
-  fire.classList.add('on');
-  setTimeout(() => fire.classList.remove('on'), FIRE_MS);
-  setTimeout(() => fire.pause(), FIRE_MS + 300);
+/* Wischer einmal durchlaufen lassen */
+function swipe(){
+  wipe.classList.remove('run');
+  void wipe.offsetWidth;                 // Reflow -> Animation startet neu
+  wipe.classList.add('run');
 }
 
 /* ---------- Drehung & Skalierung ----------
