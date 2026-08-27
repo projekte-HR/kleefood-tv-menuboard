@@ -35,7 +35,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
    Dadurch gibt es beim Wechsel keinen schwarzen Moment mehr. */
 .player{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
-  opacity:0;transition:opacity .5s linear;
+  opacity:0;transition:opacity .35s linear;
 }
 .player.on{opacity:1;z-index:2;}
 
@@ -59,7 +59,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 /* ---------- 3. Kopfbereich ---------- */
 #top{position:absolute;top:0;left:0;right:0;z-index:8;padding:54px 70px 0;text-align:center;}
 #logo{
-  width:340px;height:340px;object-fit:cover;margin:0 auto;display:block;
+  width:360px;height:360px;object-fit:cover;image-rendering:auto;margin:0 auto;display:block;
   /* runde Maske: der dunkle Bildrand des Logos verschwindet weich im Hintergrund */
   -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
           mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
@@ -136,7 +136,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
           full:"videos/mein-burger.mp4" eintragen)
    secs : Anzeigedauer in Sekunden
    ======================================================================= */
-const RES = 360;   // 360 = kleine Dateien (Fire TV Stick) · 720 = schärfer, größer
+/* Videoqualität: 720 = scharf auf dem TV (ca. 5–10 MB je Clip)
+   360 = Notfall-Stufe, falls das WLAN am Stick zu langsam ist         */
+const RES = 720;
 
 const DISHES = [
   { cat:"Nr. 04 · Burger", head:"Kleefood<br>BBQ Burger",  sub:"Rindfleisch-Patty, Cheddar-Käse, Bacon, Barbecue-Sauce",
@@ -166,7 +168,7 @@ const DISHES = [
      46316 / 1.0  Gold-Partikel
      18052 / 0.4  Partikel-Explosion
    Alle sechs live vergleichen: uebergaenge.html                          */
-const TRANS = { vid:52312, start:1.2, ms:1600 };   // Feuer-Nahaufnahme (Nr. 24)
+const TRANS = { vid:52312, start:1.2, ms:1600, res:720 };   // Feuer-Nahaufnahme (Nr. 24)
 
 const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
@@ -177,7 +179,7 @@ const trans  = document.getElementById('trans');
 const bottom = document.getElementById('bottom');
 const dots   = document.getElementById('dots');
 
-trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-360.mp4';
+trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-' + (TRANS.res || RES) + '.mp4';
 trans.addEventListener('loadeddata', () => { trans.currentTime = TRANS.start; });
 
 DISHES.forEach(() => {
@@ -206,7 +208,7 @@ function show(i){
     back.classList.add('on');              // einblenden …
     front.classList.remove('on');          // … und den alten Clip ausblenden
     const tmp = front; front = back; back = tmp;
-    setTimeout(() => { back.pause(); preload(idx + 1); }, 600);
+    setTimeout(() => { back.pause(); preload(idx + 1); }, 400);   // altes Video sofort stoppen
 
     bottom.classList.remove('play');
     void bottom.offsetWidth;
