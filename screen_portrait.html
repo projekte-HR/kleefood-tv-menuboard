@@ -55,7 +55,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 }
 .player{
   position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:0;transition:opacity .35s linear;
+  opacity:0;transition:opacity .7s ease-in-out;   /* weiche Blende statt Effekt-Video */
 }
 .player.on{opacity:1;z-index:2;}
 
@@ -96,15 +96,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 }
 #foot b{color:var(--white);}
 
-/* ---------- 4. Übergangs-Video ---------- */
-#trans{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  z-index:9;opacity:0;transition:opacity .25s linear;pointer-events:none;
-  /* "screen" blendet das Schwarz des Clips weg: nur die Flammen bleiben,
-     das Gericht dahinter verschwindet nie in einem schwarzen Bild. */
-  mix-blend-mode:screen;
-}
-#trans.on{opacity:1;}
 </style>
 </head>
 <body>
@@ -131,9 +122,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 
   <div id="dots"></div>
   <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
-
-  <!-- Übergangs-Video liegt über allem, sein Schwarz wird weggeblendet -->
-  <video id="trans" muted playsinline preload="auto"></video>
 </div>
 
 <script>
@@ -162,25 +150,16 @@ const DISHES = [
     price:"12,90 €", vid:14010, secs:10 }
 ];
 
-/* Übergangs-Video zwischen den Gerichten (Auswahl: uebergaenge.html)
-     52312 / 1.2  Feuer nah        (aktuell)
-     52284 / 1.0  Flammen hoch
-     52289 / 1.5  Flammen Zeitlupe
-      2780 / 1.0  BBQ-Grill-Flammen
-     50951 / 0.6  Rauch-Wirbel                                            */
-const TRANS = { vid:52312, start:1.2, ms:1600, res:720 };
+/* Kein Effekt-Video zwischen den Gerichten – es wird weich übergeblendet.
+   Dauer der Blende steht im CSS bei .player (transition).                */
 
 const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
 /* ---------- Aufbau ---------- */
 let front = document.getElementById('pA');   // läuft gerade
 let back  = document.getElementById('pB');   // lädt schon das nächste Gericht
-const trans  = document.getElementById('trans');
 const bottom = document.getElementById('bottom');
 const dots   = document.getElementById('dots');
-
-trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-' + TRANS.res + '.mp4';
-trans.addEventListener('loadeddata', () => { trans.currentTime = TRANS.start; });
 
 DISHES.forEach(() => {
   const d = document.createElement('div');
@@ -200,24 +179,20 @@ function show(i){
   idx = (i + DISHES.length) % DISHES.length;
   const d = DISHES[idx];
 
-  playTransition();                         // Feuer läuft – der Wechsel passiert dahinter
+  if (back.src !== url(d)) back.src = url(d);
+  back.play().catch(() => {});
+  back.classList.add('on');                 // nächsten Clip einblenden …
+  front.classList.remove('on');             // … alten ausblenden
+  const tmp = front; front = back; back = tmp;
+  setTimeout(() => { back.pause(); preload(idx + 1); }, 800);
 
-  setTimeout(() => {
-    if (back.src !== url(d)) back.src = url(d);
-    back.play().catch(() => {});
-    back.classList.add('on');               // einblenden …
-    front.classList.remove('on');           // … und den alten Clip ausblenden
-    const tmp = front; front = back; back = tmp;
-    setTimeout(() => { back.pause(); preload(idx + 1); }, 400);
-
-    bottom.classList.remove('play');
-    void bottom.offsetWidth;                // Reflow -> Animationen starten neu
-    document.getElementById('cat').innerHTML     = d.cat;
-    document.getElementById('head').innerHTML    = d.head;
-    document.getElementById('sub').textContent   = d.sub;
-    document.getElementById('price').textContent = d.price;
-    bottom.classList.add('play');
-  }, TRANS.ms * 0.45);                      // Wechsel im dichtesten Moment des Feuers
+  bottom.classList.remove('play');
+  void bottom.offsetWidth;                  // Reflow -> Animationen starten neu
+  document.getElementById('cat').innerHTML     = d.cat;
+  document.getElementById('head').innerHTML    = d.head;
+  document.getElementById('sub').textContent   = d.sub;
+  document.getElementById('price').textContent = d.price;
+  bottom.classList.add('play');
 
   dotEls.forEach((el,n) => {
     el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
@@ -226,16 +201,6 @@ function show(i){
 
   clearTimeout(timer);
   timer = setTimeout(() => show(idx + 1), d.secs * 1000);
-}
-
-/* Übergangs-Video nur während des Wechsels abspielen – dazwischen steht es
-   still, das spart auf dem Fire TV Stick spürbar Leistung. */
-function playTransition(){
-  trans.currentTime = TRANS.start;
-  trans.play().catch(() => {});
-  trans.classList.add('on');
-  setTimeout(() => trans.classList.remove('on'), TRANS.ms);
-  setTimeout(() => trans.pause(), TRANS.ms + 300);
 }
 
 /* ---------- Drehung & Skalierung ----------
