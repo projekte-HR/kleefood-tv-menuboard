@@ -7,11 +7,13 @@
 <style>
 /* =======================================================================
    KLEEFOOD – SCREEN 3: GERICHTE IM HOCHFORMAT (1080x1920)
-   Für einen um 90° gedrehten TV. Optimiert für Fire TV Stick:
-   - immer nur EIN Video gleichzeitig aktiv
-   - keine Blend-Modes, keine CSS-Filter, keine Partikel (fressen Leistung)
-   - Videos in 360p (Umschalten über RES weiter unten)
-   Querformat-Signal -> Bühne dreht sich automatisch. Taste "R" = Richtung.
+   Für einen um 90° gedrehten TV, optimiert für den Fire TV Stick.
+
+   QUALITÄT: Die Clips sind im Querformat (1280x720). Früher wurden sie auf
+   die volle Hochkant-Fläche gezoomt – dabei blieb nur der mittlere Streifen
+   übrig, 2,7-fach vergrößert = unscharf. Jetzt läuft das Video in einem
+   16:9-Fenster in Originalproportion (1020x574): das 720p-Bild wird leicht
+   VERKLEINERT statt vergrößert und ist dadurch gestochen scharf.
    ======================================================================= */
 
 :root{
@@ -26,71 +28,61 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 #stage{
   position:absolute;top:50%;left:50%;
   width:1080px;height:1920px;margin:-960px 0 0 -540px;
-  transform-origin:center center;background:var(--bg);overflow:hidden;
+  transform-origin:center center;overflow:hidden;
   font-family:'Poppins',system-ui,sans-serif;color:var(--white);
+  background:
+    radial-gradient(70% 40% at 50% 0%,   rgba(255,59,33,.16), transparent 60%),
+    radial-gradient(80% 40% at 50% 100%, rgba(255,159,28,.12), transparent 60%),
+    var(--bg);
 }
 
-/* ---------- 1. Gericht-Video ---------- */
-/* Zwei Player: der nächste Clip wird im Hintergrund geladen und eingeblendet.
-   Dadurch gibt es beim Wechsel keinen schwarzen Moment mehr. */
-.player{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;
-  opacity:0;transition:opacity .35s linear;
-}
-.player.on{opacity:1;z-index:2;}
-
-/* Abdunklung oben/unten für die Texte */
-#scrim{
-  position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:linear-gradient(180deg,rgba(17,20,23,.92) 0%,rgba(17,20,23,.20) 24%,
-                                    rgba(17,20,23,.10) 50%,rgba(17,20,23,.95) 86%);
-}
-
-/* ---------- 2. Übergangs-Video: deckt den Screen komplett ab ---------- */
-#trans{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  z-index:9;opacity:0;transition:opacity .25s linear;pointer-events:none;
-  /* "screen" blendet das Schwarz des Clips weg – es bleibt nur Rauch/Feuer/Funken
-     sichtbar, das Gericht dahinter verschwindet nie in einem schwarzen Bild. */
-  mix-blend-mode:screen;
-}
-#trans.on{opacity:1;}
-
-/* ---------- 3. Kopfbereich ---------- */
-#top{position:absolute;top:0;left:0;right:0;z-index:8;padding:54px 70px 0;text-align:center;}
+/* ---------- 1. Kopf mit Logo ---------- */
+#top{position:absolute;top:0;left:0;right:0;height:400px;z-index:8;padding-top:34px;text-align:center;}
 #logo{
-  width:360px;height:360px;object-fit:cover;image-rendering:auto;margin:0 auto;display:block;
+  width:300px;height:300px;object-fit:cover;margin:0 auto;display:block;
   /* runde Maske: der dunkle Bildrand des Logos verschwindet weich im Hintergrund */
   -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
           mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
 }
-#claim{margin-top:4px;font-size:25px;letter-spacing:9px;text-transform:uppercase;color:var(--muted);}
+#claim{margin-top:-6px;font-size:24px;letter-spacing:9px;text-transform:uppercase;color:var(--muted);}
 
-/* ---------- 4. Gericht-Text unten ---------- */
-#bottom{position:absolute;left:0;right:0;bottom:0;z-index:8;padding:0 70px 78px;}
+/* ---------- 2. Video-Fenster (16:9, Originalproportion) ---------- */
+#band{
+  position:absolute;top:406px;left:30px;width:1020px;height:574px;z-index:2;
+  border-radius:26px;overflow:hidden;background:#000;
+  border:2px solid rgba(255,59,33,.35);
+  box-shadow:0 24px 70px rgba(0,0,0,.55);
+}
+.player{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  opacity:0;transition:opacity .35s linear;
+}
+.player.on{opacity:1;z-index:2;}
+
+/* ---------- 3. Gericht-Text ---------- */
+#bottom{position:absolute;left:0;right:0;top:1020px;bottom:0;z-index:8;padding:0 60px;}
 
 .reveal{opacity:0;transform:translateY(40px);}
 #bottom.play .reveal{animation:up .7s ease-out forwards;}
 @keyframes up{to{opacity:1;transform:translateY(0);}}
 
 #cat{
-  display:inline-block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;
-  letter-spacing:5px;color:#0b0f11;background:var(--red);padding:10px 26px;border-radius:999px;
+  display:inline-block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;
+  letter-spacing:5px;color:#fff;background:var(--red);padding:11px 28px;border-radius:999px;
   animation-delay:.05s;
 }
 #head{
-  margin-top:22px;font-family:'Bebas Neue',sans-serif;font-size:124px;line-height:.95;letter-spacing:2px;
+  margin-top:24px;font-family:'Bebas Neue',sans-serif;font-size:130px;line-height:.93;letter-spacing:2px;
   color:var(--white);animation-delay:.15s;
 }
-#sub{margin-top:18px;font-size:33px;font-weight:300;line-height:1.4;color:var(--muted);animation-delay:.25s;}
-
+#sub{margin-top:20px;font-size:35px;font-weight:300;line-height:1.4;color:var(--muted);animation-delay:.25s;}
 #price{
-  display:inline-block;margin-top:30px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:78px;
-  color:#0b0f11;background:var(--gold);padding:14px 44px;border-radius:22px;animation-delay:.35s;
+  display:inline-block;margin-top:34px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:88px;
+  color:#0b0f11;background:var(--gold);padding:16px 50px;border-radius:24px;animation-delay:.35s;
 }
 
 /* Fortschrittsbalken je Gericht */
-#dots{display:flex;gap:12px;margin-top:40px;}
+#dots{position:absolute;left:60px;right:60px;bottom:196px;display:flex;gap:12px;}
 .dot-i{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;}
 .dot-i i{display:block;height:100%;width:0;background:var(--red);}
 .dot-i.done i{width:100%;}
@@ -98,22 +90,36 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 @keyframes grow{from{width:0}to{width:100%}}
 
 #foot{
-  margin-top:34px;border-top:1.5px solid rgba(255,255,255,.12);padding-top:24px;
-  font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--muted);letter-spacing:1px;
+  position:absolute;left:60px;right:60px;bottom:90px;padding-top:26px;
+  border-top:1.5px solid rgba(255,255,255,.12);
+  font-family:'Montserrat',sans-serif;font-size:23px;font-weight:800;color:var(--muted);letter-spacing:1px;
 }
 #foot b{color:var(--white);}
+
+/* ---------- 4. Übergangs-Video ---------- */
+#trans{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:9;opacity:0;transition:opacity .25s linear;pointer-events:none;
+  /* "screen" blendet das Schwarz des Clips weg: nur die Flammen bleiben,
+     das Gericht dahinter verschwindet nie in einem schwarzen Bild. */
+  mix-blend-mode:screen;
+}
+#trans.on{opacity:1;}
 </style>
 </head>
 <body>
 
 <div id="stage">
-  <video id="pA" class="player" muted playsinline preload="auto" loop></video>
-  <video id="pB" class="player" muted playsinline preload="auto" loop></video>
-  <div id="scrim"></div>
 
   <div id="top">
     <img id="logo" src="logo.jpg" alt="KleeFood">
     <div id="claim">Burger • Pizza • Fingerfood</div>
+  </div>
+
+  <!-- Video im 16:9-Fenster: keine Vergrößerung, dadurch scharf -->
+  <div id="band">
+    <video id="pA" class="player" muted playsinline preload="auto" loop></video>
+    <video id="pB" class="player" muted playsinline preload="auto" loop></video>
   </div>
 
   <div id="bottom">
@@ -121,9 +127,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
     <h1   id="head" class="reveal"></h1>
     <p    id="sub"  class="reveal"></p>
     <div><span id="price" class="reveal"></span></div>
-    <div id="dots"></div>
-    <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
   </div>
+
+  <div id="dots"></div>
+  <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
 
   <!-- Übergangs-Video liegt über allem, sein Schwarz wird weggeblendet -->
   <video id="trans" muted playsinline preload="auto"></video>
@@ -132,12 +139,12 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 <script>
 /* =======================================================================
    INHALTE – Gerichte direkt aus der KLEEFOOD-Speisekarte.
-   vid  : Mixkit-Video-ID  (eigene Aufnahme? dann stattdessen
-          full:"videos/mein-burger.mp4" eintragen)
+   vid  : Mixkit-Video-ID (eigene Aufnahme? stattdessen full:"videos/x.mp4")
    secs : Anzeigedauer in Sekunden
    ======================================================================= */
-/* Videoqualität: 720 = scharf auf dem TV (ca. 5–10 MB je Clip)
-   360 = Notfall-Stufe, falls das WLAN am Stick zu langsam ist         */
+
+/* Videoqualität: 720 = scharf (die Clips gibt es nicht höher aufgelöst)
+   360 = Notfallstufe, falls das WLAN am Stick zu langsam ist            */
 const RES = 720;
 
 const DISHES = [
@@ -155,20 +162,13 @@ const DISHES = [
     price:"12,90 €", vid:14010, secs:10 }
 ];
 
-/* Übergangs-Video zwischen den Gerichten.
-   Andere Varianten (einfach vid/start tauschen):
+/* Übergangs-Video zwischen den Gerichten (Auswahl: uebergaenge.html)
      52312 / 1.2  Feuer nah        (aktuell)
      52284 / 1.0  Flammen hoch
      52289 / 1.5  Flammen Zeitlupe
       2780 / 1.0  BBQ-Grill-Flammen
-     50951 / 0.6  Rauch-Wirbel
-      7090 / 1.5  Grill-Glut
-     30749 / 0.8  Funkenflug
-      3454 / 1.0  Kohle-Feuer
-     46316 / 1.0  Gold-Partikel
-     18052 / 0.4  Partikel-Explosion
-   Alle sechs live vergleichen: uebergaenge.html                          */
-const TRANS = { vid:52312, start:1.2, ms:1600, res:720 };   // Feuer-Nahaufnahme (Nr. 24)
+     50951 / 0.6  Rauch-Wirbel                                            */
+const TRANS = { vid:52312, start:1.2, ms:1600, res:720 };
 
 const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
@@ -179,7 +179,7 @@ const trans  = document.getElementById('trans');
 const bottom = document.getElementById('bottom');
 const dots   = document.getElementById('dots');
 
-trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-' + (TRANS.res || RES) + '.mp4';
+trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-' + TRANS.res + '.mp4';
 trans.addEventListener('loadeddata', () => { trans.currentTime = TRANS.start; });
 
 DISHES.forEach(() => {
@@ -191,7 +191,7 @@ const dotEls = [...dots.children];
 
 let idx = -1, timer = null;
 
-function preload(i){                       // nächsten Clip schon mal puffern
+function preload(i){                        // nächsten Clip schon puffern
   const d = DISHES[(i + DISHES.length) % DISHES.length];
   if (back.src !== url(d)){ back.src = url(d); back.load(); }
 }
@@ -200,24 +200,24 @@ function show(i){
   idx = (i + DISHES.length) % DISHES.length;
   const d = DISHES[idx];
 
-  playTransition();                        // Übergang läuft – der Wechsel passiert dahinter
+  playTransition();                         // Feuer läuft – der Wechsel passiert dahinter
 
   setTimeout(() => {
-    if (back.src !== url(d)){ back.src = url(d); }
+    if (back.src !== url(d)) back.src = url(d);
     back.play().catch(() => {});
-    back.classList.add('on');              // einblenden …
-    front.classList.remove('on');          // … und den alten Clip ausblenden
+    back.classList.add('on');               // einblenden …
+    front.classList.remove('on');           // … und den alten Clip ausblenden
     const tmp = front; front = back; back = tmp;
-    setTimeout(() => { back.pause(); preload(idx + 1); }, 400);   // altes Video sofort stoppen
+    setTimeout(() => { back.pause(); preload(idx + 1); }, 400);
 
     bottom.classList.remove('play');
-    void bottom.offsetWidth;
-    document.getElementById('cat').innerHTML   = d.cat;
-    document.getElementById('head').innerHTML  = d.head;
-    document.getElementById('sub').textContent = d.sub;
+    void bottom.offsetWidth;                // Reflow -> Animationen starten neu
+    document.getElementById('cat').innerHTML     = d.cat;
+    document.getElementById('head').innerHTML    = d.head;
+    document.getElementById('sub').textContent   = d.sub;
     document.getElementById('price').textContent = d.price;
     bottom.classList.add('play');
-  }, TRANS.ms * 0.45);         // Wechsel genau dann, wenn das Video den Screen deckt
+  }, TRANS.ms * 0.45);                      // Wechsel im dichtesten Moment des Feuers
 
   dotEls.forEach((el,n) => {
     el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
