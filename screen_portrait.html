@@ -2,346 +2,230 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>KLEEFOOD – Screen 3 – Burger Zubereitung (Hochformat)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600;800;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>KLEEFOOD – Screen 3 – Gerichte (Hochformat)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 <style>
 /* =======================================================================
-   KLEEFOOD – SCREEN 3: BURGER-ZUBEREITUNG (HOCHFORMAT 1080x1920)
-   Für einen um 90° gedrehten TV.
-   - Ist das Browserfenster QUER (normaler TV im Querformat-Signal),
-     wird die Bühne automatisch um 90° gedreht.
-   - Ist das Signal bereits HOCHKANT, wird nur skaliert.
-   - Taste "R" dreht die Richtung um (im-/gegen den Uhrzeigersinn),
-     die Einstellung wird im Browser gespeichert.
-   Videos & Texte: siehe CLIPS-Array unten im <script>.
+   KLEEFOOD – SCREEN 3: GERICHTE IM HOCHFORMAT (1080x1920)
+   Für einen um 90° gedrehten TV. Optimiert für Fire TV Stick:
+   - immer nur EIN Video gleichzeitig aktiv
+   - keine Blend-Modes, keine CSS-Filter, keine Partikel (fressen Leistung)
+   - Videos in 360p (Umschalten über RES weiter unten)
+   Querformat-Signal -> Bühne dreht sich automatisch. Taste "R" = Richtung.
    ======================================================================= */
 
-:root{
-  --bg:#111417; --green:#00E676; --green-deep:#10B981; --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.72);
-}
+:root{ --bg:#111417; --green:#00E676; --gold:#FF9F1C; --white:#fff; --muted:rgba(255,255,255,.72); }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 
-/* Feste Hochformat-Bühne – wird per JS gedreht und skaliert */
 #stage{
   position:absolute;top:50%;left:50%;
   width:1080px;height:1920px;margin:-960px 0 0 -540px;
-  transform-origin:center center;
-  background:var(--bg);overflow:hidden;
+  transform-origin:center center;background:var(--bg);overflow:hidden;
   font-family:'Poppins',system-ui,sans-serif;color:var(--white);
 }
 
-/* ---------- 1. Video-Ebene (zwei Player für weiche Überblendung) ---------- */
-.player{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:0;transition:opacity .9s ease;
-  transform:scale(1.02);
-}
-.player.on{opacity:1;}
+/* ---------- 1. Gericht-Video ---------- */
+#player{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;}
 
-/* Abdunklung für Textlesbarkeit */
+/* Abdunklung oben/unten für die Texte */
 #scrim{
   position:absolute;inset:0;z-index:2;pointer-events:none;
-  background:
-    linear-gradient(180deg,rgba(17,20,23,.90) 0%,rgba(17,20,23,.25) 26%,rgba(17,20,23,.10) 52%,rgba(17,20,23,.94) 88%),
-    radial-gradient(90% 45% at 50% 100%,rgba(255,159,28,.20),transparent 70%);
+  background:linear-gradient(180deg,rgba(17,20,23,.92) 0%,rgba(17,20,23,.20) 24%,
+                                    rgba(17,20,23,.10) 50%,rgba(17,20,23,.95) 86%);
 }
 
-/* ---------- 2. Feuer-Übergang zwischen den Videos ---------- */
-.fire{
-  position:absolute;inset:0;z-index:5;width:100%;height:100%;object-fit:cover;
-  mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;pointer-events:none;
-  filter:brightness(1.35) contrast(1.15) saturate(1.1);
+/* ---------- 2. Feuer-Übergang: deckt den Screen komplett ab ---------- */
+#fire{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:9;                    /* über ALLEM – während des Feuers ist nichts anderes zu sehen */
+  opacity:0;transition:opacity .25s linear;pointer-events:none;background:#2a0a00;
+  transform:scale(1.6);         /* füllt den Screen randlos mit Flammen */
 }
-/* Untere Ebene: Flammen steigen von unten auf.
-   Obere Ebene: dasselbe Video um 180° gedreht – so brennt auch die obere
-   Bildhälfte und der Übergang füllt den kompletten Screen. */
-#fire  {transform:scale(1.45);}
-#fire2 {transform:rotate(180deg) scale(1.45);}
-.fire.on{opacity:1;}
-/* zusätzlicher Hitze-Flash, damit der Schnitt knallt */
-#flash{
-  position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
-  background:radial-gradient(120% 80% at 50% 55%,rgba(255,190,80,.85),rgba(255,90,0,.55) 45%,rgba(120,20,0,.30) 80%);
-  mix-blend-mode:screen;
-}
-#flash.burn{animation:burn 1.4s ease-out;}
-@keyframes burn{
-  0%{opacity:0;}
-  18%{opacity:1;}
-  100%{opacity:0;}
-}
-
-/* Glut-Partikel (immer sichtbar, dezent) */
-#embers{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;}
-.ember{
-  position:absolute;bottom:-30px;border-radius:50%;opacity:0;
-  filter:blur(.6px);animation:emberRise linear infinite;
-}
-@keyframes emberRise{
-  0%{transform:translate(0,0) scale(.6);opacity:0;}
-  10%{opacity:.9;}
-  100%{transform:translate(var(--dx,20px),-2000px) scale(1.2);opacity:0;}
-}
+#fire.on{opacity:1;}
 
 /* ---------- 3. Kopfbereich ---------- */
-#top{position:absolute;top:0;left:0;right:0;z-index:8;padding:70px 70px 0;text-align:center;}
+#top{position:absolute;top:0;left:0;right:0;z-index:8;padding:74px 70px 0;text-align:center;}
 #logo{
-  font-family:'Bebas Neue',sans-serif;font-size:104px;letter-spacing:9px;line-height:1;
-  background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:neon 3.4s ease-in-out infinite;
+  font-family:'Bebas Neue',sans-serif;font-size:106px;letter-spacing:9px;line-height:1;color:var(--green);
+  text-shadow:0 0 30px rgba(0,230,118,.45);   /* statisch = günstig für den Stick */
 }
-@keyframes neon{
-  0%,100%{filter:drop-shadow(0 0 22px rgba(0,230,118,.35));}
-  50%    {filter:drop-shadow(0 0 52px rgba(0,230,118,.70));}
-}
-#claim{
-  margin-top:12px;font-size:24px;letter-spacing:9px;text-transform:uppercase;color:var(--muted);
-}
-#live{
-  display:inline-flex;align-items:center;gap:14px;margin-top:26px;
-  padding:12px 30px;border-radius:999px;
-  border:2px solid rgba(255,159,28,.55);background:rgba(255,159,28,.10);
-  font-family:'Montserrat',sans-serif;font-weight:800;font-size:20px;letter-spacing:4px;text-transform:uppercase;
-  animation:livePulse 2.6s ease-in-out infinite;
-}
-@keyframes livePulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,159,28,.45);}
-  50%    {box-shadow:0 0 0 18px rgba(255,159,28,0);}
-}
-#live .dot{width:14px;height:14px;border-radius:50%;background:var(--gold);box-shadow:0 0 14px var(--gold);}
+#claim{margin-top:12px;font-size:25px;letter-spacing:9px;text-transform:uppercase;color:var(--muted);}
 
-/* ---------- 4. Schritt-Text unten ---------- */
+/* ---------- 4. Gericht-Text unten ---------- */
 #bottom{position:absolute;left:0;right:0;bottom:0;z-index:8;padding:0 70px 78px;}
 
-.reveal{opacity:0;transform:translateY(56px);}
-#bottom.play .reveal{animation:up .95s cubic-bezier(.22,1,.36,1) forwards;}
+.reveal{opacity:0;transform:translateY(40px);}
+#bottom.play .reveal{animation:up .7s ease-out forwards;}
 @keyframes up{to{opacity:1;transform:translateY(0);}}
 
-#step{
+#cat{
   display:inline-block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;
-  letter-spacing:6px;color:#0b0f11;background:var(--green);padding:10px 26px;border-radius:999px;
-  animation-delay:.1s;
+  letter-spacing:5px;color:#0b0f11;background:var(--green);padding:10px 26px;border-radius:999px;
+  animation-delay:.05s;
 }
 #head{
-  margin-top:22px;font-family:'Bebas Neue',sans-serif;font-size:128px;line-height:.95;letter-spacing:2px;
-  background:linear-gradient(92deg,var(--white) 10%,var(--green) 60%,var(--gold) 100%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation-delay:.25s;
+  margin-top:22px;font-family:'Bebas Neue',sans-serif;font-size:124px;line-height:.95;letter-spacing:2px;
+  color:var(--white);animation-delay:.15s;
 }
-#sub{
-  margin-top:20px;font-size:34px;font-weight:300;line-height:1.45;color:var(--muted);
-  animation-delay:.4s;
+#sub{margin-top:18px;font-size:33px;font-weight:300;line-height:1.4;color:var(--muted);animation-delay:.25s;}
+
+#price{
+  display:inline-block;margin-top:30px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:78px;
+  color:#0b0f11;background:var(--gold);padding:14px 44px;border-radius:22px;animation-delay:.35s;
 }
 
-/* Fortschrittspunkte je Video */
-#dots{display:flex;gap:14px;margin-top:44px;}
+/* Fortschrittsbalken je Gericht */
+#dots{display:flex;gap:12px;margin-top:40px;}
 .dot-i{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;}
-.dot-i i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));}
+.dot-i i{display:block;height:100%;width:0;background:var(--green);}
 .dot-i.done i{width:100%;}
 .dot-i.now i{animation:grow linear forwards;}
 @keyframes grow{from{width:0}to{width:100%}}
 
-/* Fußzeile mit Kontakt */
 #foot{
-  margin-top:38px;display:flex;align-items:center;gap:24px;
-  border-top:1.5px solid rgba(255,255,255,.12);padding-top:26px;
-  font-family:'Montserrat',sans-serif;
+  margin-top:34px;border-top:1.5px solid rgba(255,255,255,.12);padding-top:24px;
+  font-family:'Montserrat',sans-serif;font-size:22px;font-weight:800;color:var(--muted);letter-spacing:1px;
 }
-#foot .deal{
-  padding:14px 28px;border-radius:16px;color:#0b0f11;font-weight:900;font-size:30px;
-  background:linear-gradient(135deg,var(--green),var(--gold));white-space:nowrap;
-}
-#foot .txt{font-size:21px;font-weight:600;line-height:1.35;color:var(--muted);}
-#foot .txt b{color:var(--white);}
+#foot b{color:var(--white);}
 </style>
 </head>
 <body>
 
 <div id="stage">
-  <!-- Videoebene -->
-  <video class="player" id="pA" muted playsinline preload="auto"></video>
-  <video class="player" id="pB" muted playsinline preload="auto"></video>
-
-  <!-- Feuer-Übergang -->
-  <video id="fire"  class="fire" muted playsinline preload="auto"></video>
-  <video id="fire2" class="fire" muted playsinline preload="auto"></video>
-  <div id="flash"></div>
-
-  <div id="embers"></div>
+  <video id="player" muted playsinline preload="auto" loop></video>
   <div id="scrim"></div>
 
-  <!-- Kopf -->
   <div id="top">
     <div id="logo">KLEEFOOD</div>
     <div id="claim">Burger • Pizza • Fingerfood</div>
-    <div id="live"><span class="dot"></span> Frisch gegrillt vor deinen Augen</div>
   </div>
 
-  <!-- Schritt-Text -->
   <div id="bottom">
-    <span id="step" class="reveal"></span>
-    <h1 id="head" class="reveal"></h1>
-    <p  id="sub"  class="reveal"></p>
+    <span id="cat"  class="reveal"></span>
+    <h1   id="head" class="reveal"></h1>
+    <p    id="sub"  class="reveal"></p>
+    <div><span id="price" class="reveal"></span></div>
     <div id="dots"></div>
-    <div id="foot">
-      <div class="deal">SPAR MENÜ 12,90 €</div>
-      <div class="txt"><b>Täglich 11:00 – 23:00 Uhr</b><br>Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
-    </div>
+    <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
   </div>
+
+  <!-- Feuer liegt über allem und verdeckt den Wechsel komplett -->
+  <video id="fire" muted playsinline preload="auto"></video>
 </div>
 
 <script>
 /* =======================================================================
-   INHALTE – Videos und Texte der Zubereitungs-Schritte.
-   src : Video-URL (hier Mixkit-Free-Clips; einfach gegen eigene
-         Aufnahmen aus der Küche tauschen, z. B. "videos/patty.mp4")
-   secs: Anzeigedauer in Sekunden (Clip läuft in Schleife, falls kürzer)
+   INHALTE – Gerichte direkt aus der KLEEFOOD-Speisekarte.
+   vid  : Mixkit-Video-ID  (eigene Aufnahme? dann stattdessen
+          full:"videos/mein-burger.mp4" eintragen)
+   secs : Anzeigedauer in Sekunden
    ======================================================================= */
-const CLIPS = [
-  { step:"Schritt 01", head:"Frisches<br>Angus-Rind",   sub:"Grob gewolft, nur mit Salz & Pfeffer gewürzt – niemals vorgeformt.",
-    src:"https://assets.mixkit.co/videos/16599/16599-720.mp4", secs:9 },
-  { step:"Schritt 02", head:"Auf die<br>offene Flamme",  sub:"Heißer Grill, kräftige Röstaromen – so entsteht die Kruste.",
-    src:"https://assets.mixkit.co/videos/12041/12041-720.mp4", secs:9 },
-  { step:"Schritt 03", head:"Cheddar<br>schmelzen",      sub:"Gereifter Cheddar direkt auf dem heißen Patty verlaufen lassen.",
-    src:"https://assets.mixkit.co/videos/12016/12016-720.mp4", secs:9 },
-  { step:"Schritt 04", head:"Klee<br>Signature-Sauce",   sub:"Hausgemacht – jeden Morgen frisch angerührt.",
-    src:"https://assets.mixkit.co/videos/24785/24785-720.mp4", secs:9 },
-  { step:"Schritt 05", head:"Frisch<br>gestapelt",       sub:"Salat, Tomate, Zwiebeln & Gurken – alles täglich frisch geschnitten.",
-    src:"https://assets.mixkit.co/videos/3533/3533-1080.mp4",  secs:9 },
-  { step:"Schritt 06", head:"Pommes<br>dazu – fertig",   sub:"Als Spar Menü mit Pommes und 0,33 l Softdrink für 12,90 €.",
-    src:"https://assets.mixkit.co/videos/36582/36582-720.mp4", secs:9 }
+const RES = 360;   // 360 = kleine Dateien (Fire TV Stick) · 720 = schärfer, größer
+
+const DISHES = [
+  { cat:"Nr. 04 · Burger", head:"Kleefood<br>BBQ Burger",  sub:"Rindfleisch-Patty, Cheddar-Käse, Bacon, Barbecue-Sauce",
+    price:"7,50 €",  vid:12041, secs:10 },
+  { cat:"Nr. 13 · Burger", head:"Kleefeld<br>Special",     sub:"2 Mozzarella-Sticks, 2 Zwiebelringe, Röstzwiebeln, Sauce nach Wahl",
+    price:"10,00 €", vid:12016, secs:10 },
+  { cat:"Nr. 03 · Burger", head:"Chili<br>Cheeseburger",   sub:"Rindfleisch-Patty, Cheddar-Käse, Jalapeños, Chili-Sauce",
+    price:"7,00 €",  vid:16599, secs:10 },
+  { cat:"Nr. 17 · Smash",  head:"Chili Cheese<br>Smash",   sub:"Smash-Patty mit Käse und Jalapeños · doppeltes Patty +2,50 €",
+    price:"5,00 €",  vid:11760, secs:10 },
+  { cat:"Nr. 26 · Beilage",head:"Chili<br>Cheese Fries",   sub:"Knusprige Fries mit Jalapeños und Käse",
+    price:"5,50 €",  vid:36582, secs:10 },
+  { cat:"Spar Menü",       head:"Menü statt<br>nur Burger",sub:"Burger nach Wahl + Pommes + 0,33 l Softdrink",
+    price:"12,90 €", vid:14010, secs:10 }
 ];
 
-/* Feuer-Clip für den Übergang (Flammen auf Schwarz, wird per "screen" überblendet) */
-const FIRE_SRC   = "https://assets.mixkit.co/videos/52292/52292-1080.mp4";
-const FIRE_START = 14.6;   // Feuer-Clip nur im heißen Abschnitt laufen lassen …
-const FIRE_END   = 18.6;   // … und dort in Schleife halten (Clip ist 19,5 s lang)
-const FIRE_MS    = 1400;   // Dauer des Feuer-Übergangs
-const FADE_MS    = 900;    // Kreuzblende zwischen den Videos (= CSS .player transition)
+/* Feuer-Clip: Flammen füllen das komplette Bild (Spiegel-Effekt, 15 s lang).
+   Immer 720p – nur eine Datei (~5 MB), dafür sichtbar schärfer als 360p. */
+const FIRE_VID   = 3767;
+const FIRE_RES   = 720;
+const FIRE_START = 1.5;    // Abschnitt, in dem der ganze Screen brennt
+const FIRE_END   = 12;
+const FIRE_MS    = 1500;   // Dauer des Feuer-Übergangs
+
+const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
 /* ---------- Aufbau ---------- */
-const pA = document.getElementById('pA'), pB = document.getElementById('pB');
-const fire = document.getElementById('fire'), fire2 = document.getElementById('fire2');
-const flash = document.getElementById('flash');
-const bottom = document.getElementById('bottom'), dots = document.getElementById('dots');
+const player = document.getElementById('player');
+const fire   = document.getElementById('fire');
+const bottom = document.getElementById('bottom');
+const dots   = document.getElementById('dots');
 
-fire.src = FIRE_SRC;
-fire2.src = FIRE_SRC;
+fire.src = 'https://assets.mixkit.co/videos/' + FIRE_VID + '/' + FIRE_VID + '-' + FIRE_RES + '.mp4';
+fire.addEventListener('loadeddata', () => { fire.currentTime = FIRE_START; });
 
-CLIPS.forEach(() => {
+DISHES.forEach(() => {
   const d = document.createElement('div');
-  d.className = 'dot-i';
-  d.innerHTML = '<i></i>';
+  d.className = 'dot-i'; d.innerHTML = '<i></i>';
   dots.appendChild(d);
 });
 const dotEls = [...dots.children];
 
-let front = pA, back = pB, idx = -1, timer = null;
+let idx = -1, timer = null;
 
-function play(i){
-  idx = (i + CLIPS.length) % CLIPS.length;
-  const c = CLIPS[idx];
+function show(i){
+  idx = (i + DISHES.length) % DISHES.length;
+  const d = DISHES[idx];
 
-  // Feuer-Übergang zünden
-  burnTransition();
+  burn();                                  // Feuer an – der Wechsel passiert dahinter
 
-  // Nächstes Video im Hintergrund-Player laden und einblenden
-  back.src = c.src;
-  back.loop = true;
-  back.play().catch(() => {});          // Autoplay ist durch "muted" erlaubt
   setTimeout(() => {
-    back.classList.add('on');
-    front.classList.remove('on');
-    const tmp = front; front = back; back = tmp;
-  }, FIRE_MS * 0.45);                    // Schnitt liegt im hellsten Moment des Feuers
-
-  // Texte neu einblenden
-  setTimeout(() => {
+    player.src = url(d);                   // Videowechsel, während Feuer alles verdeckt
+    player.play().catch(() => {});
     bottom.classList.remove('play');
-    void bottom.offsetWidth;             // Reflow -> Animationen starten neu
-    document.getElementById('step').textContent = c.step;
-    document.getElementById('head').innerHTML   = c.head;
-    document.getElementById('sub').textContent  = c.sub;
+    void bottom.offsetWidth;
+    document.getElementById('cat').innerHTML   = d.cat;
+    document.getElementById('head').innerHTML  = d.head;
+    document.getElementById('sub').textContent = d.sub;
+    document.getElementById('price').textContent = d.price;
     bottom.classList.add('play');
-  }, FIRE_MS * 0.5);
+  }, FIRE_MS * 0.45);
 
-  // Fortschrittsbalken
-  dotEls.forEach((d,n) => {
-    d.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
-    d.firstChild.style.animationDuration = c.secs + 's';
+  dotEls.forEach((el,n) => {
+    el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
+    el.firstChild.style.animationDuration = d.secs + 's';
   });
 
   clearTimeout(timer);
-  timer = setTimeout(() => play(idx + 1), c.secs * 1000);
+  timer = setTimeout(() => show(idx + 1), d.secs * 1000);
 }
 
-// Der Feuer-Clip läuft dauerhaft in Schleife im Hintergrund und wird nur
-// ein- und ausgeblendet – so gibt es beim Übergang keine Ruckler durchs Suchen.
-// Beide Ebenen laufen versetzt, damit oben und unten nicht identisch flackern.
-[[fire, 0], [fire2, 1.8]].forEach(([v, offset]) => {
-  v.loop = false;
-  v.addEventListener('loadeddata', () => { v.currentTime = FIRE_START + offset; v.play().catch(() => {}); });
-  v.addEventListener('timeupdate', () => {
-    if (v.currentTime >= FIRE_END || v.currentTime < FIRE_START - .5) v.currentTime = FIRE_START + offset;
-  });
-});
-
-function burnTransition(){
-  fire.classList.add('on'); fire2.classList.add('on');
-  flash.classList.remove('burn'); void flash.offsetWidth; flash.classList.add('burn');
-  setTimeout(() => { fire.classList.remove('on'); fire2.classList.remove('on'); }, FIRE_MS);
+/* Feuer nur während des Übergangs abspielen – dazwischen steht es still,
+   das spart auf schwacher Hardware spürbar Leistung. */
+let firePos = FIRE_START;          // wandert durch den Clip, damit nicht immer dasselbe Feuer läuft
+function burn(){
+  fire.currentTime = firePos;
+  firePos += FIRE_MS / 1000;
+  if (firePos > FIRE_END) firePos = FIRE_START;
+  fire.play().catch(() => {});
+  fire.classList.add('on');
+  setTimeout(() => fire.classList.remove('on'), FIRE_MS);
+  setTimeout(() => fire.pause(), FIRE_MS + 300);
 }
 
-/* ---------- Glut-Partikel ---------- */
-const emb = document.getElementById('embers');
-for (let i = 0; i < 34; i++){
-  const e = document.createElement('div');
-  const s = 2 + Math.random() * 6;
-  e.className = 'ember';
-  e.style.cssText =
-    'left:' + (Math.random()*100) + '%;width:' + s + 'px;height:' + s + 'px;' +
-    '--dx:' + (Math.random()*120 - 60) + 'px;' +
-    'background:' + (Math.random() > .5 ? 'var(--gold)' : '#ff5b1f') + ';' +
-    'animation-duration:' + (9 + Math.random()*10) + 's;' +
-    'animation-delay:' + (-Math.random()*18) + 's;';
-  emb.appendChild(e);
-}
-
-/* ---------- Drehung & Skalierung ---------------------------------------
-   Querformat-Signal  -> Bühne um 90° drehen (TV hängt hochkant)
-   Hochformat-Signal  -> nur skalieren
-   Taste "R"          -> Drehrichtung umschalten (90° / 270°)
-   ----------------------------------------------------------------------- */
-// Drehrichtung merken – localStorage kann je nach Browser/Kiosk gesperrt sein
+/* ---------- Drehung & Skalierung ----------
+   Querformat-Signal -> 90° drehen · Hochformat-Signal -> nur skalieren
+   Taste "R" schaltet die Drehrichtung um.                                */
 function store(v){ try{ if(v===undefined) return localStorage.getItem('kleefood-rot');
                         localStorage.setItem('kleefood-rot', v); }catch(e){ return null; } }
-let dir = +(store() || 90);   // 90 = im Uhrzeigersinn
+let dir = +(store() || 90);
 
 function fit(){
-  const vw = innerWidth, vh = innerHeight;
-  const landscape = vw >= vh;
-  const rot = landscape ? dir : 0;
-  // Nach der Drehung tauschen Breite und Höhe der Bühne die Rollen
+  const rot = innerWidth >= innerHeight ? dir : 0;
   const w = rot ? 1920 : 1080, h = rot ? 1080 : 1920;
-  const s = Math.min(vw / w, vh / h);
+  const s = Math.min(innerWidth / w, innerHeight / h);
   document.getElementById('stage').style.transform = 'rotate(' + rot + 'deg) scale(' + s + ')';
 }
 addEventListener('resize', fit);
 addEventListener('keydown', e => {
-  if (e.key.toLowerCase() === 'r'){
-    dir = dir === 90 ? 270 : 90;
-    store(dir);
-    fit();
-  }
+  if (e.key.toLowerCase() === 'r'){ dir = dir === 90 ? 270 : 90; store(dir); fit(); }
 });
 fit();
 
-play(0);
+show(0);
 </script>
 </body>
 </html>
