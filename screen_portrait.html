@@ -35,34 +35,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
                                     rgba(17,20,23,.10) 50%,rgba(17,20,23,.95) 86%);
 }
 
-/* ---------- 2. Übergang: Klee-Wipe ----------------------------------
-   Ein Farbbalken in Smaragdgrün/Gold fährt diagonal über den Screen und
-   deckt den Wechsel komplett ab. Reines CSS (nur transform/opacity) –
-   kein Video, kein Download, minimale Last für den Fire TV Stick.      */
-#wipe{
-  position:absolute;inset:-12% -30%;z-index:9;pointer-events:none;
-  display:grid;place-items:center;
-  background:linear-gradient(135deg,#00E676 0%,#10B981 45%,#FF9F1C 100%);
-  transform:translateX(-135%) skewX(-11deg);
+/* ---------- 2. Übergangs-Video: deckt den Screen komplett ab ---------- */
+#trans{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  z-index:9;                     /* über ALLEM – während des Übergangs ist nichts anderes zu sehen */
+  opacity:0;transition:opacity .22s linear;pointer-events:none;background:#000;
 }
-#wipe.run{animation:wipe var(--wipe,900ms) cubic-bezier(.65,0,.35,1) forwards;}
-@keyframes wipe{
-  0%  {transform:translateX(-135%) skewX(-11deg);}
-  42% {transform:translateX(0)     skewX(-11deg);}
-  58% {transform:translateX(0)     skewX(-11deg);}   /* kurz stehen bleiben = Wechsel dahinter */
-  100%{transform:translateX(135%)  skewX(11deg);}
-}
-/* Logo im Wischer */
-#wipe span{
-  font-family:'Bebas Neue',sans-serif;font-size:120px;letter-spacing:10px;color:#0b0f11;
-  transform:skewX(11deg);opacity:0;
-}
-#wipe.run span{animation:wipeLogo var(--wipe,900ms) ease-out forwards;}
-@keyframes wipeLogo{
-  0%,20%{opacity:0;transform:skewX(11deg) scale(.9);}
-  45%,60%{opacity:1;transform:skewX(11deg) scale(1);}
-  100%{opacity:0;transform:skewX(11deg) scale(1.05);}
-}
+#trans.on{opacity:1;}
 
 /* ---------- 3. Kopfbereich ---------- */
 #top{position:absolute;top:0;left:0;right:0;z-index:8;padding:74px 70px 0;text-align:center;}
@@ -130,8 +109,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
     <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
   </div>
 
-  <!-- Wischer liegt über allem und verdeckt den Wechsel komplett -->
-  <div id="wipe"><span>KLEEFOOD</span></div>
+  <!-- Übergangs-Video liegt über allem und verdeckt den Wechsel komplett -->
+  <video id="trans" muted playsinline preload="auto"></video>
 </div>
 
 <script>
@@ -158,18 +137,27 @@ const DISHES = [
     price:"12,90 €", vid:14010, secs:10 }
 ];
 
-/* Dauer des Klee-Wipes in Millisekunden (muss zur CSS-Variable --wipe passen) */
-const WIPE_MS = 900;
+/* Übergangs-Video zwischen den Gerichten.
+   Andere Varianten (einfach vid/start tauschen):
+     50951 / 0.6  Rauch-Wirbel   (aktuell)
+      7090 / 1.5  Grill-Glut
+     30749 / 0.8  Funkenflug
+      3454 / 1.0  Kohle-Feuer
+     46316 / 1.0  Gold-Partikel
+     18052 / 0.4  Partikel-Explosion
+   Alle sechs live vergleichen: uebergaenge.html                          */
+const TRANS = { vid:50951, start:0.6, ms:1600 };
 
 const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
 
 /* ---------- Aufbau ---------- */
 const player = document.getElementById('player');
-const wipe   = document.getElementById('wipe');
+const trans  = document.getElementById('trans');
 const bottom = document.getElementById('bottom');
 const dots   = document.getElementById('dots');
 
-wipe.style.setProperty('--wipe', WIPE_MS + 'ms');
+trans.src = 'https://assets.mixkit.co/videos/' + TRANS.vid + '/' + TRANS.vid + '-360.mp4';
+trans.addEventListener('loadeddata', () => { trans.currentTime = TRANS.start; });
 
 DISHES.forEach(() => {
   const d = document.createElement('div');
@@ -184,7 +172,7 @@ function show(i){
   idx = (i + DISHES.length) % DISHES.length;
   const d = DISHES[idx];
 
-  swipe();                                 // Wischer läuft – der Wechsel passiert dahinter
+  playTransition();                        // Übergangs-Video läuft – der Wechsel passiert dahinter
 
   setTimeout(() => {
     player.src = url(d);                   // Videowechsel, während Feuer alles verdeckt
@@ -196,7 +184,7 @@ function show(i){
     document.getElementById('sub').textContent = d.sub;
     document.getElementById('price').textContent = d.price;
     bottom.classList.add('play');
-  }, WIPE_MS * 0.48);          // Wechsel genau dann, wenn der Balken den Screen deckt
+  }, TRANS.ms * 0.45);         // Wechsel genau dann, wenn das Video den Screen deckt
 
   dotEls.forEach((el,n) => {
     el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
@@ -207,11 +195,14 @@ function show(i){
   timer = setTimeout(() => show(idx + 1), d.secs * 1000);
 }
 
-/* Wischer einmal durchlaufen lassen */
-function swipe(){
-  wipe.classList.remove('run');
-  void wipe.offsetWidth;                 // Reflow -> Animation startet neu
-  wipe.classList.add('run');
+/* Übergangs-Video nur während des Wechsels abspielen – dazwischen steht es
+   still, das spart auf dem Fire TV Stick spürbar Leistung. */
+function playTransition(){
+  trans.currentTime = TRANS.start;
+  trans.play().catch(() => {});
+  trans.classList.add('on');
+  setTimeout(() => trans.classList.remove('on'), TRANS.ms);
+  setTimeout(() => trans.pause(), TRANS.ms + 300);
 }
 
 /* ---------- Drehung & Skalierung ----------
