@@ -51,16 +51,22 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 }
 
 /* ---------- 2. Feuer-Übergang zwischen den Videos ---------- */
-#fire{
+.fire{
   position:absolute;inset:0;z-index:5;width:100%;height:100%;object-fit:cover;
-  mix-blend-mode:screen;opacity:0;transition:opacity .35s ease;pointer-events:none;
-  transform:scale(1.25);           /* Flammen greifen über den ganzen Screen */
+  mix-blend-mode:screen;opacity:0;transition:opacity .3s ease;pointer-events:none;
+  filter:brightness(1.35) contrast(1.15) saturate(1.1);
 }
-#fire.on{opacity:1;}
+/* Untere Ebene: Flammen steigen von unten auf.
+   Obere Ebene: dasselbe Video um 180° gedreht – so brennt auch die obere
+   Bildhälfte und der Übergang füllt den kompletten Screen. */
+#fire  {transform:scale(1.45);}
+#fire2 {transform:rotate(180deg) scale(1.45);}
+.fire.on{opacity:1;}
 /* zusätzlicher Hitze-Flash, damit der Schnitt knallt */
 #flash{
   position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;
-  background:radial-gradient(70% 45% at 50% 88%,rgba(255,159,28,.75),rgba(255,80,0,.35) 45%,transparent 75%);
+  background:radial-gradient(120% 80% at 50% 55%,rgba(255,190,80,.85),rgba(255,90,0,.55) 45%,rgba(120,20,0,.30) 80%);
+  mix-blend-mode:screen;
 }
 #flash.burn{animation:burn 1.4s ease-out;}
 @keyframes burn{
@@ -162,7 +168,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   <video class="player" id="pB" muted playsinline preload="auto"></video>
 
   <!-- Feuer-Übergang -->
-  <video id="fire" muted playsinline preload="auto" loop></video>
+  <video id="fire"  class="fire" muted playsinline preload="auto"></video>
+  <video id="fire2" class="fire" muted playsinline preload="auto"></video>
   <div id="flash"></div>
 
   <div id="embers"></div>
@@ -212,17 +219,19 @@ const CLIPS = [
 
 /* Feuer-Clip für den Übergang (Flammen auf Schwarz, wird per "screen" überblendet) */
 const FIRE_SRC   = "https://assets.mixkit.co/videos/52292/52292-1080.mp4";
-const FIRE_START = 13.5;   // Feuer-Clip nur im heißen Abschnitt laufen lassen …
-const FIRE_END   = 18.8;   // … und dort in Schleife halten (Clip ist 19,5 s lang)
+const FIRE_START = 14.6;   // Feuer-Clip nur im heißen Abschnitt laufen lassen …
+const FIRE_END   = 18.6;   // … und dort in Schleife halten (Clip ist 19,5 s lang)
 const FIRE_MS    = 1400;   // Dauer des Feuer-Übergangs
 const FADE_MS    = 900;    // Kreuzblende zwischen den Videos (= CSS .player transition)
 
 /* ---------- Aufbau ---------- */
 const pA = document.getElementById('pA'), pB = document.getElementById('pB');
-const fire = document.getElementById('fire'), flash = document.getElementById('flash');
+const fire = document.getElementById('fire'), fire2 = document.getElementById('fire2');
+const flash = document.getElementById('flash');
 const bottom = document.getElementById('bottom'), dots = document.getElementById('dots');
 
 fire.src = FIRE_SRC;
+fire2.src = FIRE_SRC;
 
 CLIPS.forEach(() => {
   const d = document.createElement('div');
@@ -273,16 +282,19 @@ function play(i){
 
 // Der Feuer-Clip läuft dauerhaft in Schleife im Hintergrund und wird nur
 // ein- und ausgeblendet – so gibt es beim Übergang keine Ruckler durchs Suchen.
-fire.loop = false;
-fire.addEventListener('loadeddata', () => { fire.currentTime = FIRE_START; fire.play().catch(() => {}); });
-fire.addEventListener('timeupdate', () => {
-  if (fire.currentTime >= FIRE_END || fire.currentTime < FIRE_START - .5) fire.currentTime = FIRE_START;
+// Beide Ebenen laufen versetzt, damit oben und unten nicht identisch flackern.
+[[fire, 0], [fire2, 1.8]].forEach(([v, offset]) => {
+  v.loop = false;
+  v.addEventListener('loadeddata', () => { v.currentTime = FIRE_START + offset; v.play().catch(() => {}); });
+  v.addEventListener('timeupdate', () => {
+    if (v.currentTime >= FIRE_END || v.currentTime < FIRE_START - .5) v.currentTime = FIRE_START + offset;
+  });
 });
 
 function burnTransition(){
-  fire.classList.add('on');
+  fire.classList.add('on'); fire2.classList.add('on');
   flash.classList.remove('burn'); void flash.offsetWidth; flash.classList.add('burn');
-  setTimeout(() => fire.classList.remove('on'), FIRE_MS);
+  setTimeout(() => { fire.classList.remove('on'); fire2.classList.remove('on'); }, FIRE_MS);
 }
 
 /* ---------- Glut-Partikel ---------- */
