@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 <style>
 /* =======================================================================
-   AUSWAHL-SEITE: 18 Video-Übergänge für Screen 3, nach Stil gruppiert.
+   AUSWAHL-SEITE: 30 Video-Übergänge für Screen 3, nach Stil gruppiert.
    Jede Kachel spielt in Schleife · Klick = sofort abspielen.
    ======================================================================= */
 :root{--bg:#111417;--green:#00E676;--gold:#FF9F1C;--muted:rgba(255,255,255,.6);}
@@ -44,7 +44,7 @@ h3 span{color:var(--gold);font-size:16px;letter-spacing:2px;font-family:'Montser
 <body>
 
 <h1>VIDEO-ÜBERGÄNGE FÜR SCREEN 3</h1>
-<p class="lead">18 Varianten, gruppiert nach Stil. Jeder Clip deckt den Wechsel zwischen den Gerichten komplett ab.
+<p class="lead">30 Varianten, gruppiert nach Stil. Jeder Clip deckt den Wechsel zwischen den Gerichten komplett ab.
 Kachel anklicken = sofort abspielen. Sag mir die Nummer, dann baue ich sie ein.</p>
 
 <div id="out"></div>
@@ -59,6 +59,20 @@ const IMG_B = "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto
 
 /* Gruppen mit Clips · vid = Mixkit-ID · start = Startsekunde · ms = Dauer */
 const GROUPS = [
+  { title:"FEUER", note:"12 Varianten – von ruhiger Flamme bis Explosion", items:[
+    {n:19, name:"Flammen hoch",   vid:52284, start:1.0, ms:1600, mb:"1,2", desc:"Lodernde Flammen auf Schwarz, hochformatig gedreht."},
+    {n:20, name:"Flammen Zeitlupe",vid:52289,start:1.5, ms:1700, mb:"1,5", desc:"Flammen steigen in Zeitlupe auf – ruhig und edel."},
+    {n:21, name:"Flackern",       vid:52294, start:1.2, ms:1600, mb:"1,4", desc:"Flackerndes Feuer, fließt gleichmäßig nach oben."},
+    {n:22, name:"Flammen quer",   vid:52297, start:1.0, ms:1600, mb:"1,4", desc:"Flammen ziehen in verschiedene Richtungen durchs Bild."},
+    {n:23, name:"Feuer-Ausbruch", vid:52304, start:0.6, ms:1500, mb:"1,2", desc:"Flammen brechen plötzlich aus und verschlingen sich."},
+    {n:24, name:"Feuer Nahaufnahme",vid:52312,start:1.2,ms:1600, mb:"1,4", desc:"Ganz nah an der Flamme – füllt den Screen komplett."},
+    {n:25, name:"Feuer zur Mitte",vid:3757,  start:0.8, ms:1500, mb:"1,3", desc:"Flammen laufen von den Rändern zur Bildmitte."},
+    {n:26, name:"Feuer von unten",vid:3760,  start:0.8, ms:1500, mb:"1,0", desc:"Flammen schlagen von unten und den Seiten hoch."},
+    {n:27, name:"BBQ-Grill",      vid:2780,  start:1.0, ms:1600, mb:"1,2", desc:"Flammen im Grill – thematisch am nächsten am Burger."},
+    {n:28, name:"Holzfeuer Grill",vid:7441,  start:1.0, ms:1600, mb:"1,1", desc:"Brennendes Holz im Grill, warme Glut."},
+    {n:29, name:"Glut-Explosion", vid:48299, start:0.4, ms:1400, mb:"2,4", desc:"Glutfunken werden explosionsartig weggeschleudert."},
+    {n:30, name:"Feuer-Explosion",vid:38818, start:0.2, ms:1300, mb:"0,3", desc:"Kurze Feuerexplosion auf Schwarz – knallt am meisten."}
+  ]},
   { title:"RAUCH & DAMPF", note:"sauber, neutral, passt über jedes Gericht", items:[
     {n:1,  name:"Rauch-Wirbel",   vid:50951, start:0.6, ms:1600, mb:"1,6", desc:"Rauchschwall wirbelt schnell durchs Bild. (aktuell)"},
     {n:2,  name:"Rauch von oben", vid:32110, start:0.5, ms:1600, mb:"0,9", desc:"Rauch sinkt von oben herab und deckt zu."},
