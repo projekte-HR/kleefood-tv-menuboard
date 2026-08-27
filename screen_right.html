@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KLEEFOOD – Screen 2 – Menükarte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =======================================================================
+   KLEEFOOD – SCREEN 2 (RECHTS): VOLLSTÄNDIGE MENÜKARTE
+   Inhalte = Original-Speisekarte. Pflege im <script> unten (MENU / DIPS / SPAR).
+   ======================================================================= */
+
+/* ---------- 1. Design-Tokens ---------- */
+:root{
+  --bg:         #111417;
+  --card:       #171c20;
+  --green:      #00E676;
+  --green-deep: #10B981;
+  --gold:       #FF9F1C;
+  --white:      #FFFFFF;
+  --muted:      rgba(255,255,255,.60);
+  --line:       rgba(255,255,255,.08);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:1920px;height:1080px;overflow:hidden;
+  background:var(--bg);color:var(--white);
+  font-family:'Poppins',system-ui,sans-serif;transform-origin:top left;
+}
+
+/* Hintergrund: weiche Farbwolken + Grid-Textur */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(60% 50% at 12% 0%,  rgba(0,230,118,.16), transparent 65%),
+    radial-gradient(55% 50% at 92% 8%,  rgba(255,159,28,.13), transparent 65%),
+    radial-gradient(70% 60% at 50% 115%,rgba(16,185,129,.12), transparent 65%);
+  animation:breathe 12s ease-in-out infinite alternate;
+}
+@keyframes breathe{from{opacity:.65;}to{opacity:1;}}
+body::after{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.32;
+  background-image:linear-gradient(var(--line) 1px,transparent 1px),
+                   linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(80% 70% at 50% 40%,#000,transparent 100%);
+}
+
+#board{position:relative;z-index:1;width:1920px;height:1080px;padding:22px 40px 22px;display:flex;flex-direction:column;}
+
+/* ---------- 2. Header ---------- */
+header{display:flex;align-items:center;gap:26px;}
+
+.logo-mark{
+  width:66px;height:66px;flex:none;border-radius:50%;display:grid;place-items:center;
+  font-size:40px;border:3px solid var(--green);background:rgba(0,230,118,.08);
+  animation:markGlow 3s ease-in-out infinite;
+}
+@keyframes markGlow{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.40),0 0 30px rgba(0,230,118,.25) inset;}
+  50%    {box-shadow:0 0 0 14px rgba(0,230,118,0), 0 0 52px rgba(0,230,118,.45) inset;}
+}
+
+.logo-text h1{
+  font-family:'Bebas Neue',sans-serif;font-size:60px;line-height:.9;letter-spacing:5px;
+  background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:neon 3.4s ease-in-out infinite;
+}
+@keyframes neon{
+  0%,100%{filter:drop-shadow(0 0 18px rgba(0,230,118,.30));}
+  50%    {filter:drop-shadow(0 0 40px rgba(0,230,118,.65));}
+}
+.logo-text p{font-size:16px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+
+.header-note{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
+.header-note .big{font-size:24px;font-weight:800;letter-spacing:2px;color:var(--gold);}
+.header-note .mid{font-size:19px;font-weight:700;letter-spacing:1px;margin-top:4px;}
+.header-note .small{font-size:14px;letter-spacing:2.5px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+
+/* ---------- 3. Laufband / Ticker ---------- */
+#ticker{
+  margin:12px 0 12px;height:44px;border-radius:12px;overflow:hidden;position:relative;
+  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);
+  display:flex;align-items:center;
+}
+#ticker .track{display:flex;white-space:nowrap;will-change:transform;animation:scroll 28s linear infinite;}
+#ticker .track span{
+  font-family:'Montserrat',sans-serif;font-weight:800;font-size:21px;letter-spacing:4px;
+  padding:0 55px;text-transform:uppercase;
+}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+/* ---------- 4. Menü-Spalten ---------- */
+#columns{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;min-height:0;}
+
+.col{
+  background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
+  border:1.5px solid var(--line);border-radius:20px;padding:16px 18px 14px;
+  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  opacity:0;transform:translateY(36px);
+  animation:colIn .9s cubic-bezier(.22,1,.36,1) forwards;
+}
+.col:nth-child(1){animation-delay:.10s;}
+.col:nth-child(2){animation-delay:.25s;}
+.col:nth-child(3){animation-delay:.40s;}
+@keyframes colIn{to{opacity:1;transform:translateY(0);}}
+.col::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--green),var(--gold));opacity:.85;
+}
+
+/* Kategorie-Überschrift */
+.sec-head{display:flex;align-items:flex-end;gap:10px;margin:2px 0 6px;padding-bottom:6px;border-bottom:2px solid rgba(255,255,255,.10);}
+.sec + .sec .sec-head{margin-top:10px;}
+.sec-head .ico{font-size:26px;line-height:1;}
+.sec-head h2{
+  font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2.5px;line-height:1;
+  background:linear-gradient(90deg,var(--white),var(--green));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.sec-head .note{font-size:12.5px;color:var(--muted);letter-spacing:.5px;margin-left:auto;text-align:right;line-height:1.25;}
+.sec-head .sizes{display:flex;gap:14px;margin-left:auto;}
+.sec-head .sizes span{
+  width:62px;text-align:right;font-size:12px;font-weight:700;letter-spacing:1px;
+  color:var(--gold);text-transform:uppercase;
+}
+
+/* Einzelnes Gericht */
+.item{
+  display:flex;align-items:center;gap:9px;padding:3px 8px;border-radius:9px;
+  position:relative;overflow:hidden;
+}
+.item + .item{border-top:1px solid rgba(255,255,255,.05);}
+.item .no{
+  font-family:'Montserrat',sans-serif;font-size:12px;font-weight:800;color:var(--gold);
+  width:22px;flex:none;opacity:.85;
+}
+.item .txt{flex:1;min-width:0;}
+.item .name{font-size:17.5px;font-weight:600;letter-spacing:.2px;line-height:1.25;}
+.item .ing{font-size:12.5px;font-weight:300;color:var(--muted);margin-left:7px;}
+.item .price{
+  font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:var(--gold);
+  white-space:nowrap;width:62px;text-align:right;flex:none;
+}
+.item .price.second{color:var(--white);}
+
+/* Bestseller: Rahmen + wiederkehrender Shimmer */
+.item.best{background:rgba(0,230,118,.07);box-shadow:inset 0 0 0 1px rgba(0,230,118,.28);}
+.badge{
+  font-family:'Montserrat',sans-serif;font-size:9px;font-weight:800;letter-spacing:1.2px;
+  padding:2px 7px;border-radius:99px;margin-left:7px;vertical-align:middle;white-space:nowrap;
+}
+.badge.best{color:#0b0f11;background:var(--green);}
+.badge.veg{color:var(--green);border:1px solid var(--green);}
+.item.best::after{
+  content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.20),transparent);
+  animation:shimmer 5.5s ease-in-out infinite;
+}
+@keyframes shimmer{0%,72%{left:-60%;}100%{left:130%;}}
+.col:nth-child(2) .item.best::after{animation-delay:1.6s;}
+.col:nth-child(3) .item.best::after{animation-delay:3.2s;}
+
+/* Hinweiszeile innerhalb einer Kategorie (z. B. Aufpreis) */
+.hint{
+  font-size:13px;font-style:italic;color:var(--green);padding:5px 8px 2px;letter-spacing:.3px;
+}
+
+/* Dips-Block: kompakt zweispaltig */
+#dips{
+  margin-top:6px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+}
+#dips .t{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--white);margin-bottom:4px;}
+#dips .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px 14px;}
+#dips .d{display:flex;justify-content:space-between;font-size:12.5px;color:rgba(255,255,255,.82);}
+#dips .d b{font-family:'Montserrat',sans-serif;font-weight:800;color:var(--gold);}
+
+/* ---------- 5. Spar-Menü-Kasten (unten rechts) ---------- */
+#combo{
+  margin-top:8px;border-radius:16px;padding:11px 14px;position:relative;overflow:hidden;
+  background:linear-gradient(135deg,rgba(0,230,118,.16),rgba(255,159,28,.16));
+  border:2px solid var(--gold);
+  animation:comboPulse 2.6s ease-in-out infinite;
+}
+@keyframes comboPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,159,28,.42);}
+  50%    {box-shadow:0 0 0 14px rgba(255,159,28,0),0 0 40px rgba(255,159,28,.30);}
+}
+#combo .head{display:flex;align-items:center;gap:12px;}
+#combo .kicker{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2.5px;color:var(--gold);}
+#combo .price{
+  margin-left:auto;padding:6px 18px;border-radius:99px;color:#0b0f11;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;
+  background:linear-gradient(135deg,var(--green),var(--gold));
+}
+#combo ul{list-style:none;margin-top:6px;}
+#combo li{font-size:13.5px;font-weight:500;line-height:1.4;}
+#combo li::before{content:"▸ ";color:var(--green);font-weight:800;}
+#combo .note{font-size:12.5px;color:rgba(255,255,255,.75);margin-top:5px;}
+</style>
+</head>
+<body>
+
+<div id="board">
+
+  <!-- ---------- Header ---------- -->
+  <header>
+    <div class="logo-mark">☘</div>
+    <div class="logo-text">
+      <h1>KLEEFOOD</h1>
+      <p>Burger • Pizza • Fingerfood</p>
+    </div>
+    <div class="header-note">
+      <div class="big">TÄGLICH 11:00 – 23:00 UHR</div>
+      <div class="mid">TEL. 0511 569 575 67 · Kirchröder Str. 77, 30625 Hannover</div>
+      <div class="small">Alle Preise in € inkl. MwSt.</div>
+    </div>
+  </header>
+
+  <!-- ---------- Laufband ---------- -->
+  <div id="ticker"><div class="track" id="ticker-track"></div></div>
+
+  <!-- ---------- Menü-Spalten (per JS aus MENU befüllt) ---------- -->
+  <div id="columns"></div>
+</div>
+
+<script>
+/* =======================================================================
+   INHALTE – 1:1 nach der KLEEFOOD Speisekarte.
+   Struktur: COLUMNS -> sections -> items
+     no    = Nummer auf der Karte
+     price = Preis (bei Pizza: 30 cm), price2 = 40 cm bzw. große Portion
+     best  = Bestseller-Highlight, veg = Veggie-Badge
+   ======================================================================= */
+const TICKER_TEXT = "🔥 TÄGLICH FRISCH • 100% RIND • HAUSGEMACHTE SAUCEN • ALLE PIZZEN IN 30 CM & 40 CM • FRAG NACH DEM SPAR MENÜ FÜR 12,90 € 🔥";
+
+const COLUMNS = [
+  /* ------------------------- SPALTE 1 ------------------------- */
+  [
+    {
+      icon:"🍔", title:"HAMBURGER",
+      note:"100 % Rind · alle Burger mit Ketchup, Mayonnaise,<br>Tomaten, sauren Gurken, Senf, Zwiebeln & Mixed-Salat",
+      items:[
+        {no:"01", name:"Classic Hamburger",  ing:"Rindfleisch-Patty",                                   price:"6,00"},
+        {no:"02", name:"Cheeseburger",       ing:"Rindfleisch-Patty, Cheddar-Käse",                     price:"6,50"},
+        {no:"03", name:"Chili Cheeseburger", ing:"Cheddar-Käse, Jalapeños, Chili-Sauce",                price:"7,00"},
+        {no:"04", name:"Kleefood BBQ Burger",ing:"Cheddar-Käse, Bacon, Barbecue-Sauce",                 price:"7,50", best:true},
+        {no:"05", name:"Cremig Avocado",     ing:"Guacamole, Beef-Patty",                               price:"7,50"},
+        {no:"06", name:"Mushroom & Blue Cheese", ing:"Pesto, gegrillte Champignons, Schmorzwiebeln",    price:"7,50"},
+        {no:"07", name:"Halloumi & Aubergine",   ing:"Halloumi, gegrillte Aubergine, Honey Mustard",    price:"7,50", veg:true},
+        {no:"08", name:"Mozzarella Burger",  ing:"Pesto, Aioli, Mozzarella, Röstzwiebeln",              price:"8,00"},
+        {no:"09", name:"Chicken Classic",    ing:"Gegrilltes Chicken",                                  price:"5,50"},
+        {no:"10", name:"Crunchy Chicken",    ing:"Crunchy Chicken mit Cheese nach Wahl",                price:"6,50"},
+        {no:"11", name:"Beyond Burger",      ing:"Pflanzliches Patty, Ketchup",                         price:"8,00", veg:true},
+        {no:"12", name:"BBQ Burger Avocado", ing:"Cheddar, Barbecue-Sauce, Avocado",                    price:"9,00"},
+        {no:"13", name:"Kleefeld Special",   ing:"2 Mozzarella-Sticks, 2 Zwiebelringe, Röstzwiebeln",   price:"10,00", best:true}
+      ]
+    },
+    {
+      icon:"🥩", title:"SMASH BURGER",
+      items:[
+        {no:"15", name:"Hamburger Smash",        ing:"",                    price:"4,00"},
+        {no:"16", name:"Cheeseburger Smash",     ing:"",                    price:"4,50"},
+        {no:"17", name:"Chili Cheese Smash",     ing:"mit Jalapeños",       price:"5,00"},
+        {no:"18", name:"BBQ Burger Smash",       ing:"mit BBQ-Sauce",       price:"5,00"},
+        {no:"19", name:"Chicken Burger Smash",   ing:"mit Aioli",           price:"5,00"}
+      ],
+      hint:"Doppeltes Beef-Patty  +2,50 €"
+    }
+  ],
+
+  /* ------------------------- SPALTE 2 ------------------------- */
+  [
+    {
+      icon:"🍕", title:"PIZZA", sizes:["30 cm","40 cm"],
+      items:[
+        {no:"65", name:"Margharita",     ing:"Tomatensoße & Käse",                              price:"7,00",  price2:"12,00"},
+        {no:"66", name:"Tonno",          ing:"Thunfisch, Zwiebeln",                             price:"9,00",  price2:"16,00"},
+        {no:"67", name:"Kleefood",       ing:"Putenschinken, Paprika, Champignons, Jalapeños",  price:"9,50",  price2:"16,00", best:true},
+        {no:"68", name:"Salami",         ing:"Geflügel-Salami",                                 price:"9,50",  price2:"16,00"},
+        {no:"69", name:"Putenschinken",  ing:"Putenschinken",                                   price:"9,50",  price2:"16,00"},
+        {no:"70", name:"Hawaii",         ing:"Putenschinken & Ananas",                          price:"9,50",  price2:"16,00"},
+        {no:"71", name:"Funghi",         ing:"fr. Champignons, Peperoni",                       price:"9,50",  price2:"16,00"},
+        {no:"72", name:"Fiori",          ing:"Geflügel-Salami, Champignons, Peperoni",          price:"10,00", price2:"18,00"},
+        {no:"73", name:"Sucuk",          ing:"Knoblauchwurst",                                  price:"9,50",  price2:"16,00"},
+        {no:"74", name:"BBQ",            ing:"Hähnchenbrust, Zwiebeln, Mais & BBQ-Sauce",       price:"10,00", price2:"18,00"},
+        {no:"75", name:"Picante",        ing:"Geflügel-Salami, Zwiebeln, Jalapeños, Oliven",    price:"10,00", price2:"18,00"},
+        {no:"76", name:"Garnelen",       ing:"mit Knoblauch",                                   price:"10,00", price2:"18,00"}
+      ]
+    },
+    {
+      icon:"🥙", title:"VEGETARISCH",
+      items:[
+        {no:"35", name:"Falafel Rolle",         ing:"4 St. mit Salat & Soße",                   price:"5,50",  veg:true},
+        {no:"36", name:"XL Falafel Rolle",      ing:"6 St. mit Salat & Soße",                   price:"6,50",  veg:true},
+        {no:"37", name:"Falafel Teller",        ing:"8 St., Reis oder Pommes, Salat & Soße",    price:"10,00", veg:true},
+        {no:"38", name:"Halloumi & Falafel",    ing:"3 Halloumi, 3 Falafel, Salat & Soße",      price:"8,50",  veg:true},
+        {no:"39", name:"Crispy Teller",         ing:"4 St. mit Reis oder Pommes",               price:"10,00"}
+      ]
+    }
+  ],
+
+  /* ------------------------- SPALTE 3 ------------------------- */
+  [
+    {
+      icon:"🍗", title:"FINGERFOOD", sizes:["klein","groß"],
+      items:[
+        {no:"45", name:"Zwiebelringe",     ing:"mit einem Dip nach Wahl · 10 St.",                       price:"–",    price2:"4,50"},
+        {no:"46", name:"Mozzarella-Sticks",ing:"mit einem Dip · 5 St. / 10 St.",                         price:"4,00", price2:"7,00"},
+        {no:"47", name:"Hot Chicken Wings",ing:"mit einem Dip · 6 St. / 10 St.",                         price:"6,40", price2:"8,90", best:true},
+        {no:"48", name:"Chicken Nuggets",  ing:"mit Pommes & einem Dip · 6 St. / 10 St.",                price:"8,00", price2:"10,00"},
+        {no:"49", name:"Chicken Fingers",  ing:"mit einem Dip · 6 St. / 10 St.",                         price:"8,00", price2:"12,00"},
+        {no:"50", name:"Tex-Mex-Teller",   ing:"2× Mozzarella, 2× Zwiebelring, 2× Nuggets, Pommes, 2 Dips", price:"", price2:"9,60"},
+        {no:"51", name:"KLEEFOOD Bucket",  ing:"4× Mozzarella, 4× Zwiebelring, 4× Nuggets, Pommes, 4 Dips", price:"", price2:"14,50", best:true}
+      ]
+    },
+    {
+      icon:"🍟", title:"BEILAGEN",
+      items:[
+        {no:"25", name:"BBQ Fries",           ing:"BBQ-Sauce, Bacon, Röstzwiebeln",     price:"5,50"},
+        {no:"26", name:"Chili Cheese Fries",  ing:"Jalapeños, Käse",                    price:"5,50", best:true},
+        {no:"27", name:"Garlic Fries",        ing:"Parmesan, Petersilie, Knoblauch",    price:"5,50"},
+        {no:"28", name:"Süßkartoffel-Pommes", ing:"",                                   price:"4,90", veg:true},
+        {no:"29", name:"Pommes Fries",        ing:"",                                   price:"4,00", veg:true},
+        {no:"30", name:"Curly Fries",         ing:"",                                   price:"5,00", veg:true},
+        {no:"31", name:"Coleslaw",            ing:"Krautsalat",                         price:"2,50", veg:true}
+      ]
+    }
+  ]
+];
+
+/* Dips (Nr. 55–63) – kompakter Block unter Spalte 3 */
+const DIPS = [
+  ["55 Ketchup","0,50"], ["56 Mayonnaise","0,50"],
+  ["57 Aioli","1,00"],   ["58 Sauer-Creme","1,00"],
+  ["59 Juppi-Sauce","1,00"], ["60 Hanim Master","1,00"],
+  ["61 Barbecue","1,00"],    ["62 Trüffel-Mayo","1,00"],
+  ["63 Käsesauce","2,50"]
+];
+
+/* Spar Menü */
+const SPAR = {
+  kicker:"SPAR MENÜ",
+  price:"12,90 €",
+  lines:[
+    "Burger nach Wahl + Pommes + 0,33 l Softdrink",
+    "2× Smash Burger nach Wahl + Pommes + 0,33 l Softdrink",
+    "Falafel Rolle + Pommes + 0,33 l Softdrink"
+  ],
+  note:"Täglich 11:00 – 23:00 Uhr · auch zum Mitnehmen"
+};
+
+/* ---------- Aufbau: Ticker (Text doppelt für nahtlose Schleife) ---------- */
+document.getElementById('ticker-track').innerHTML =
+  '<span>' + TICKER_TEXT + '</span><span>' + TICKER_TEXT + '</span>';
+
+/* ---------- Aufbau: Spalten ---------- */
+const cols = document.getElementById('columns');
+
+function renderItem(it){
+  const cls = 'item' + (it.best ? ' best' : '') + (it.veg ? ' veg' : '');
+  const p2  = (it.price2 !== undefined) ? '<div class="price second">' + it.price2 + '</div>' : '';
+  return '<div class="' + cls + '">' +
+           '<div class="no">' + (it.no || '') + '</div>' +
+           '<div class="txt"><div class="name">' + it.name +
+             (it.best ? '<span class="badge best">★ BESTSELLER</span>' : '') +
+             (it.veg  ? '<span class="badge veg">VEGGIE</span>' : '') +
+             (it.ing  ? '<span class="ing">' + it.ing + '</span>' : '') +
+           '</div></div>' +
+           '<div class="price">' + it.price + '</div>' + p2 +
+         '</div>';
+}
+
+function renderSection(sec){
+  const right = sec.sizes
+      ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>'
+      : (sec.note ? '<div class="note">' + sec.note + '</div>' : '');
+  return '<div class="sec">' +
+           '<div class="sec-head"><span class="ico">' + sec.icon + '</span><h2>' + sec.title + '</h2>' + right + '</div>' +
+           sec.items.map(renderItem).join('') +
+           (sec.hint ? '<div class="hint">' + sec.hint + '</div>' : '') +
+         '</div>';
+}
+
+COLUMNS.forEach((sections, ci) => {
+  const col = document.createElement('div');
+  col.className = 'col';
+  col.innerHTML = sections.map(renderSection).join('');
+
+  // Dips + Spar Menü nur in der letzten Spalte
+  if (ci === COLUMNS.length - 1){
+    col.innerHTML +=
+      '<div id="dips"><div class="t">DIPS & SAUCEN</div><div class="grid">' +
+        DIPS.map(d => '<div class="d"><span>' + d[0] + '</span><b>' + d[1] + '</b></div>').join('') +
+      '</div></div>' +
+      '<div id="combo">' +
+        '<div class="head"><span class="kicker">' + SPAR.kicker + '</span>' +
+        '<span class="price">' + SPAR.price + '</span></div>' +
+        '<ul>' + SPAR.lines.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
+      '</div>';
+  }
+  cols.appendChild(col);
+});
+
+/* ---------- Auto-Skalierung auf abweichende Displaygrößen ---------- */
+function fit(){
+  const s = Math.min(innerWidth/1920, innerHeight/1080);
+  document.body.style.transform = 'scale(' + s + ')';
+}
+addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

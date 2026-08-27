@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KLEEFOOD – Screen 1 – Food Showcase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@600;800;900&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* =======================================================================
+   KLEEFOOD – SCREEN 1 (LINKS): FOOD SHOWCASE SLIDESHOW
+   Fixes Layout 1920x1080. Inhalte werden unten im <script> im
+   Array SLIDES gepflegt (Titel, Zutaten, Preis, Tags, Bild-URL).
+   ======================================================================= */
+
+/* ---------- 1. Design-Tokens (Farben, Zeiten) ---------- */
+:root{
+  --bg:            #111417;   /* Deep Charcoal */
+  --bg-soft:       #171c20;
+  --green:         #00E676;   /* Klee-Smaragd hell */
+  --green-deep:    #10B981;   /* Klee-Smaragd tief  */
+  --gold:          #FF9F1C;   /* warmes Gold/Orange */
+  --white:         #FFFFFF;
+  --muted:         rgba(255,255,255,.72);
+  --slide-time:    6s;        /* muss zu SLIDE_MS im JS passen */
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:1920px;height:1080px;overflow:hidden;background:var(--bg);
+  font-family:'Poppins',system-ui,sans-serif;color:var(--white);
+  /* Skaliert das feste 1920x1080 Layout auf abweichende TV-Auflösungen */
+  transform-origin:top left;
+}
+
+/* ---------- 2. Bühne / Slides ---------- */
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;}
+
+.slide{
+  position:absolute;inset:0;opacity:0;visibility:hidden;
+  transition:opacity 1.2s cubic-bezier(.4,0,.2,1);
+}
+.slide.active{opacity:1;visibility:visible;}
+
+/* Ken-Burns Zoomfahrt auf dem aktiven Foto */
+.slide .photo{
+  position:absolute;inset:0;
+  background-size:cover;background-position:center;
+  transform:scale(1.06);
+}
+.slide.active .photo{animation:kenburns 9s ease-out forwards;}
+@keyframes kenburns{
+  0%  {transform:scale(1.04) translate3d(0,0,0);}
+  100%{transform:scale(1.20) translate3d(-1.4%,-1.6%,0);}
+}
+
+/* Abdunklung + Farbstich für Lesbarkeit der Texte */
+.slide::after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(100deg, rgba(17,20,23,.96) 0%, rgba(17,20,23,.80) 34%, rgba(17,20,23,.18) 62%, rgba(17,20,23,.55) 100%),
+    radial-gradient(120% 90% at 15% 50%, rgba(0,230,118,.16), transparent 60%),
+    linear-gradient(0deg, rgba(17,20,23,.92) 0%, transparent 34%);
+}
+
+/* ---------- 3. Licht- & Partikeleffekte ---------- */
+.beam{
+  position:absolute;top:-40%;left:-25%;width:60%;height:180%;
+  background:linear-gradient(90deg,transparent,rgba(0,230,118,.10),transparent);
+  transform:rotate(14deg);filter:blur(28px);
+  animation:beam 11s linear infinite;pointer-events:none;z-index:3;
+}
+@keyframes beam{0%{left:-30%}100%{left:120%}}
+
+#particles{position:absolute;inset:0;z-index:4;pointer-events:none;}
+.particle{
+  position:absolute;bottom:-20px;border-radius:50%;
+  background:var(--green);opacity:.0;filter:blur(.5px);
+  animation:rise linear infinite;
+}
+@keyframes rise{
+  0%  {transform:translateY(0) scale(.7);opacity:0;}
+  12% {opacity:.55;}
+  100%{transform:translateY(-1180px) scale(1.15);opacity:0;}
+}
+
+/* ---------- 4. Content-Overlay ---------- */
+#overlay{position:absolute;inset:0;z-index:6;padding:78px 90px 0;display:flex;flex-direction:column;}
+
+/* Marken-Badge oben links (pulsierend) */
+#badge{
+  display:inline-flex;align-items:center;gap:20px;align-self:flex-start;
+  padding:18px 34px;border-radius:999px;
+  background:rgba(23,28,32,.72);border:2px solid rgba(0,230,118,.45);
+  backdrop-filter:blur(8px);
+  animation:badgePulse 2.8s ease-in-out infinite;
+}
+@keyframes badgePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.42), 0 0 26px rgba(0,230,118,.18);}
+  50%    {box-shadow:0 0 0 18px rgba(0,230,118,0), 0 0 46px rgba(0,230,118,.34);}
+}
+#badge .clover{font-size:34px;filter:drop-shadow(0 0 10px var(--green));}
+#badge .name{
+  font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:5px;line-height:1;
+  background:linear-gradient(90deg,var(--white),var(--green));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+#badge .sub{font-size:14px;letter-spacing:3.5px;color:var(--muted);text-transform:uppercase;}
+
+/* Textblock des Gerichts */
+#info{margin-top:auto;margin-bottom:210px;max-width:1080px;}
+
+.reveal{opacity:0;transform:translateY(46px);}
+.slide-in.reveal{transform:translateX(-70px);}
+#info.play .reveal{animation:fadeUp .9s cubic-bezier(.22,1,.36,1) forwards;}
+@keyframes fadeUp{to{opacity:1;transform:translate(0,0);}}
+
+#eyebrow{
+  font-family:'Montserrat',sans-serif;font-weight:800;font-size:22px;letter-spacing:9px;
+  color:var(--gold);text-transform:uppercase;margin-bottom:18px;animation-delay:.15s;
+}
+#title{
+  font-family:'Bebas Neue',sans-serif;font-size:132px;line-height:.94;letter-spacing:2px;
+  background:linear-gradient(92deg,var(--white) 8%,var(--green) 52%,var(--gold) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 12px 40px rgba(0,0,0,.65));
+  animation-delay:.3s;
+}
+#desc{
+  margin-top:24px;font-size:30px;font-weight:300;line-height:1.5;color:var(--muted);
+  max-width:900px;animation-delay:.45s;
+}
+
+/* Tags + Preis */
+#meta{display:flex;align-items:center;gap:26px;margin-top:44px;}
+#tags{display:flex;gap:14px;flex-wrap:wrap;animation-delay:.6s;}
+.tag{
+  padding:12px 24px;border-radius:999px;font-size:17px;font-weight:600;letter-spacing:1.5px;
+  text-transform:uppercase;border:1.5px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.06);backdrop-filter:blur(6px);
+}
+.tag.hot{border-color:var(--gold);color:var(--gold);background:rgba(255,159,28,.10);}
+.tag.klee{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.10);}
+
+#price{
+  margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:66px;
+  padding:22px 52px;border-radius:26px;color:#0b0f11;white-space:nowrap;
+  background:linear-gradient(135deg,var(--green) 0%,var(--green-deep) 55%,var(--gold) 130%);
+  animation-delay:.75s;
+}
+#info.play #price{animation:fadeUp .9s cubic-bezier(.22,1,.36,1) .75s forwards, pricePulse 2.4s ease-in-out 1.6s infinite;}
+@keyframes pricePulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.45),0 18px 50px rgba(0,0,0,.5);transform:scale(1);}
+  50%    {box-shadow:0 0 0 22px rgba(0,230,118,0),0 18px 50px rgba(0,0,0,.5);transform:scale(1.035);}
+}
+
+/* ---------- 5. Footer: Progress + Thumbnails ---------- */
+#footer{
+  position:absolute;left:0;right:0;bottom:0;z-index:7;height:170px;
+  padding:0 90px;display:flex;align-items:center;gap:34px;
+  background:linear-gradient(0deg,rgba(10,12,14,.94),rgba(10,12,14,0));
+}
+
+#thumbs{display:flex;gap:20px;}
+.thumb{
+  position:relative;width:172px;height:100px;border-radius:16px;overflow:hidden;
+  border:2px solid rgba(255,255,255,.12);opacity:.45;
+  transition:opacity .5s ease,transform .5s ease,border-color .5s ease;
+  background-size:cover;background-position:center;
+}
+.thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.72),transparent 65%);}
+.thumb span{
+  position:absolute;left:10px;right:10px;bottom:8px;z-index:2;font-size:12.5px;font-weight:600;
+  letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.thumb.active{
+  opacity:1;transform:translateY(-10px) scale(1.06);border-color:var(--green);
+  box-shadow:0 0 28px rgba(0,230,118,.42);
+}
+
+/* Ladebalken für den nächsten Slide */
+#progress-wrap{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden;}
+#progress{
+  height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--green),var(--gold));
+  box-shadow:0 0 18px rgba(0,230,118,.6);
+}
+#progress.run{animation:fill var(--slide-time) linear forwards;}
+@keyframes fill{from{width:0}to{width:100%}}
+
+#counter{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:var(--muted);}
+#counter b{color:var(--green);}
+</style>
+</head>
+<body>
+
+<div id="stage">
+  <!-- Slides werden per JS aus dem SLIDES-Array erzeugt -->
+  <div class="beam"></div>
+  <div id="particles"></div>
+
+  <!-- Text-Overlay -->
+  <div id="overlay">
+    <div id="badge">
+      <span class="clover">☘</span>
+      <div>
+        <div class="name">KLEEFOOD</div>
+        <div class="sub">Gourmet Burger • Stone Baked Pizza • Crispy Fingerfood</div>
+      </div>
+    </div>
+
+    <div id="info">
+      <div id="eyebrow" class="reveal">Heute empfohlen</div>
+      <h1 id="title" class="reveal slide-in"></h1>
+      <p  id="desc"  class="reveal"></p>
+      <div id="meta">
+        <div id="tags" class="reveal"></div>
+        <div id="price" class="reveal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer">
+    <div id="thumbs"></div>
+    <div id="progress-wrap"><div id="progress"></div></div>
+    <div id="counter"></div>
+  </div>
+</div>
+
+<script>
+/* =======================================================================
+   INHALTE – hier Gerichte, Preise, Tags und Bilder pflegen.
+   img: beliebige hochauflösende Bild-URL (hier Unsplash-Platzhalter).
+   ======================================================================= */
+const SLIDES = [
+  {
+    title: "Kleefeld<br>Special Burger",
+    short: "Kleefeld Special",
+    desc:  "Rindfleisch-Patty mit 2 Mozzarella-Sticks, 2 Zwiebelringen, Röstzwiebeln und Sauce nach Wahl – Nr. 13 auf der Karte.",
+    price: "10,00 €",
+    tags:  [["Bestseller","hot"],["100% Rind","klee"],["Nr. 13",""]],
+    img:   "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1920&q=80"
+  },
+  {
+    title: "Pizza<br>Kleefood",
+    short: "Pizza Kleefood",
+    desc:  "Putenschinken, Paprika, frische Champignons und Jalapeños auf Tomatensoße & Käse. 30 cm 9,50 € • 40 cm 16,00 €.",
+    price: "9,50 €",
+    tags:  [["KLEE Special","klee"],["30 cm & 40 cm",""],["Scharf 🔥","hot"]],
+    img:   "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1920&q=80"
+  },
+  {
+    title: "Hot Chicken<br>Wings",
+    short: "Hot Wings",
+    desc:  "Knusprige Hot Wings mit einem Dip nach Wahl. 6 Stück 6,40 € • 10 Stück 8,90 €.",
+    price: "8,90 €",
+    tags:  [["10 Stück","klee"],["Extra Crispy",""],["Scharf 🔥","hot"]],
+    img:   "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=1920&q=80"
+  },
+  {
+    title: "Chili Cheese<br>Fries",
+    short: "Chili Cheese Fries",
+    desc:  "Goldene Fries mit Jalapeños und cremigem Käse – auch als BBQ Fries oder Garlic Fries für 5,50 €.",
+    price: "5,50 €",
+    tags:  [["Beilage",""],["Vegetarisch","klee"],["Sharing Size","hot"]],
+    img:   "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1920&q=80"
+  },
+  {
+    title: "KLEEFOOD<br>Bucket",
+    short: "KLEEFOOD Bucket",
+    desc:  "4× Mozzarella, 4× Zwiebelringe, 4× Chicken Nuggets, Pommes & 4 Dips nach Wahl – zum Teilen.",
+    price: "14,50 €",
+    tags:  [["Bestseller","hot"],["KLEE Special","klee"],["Für 2–3 Personen",""]],
+    img:   "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1920&q=80"
+  },
+  {
+    title: "Spar Menü",
+    short: "Spar Menü",
+    desc:  "Burger nach Wahl · 2× Smash Burger nach Wahl · oder Falafel Rolle – jeweils mit Pommes und 0,33 l Softdrink.",
+    price: "12,90 €",
+    tags:  [["Spar Menü","hot"],["Inkl. Pommes & Drink","klee"],["Täglich 11–23 Uhr",""]],
+    img:   "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1920&q=80"
+  }
+];
+
+const SLIDE_MS = 6000;   // Anzeigedauer je Slide (CSS --slide-time anpassen!)
+
+/* ---------- Aufbau ---------- */
+const stage = document.getElementById('stage');
+const thumbsBox = document.getElementById('thumbs');
+
+SLIDES.forEach((s, i) => {
+  const el = document.createElement('div');
+  el.className = 'slide';
+  el.innerHTML = '<div class="photo" style="background-image:url(' + s.img + ')"></div>';
+  stage.prepend(el);                                  // hinter Overlay/Footer
+
+  const t = document.createElement('div');
+  t.className = 'thumb';
+  t.style.backgroundImage = 'url(' + s.img + ')';
+  t.innerHTML = '<span>' + s.short + '</span>';
+  t.onclick = () => show(i);                          // optional: Touch/Klick
+  thumbsBox.appendChild(t);
+});
+
+const slideEls = [...document.querySelectorAll('.slide')].reverse(); // Reihenfolge wie SLIDES
+const thumbEls = [...document.querySelectorAll('.thumb')];
+const info = document.getElementById('info');
+const bar  = document.getElementById('progress');
+
+let idx = -1, timer = null;
+
+function show(i){
+  idx = (i + SLIDES.length) % SLIDES.length;
+  const s = SLIDES[idx];
+
+  slideEls.forEach((el,n) => el.classList.toggle('active', n === idx));
+  thumbEls.forEach((el,n) => el.classList.toggle('active', n === idx));
+
+  // Texte setzen und Einblend-Animationen neu starten
+  info.classList.remove('play');
+  void info.offsetWidth;                              // Reflow erzwingt Animations-Restart
+  document.getElementById('title').innerHTML = s.title;
+  document.getElementById('desc').textContent = s.desc;
+  document.getElementById('price').textContent = s.price;
+  document.getElementById('tags').innerHTML =
+    s.tags.map(([label,mod]) => '<span class="tag ' + mod + '">' + label + '</span>').join('');
+  info.classList.add('play');
+
+  document.getElementById('counter').innerHTML =
+    '<b>' + String(idx+1).padStart(2,'0') + '</b> / ' + String(SLIDES.length).padStart(2,'0');
+
+  // Progress-Bar neu starten
+  bar.classList.remove('run'); void bar.offsetWidth; bar.classList.add('run');
+
+  clearTimeout(timer);
+  timer = setTimeout(() => show(idx + 1), SLIDE_MS);
+}
+
+/* ---------- Partikel (dezente Lichtpunkte) ---------- */
+const pBox = document.getElementById('particles');
+for (let i = 0; i < 26; i++){
+  const p = document.createElement('div');
+  const size = 2 + Math.random() * 5;
+  p.className = 'particle';
+  p.style.cssText =
+    'left:' + (Math.random()*100) + '%;width:' + size + 'px;height:' + size + 'px;' +
+    'animation-duration:' + (11 + Math.random()*12) + 's;' +
+    'animation-delay:' + (-Math.random()*20) + 's;' +
+    'background:' + (Math.random() > .65 ? 'var(--gold)' : 'var(--green)') + ';';
+  pBox.appendChild(p);
+}
+
+/* ---------- Auto-Skalierung auf abweichende Displaygrößen ---------- */
+function fit(){
+  const s = Math.min(innerWidth/1920, innerHeight/1080);
+  document.body.style.transform = 'scale(' + s + ')';
+}
+addEventListener('resize', fit); fit();
+
+show(0);
+</script>
+</body>
+</html>

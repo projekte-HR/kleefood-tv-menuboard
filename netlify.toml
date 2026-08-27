@@ -1,0 +1,4 @@
+# Statisches Deployment: alle Dateien liegen im Repo-Root
+[build]
+  publish = "."
+  command = ""
