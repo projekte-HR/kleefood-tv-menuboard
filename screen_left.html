@@ -56,19 +56,16 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .play .card{animation:cardIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.1s) both;}
 @keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
-/* ---------- Fotos ---------- */
-.shot{position:relative;flex:1;min-height:0;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
-.shot .img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);}
-.play .shot .img{animation:ken 26s ease-in-out infinite alternate;}
-@keyframes ken{from{transform:scale(1.02);} to{transform:scale(1.16);}}
-.shot::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(0deg,rgba(10,12,14,.93) 0%,rgba(10,12,14,.15) 46%,transparent 70%);}
+/* ---------- Videofenster (Burger- und Pizza-Zubereitung nacheinander) ---------- */
+.shot{position:relative;flex:none;height:320px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);background:#000;}
+.shot video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.shot::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(10,12,14,.93) 0%,rgba(10,12,14,.12) 44%,transparent 68%);}
 .shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
-.shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;letter-spacing:2px;}
-.shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0;}
-.shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;
+.shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:1;letter-spacing:2px;}
+.shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:18px;color:var(--muted);letter-spacing:0;}
+.shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:32px;
   color:#0b0f11;background:linear-gradient(135deg,var(--green),var(--gold));padding:6px 18px;border-radius:12px;white-space:nowrap;}
-.play .shot .cap{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
 
 /* ---------- Kategorie-Kopf ---------- */
 .head{display:flex;align-items:flex-end;gap:10px;padding-bottom:7px;margin-bottom:4px;
@@ -76,25 +73,25 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .sec + .sec .head{margin-top:10px;}
 .play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
-.head .ico{font-size:28px;line-height:1;}
-.head h2{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2.5px;line-height:1;
+.head .ico{font-size:31px;line-height:1;}
+.head h2{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2.5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
   -webkit-background-clip:text;background-clip:text;color:transparent;}
 .head .sizes{margin-left:auto;display:flex;gap:12px;}
-.head .sizes span{width:76px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
+.head .sizes span{width:84px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* ---------- Zeile ---------- */
-.row{display:flex;align-items:center;gap:10px;padding:5px 5px;border-radius:9px;position:relative;}
+.row{display:flex;align-items:center;gap:10px;padding:3px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
 .play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
-.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--gold);width:28px;flex:none;}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--gold);width:30px;flex:none;}
 .row .tx{flex:1;min-width:0;}
-.row .nm{font-size:25px;font-weight:600;line-height:1.18;}
-.row .ig{font-size:15px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
-.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--gold);
-  width:76px;text-align:right;flex:none;white-space:nowrap;}
+.row .nm{font-size:28px;font-weight:600;line-height:1.16;}
+.row .ig{font-size:17px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:var(--gold);
+  width:84px;text-align:right;flex:none;white-space:nowrap;}
 .row .pr.two{color:var(--white);}
 .play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
@@ -107,7 +104,7 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
   padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
 .tag.b{background:var(--green);color:#0b0f11;}
 .tag.v{border:1px solid var(--green);color:var(--green);}
-.hint{font-size:16px;font-style:italic;color:var(--green);padding-top:6px;}
+.hint{font-size:18px;font-style:italic;color:var(--green);padding-top:6px;}
 
 /* ---------- Ticker ---------- */
 footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
@@ -138,17 +135,10 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
     <!-- Spalte 1: echte Fotos + Smash Burger -->
     <div class="col" style="--c:0">
       <div class="shot">
-        <div class="img" id="imgBurger"></div>
+        <video id="clip" muted playsinline preload="auto"></video>
         <div class="cap">
-          <div class="t">CLASSIC HAMBURGER<b>Rindfleisch-Patty, Salat, Tomate, Gurken, Zwiebeln</b></div>
-          <div class="p">6,00 €</div>
-        </div>
-      </div>
-      <div class="shot">
-        <div class="img" id="imgPizza"></div>
-        <div class="cap">
-          <div class="t">PIZZA KLEEFOOD<b>Putenschinken, Paprika, Champignons, Jalapeños</b></div>
-          <div class="p">9,50 €</div>
+          <div class="t" id="clipTitle"></div>
+          <div class="p" id="clipPrice"></div>
         </div>
       </div>
       <div class="card" id="smash"></div>
@@ -170,10 +160,23 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
    Fingerfood, Beilagen, Vegetarisch, Dips und Spar Menü laufen auf Screen 2.
    Eigene Fotos? Einfach die URLs in PHOTOS auf z. B. "fotos/burger.jpg" ändern.
    ======================================================================= */
-const PHOTOS = {
-  burger: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=72",
-  pizza:  "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1000&q=72"
-};
+/* Videoschleife: erst wird der Burger gemacht, dann die Pizza.
+   vid = Mixkit-ID (eigene Aufnahme? stattdessen full:"videos/x.mp4")
+   secs = wie lange der Clip laufen soll                                   */
+const CLIP_RES = 360;                      // kleines Fenster -> 360p reicht
+const CLIPS = [
+  /* Burger */
+  {vid:12041, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Patty auf dem heißen Grill",         p:"ab 6,00 €"},
+  {vid:12016, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Frisch gestapelt, täglich geschnitten", p:"ab 6,00 €"},
+  {vid:11760, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Hausgemachte Saucen",                p:"ab 6,00 €"},
+  /* Pizza */
+  {vid:42473, secs:8, t:"STEINOFEN-PIZZA",         s:"Tomatensoße auf frischem Teig",      p:"ab 7,00 €"},
+  {vid:32415, secs:8, t:"STEINOFEN-PIZZA",         s:"Direkt aus dem Steinofen",           p:"ab 7,00 €"},
+  {vid:1666,  secs:8, t:"STEINOFEN-PIZZA",         s:"Frisch aufgeschnitten",              p:"ab 7,00 €"}
+];
+/* Eigenes Video (z. B. euer Koch mit Handschuhen beim Belegen)?
+   Datei nach videos/ legen und hier eintragen:
+   {full:"videos/pizza-belegen.mp4", secs:10, t:"STEINOFEN-PIZZA", s:"Frisch belegt", p:"ab 7,00 €"} */
 
 const TICKER = "🔥 TÄGLICH FRISCH • 100 % RIND • HAUSGEMACHTE SAUCEN • STEINOFEN-PIZZA IN 30 & 40 CM • SPAR MENÜ 12,90 € 🔥";
 
@@ -219,8 +222,6 @@ const SECTIONS = {
 };
 
 /* ---------- Aufbau ---------- */
-document.getElementById('imgBurger').style.backgroundImage = 'url(' + PHOTOS.burger + ')';
-document.getElementById('imgPizza').style.backgroundImage  = 'url(' + PHOTOS.pizza  + ')';
 document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
 
 function renderSection(sec){
@@ -242,6 +243,25 @@ function renderSection(sec){
 document.getElementById('burger').innerHTML = renderSection(SECTIONS.burger);
 document.getElementById('smash').innerHTML  = renderSection(SECTIONS.smash);
 document.getElementById('pizza').innerHTML  = renderSection(SECTIONS.pizza);
+
+/* ---------- Videoschleife: ein Clip nach dem anderen ---------- */
+const clip = document.getElementById('clip');
+const clipTitle = document.getElementById('clipTitle');
+const clipPrice = document.getElementById('clipPrice');
+let ci = -1, clipTimer = null;
+
+function nextClip(){
+  ci = (ci + 1) % CLIPS.length;
+  const c = CLIPS[ci];
+  clip.src = c.full || ('https://assets.mixkit.co/videos/' + c.vid + '/' + c.vid + '-' + CLIP_RES + '.mp4');
+  clip.loop = true;                       // kurze Clips laufen bis zum Weiterschalten
+  clip.play().catch(() => {});
+  clipTitle.innerHTML = c.t + '<b>' + c.s + '</b>';
+  clipPrice.textContent = c.p;
+  clearTimeout(clipTimer);
+  clipTimer = setTimeout(nextClip, c.secs * 1000);
+}
+nextClip();
 
 /* ---------- Einblendungen alle 60 s neu starten, damit Bewegung drin bleibt ---------- */
 const board = document.getElementById('board');

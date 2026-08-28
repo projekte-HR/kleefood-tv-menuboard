@@ -76,25 +76,25 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .sec + .sec .head{margin-top:10px;}
 .play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
-.head .ico{font-size:28px;line-height:1;}
-.head h2{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2.5px;line-height:1;
+.head .ico{font-size:31px;line-height:1;}
+.head h2{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2.5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
   -webkit-background-clip:text;background-clip:text;color:transparent;}
 .head .sizes{margin-left:auto;display:flex;gap:12px;}
-.head .sizes span{width:76px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
+.head .sizes span{width:84px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* ---------- Zeile ---------- */
-.row{display:flex;align-items:center;gap:10px;padding:5px 5px;border-radius:9px;position:relative;}
+.row{display:flex;align-items:center;gap:10px;padding:3px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
 .play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
-.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--gold);width:28px;flex:none;}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--gold);width:30px;flex:none;}
 .row .tx{flex:1;min-width:0;}
-.row .nm{font-size:25px;font-weight:600;line-height:1.18;}
-.row .ig{font-size:15px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
-.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--gold);
-  width:76px;text-align:right;flex:none;white-space:nowrap;}
+.row .nm{font-size:28px;font-weight:600;line-height:1.16;}
+.row .ig{font-size:17px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:var(--gold);
+  width:84px;text-align:right;flex:none;white-space:nowrap;}
 .row .pr.two{color:var(--white);}
 .play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
@@ -116,11 +116,11 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 }
 .play #deal{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
 #deal .top{display:flex;align-items:center;gap:14px;}
-#deal .kick{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--gold);line-height:1;}
+#deal .kick{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:3px;color:var(--gold);line-height:1;}
 #deal .price{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#0b0f11;
   background:linear-gradient(135deg,var(--green),var(--gold));padding:8px 22px;border-radius:14px;white-space:nowrap;}
 #deal ul{list-style:none;margin-top:10px;}
-#deal li{font-size:21px;font-weight:500;line-height:1.55;}
+#deal li{font-size:23px;font-weight:500;line-height:1.55;}
 #deal li::before{content:"▸ ";color:var(--green);font-weight:900;}
 #deal .note{font-size:15px;color:var(--muted);margin-top:6px;}
 
@@ -188,7 +188,7 @@ const S = {
     {no:"47", nm:"Hot Chicken Wings", ig:"6 / 10 St. mit einem Dip",   pr:"6,40", pr2:"8,90", best:true},
     {no:"48", nm:"Chicken Nuggets",   ig:"mit Pommes & einem Dip",     pr:"8,00", pr2:"10,00"},
     {no:"49", nm:"Chicken Fingers",   ig:"6 / 10 St. mit einem Dip",   pr:"8,00", pr2:"12,00"},
-    {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× Mozzarella, Zwiebelringe, Nuggets, Pommes, 2 Dips", pr:"", pr2:"9,60"},
+    {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× plus Pommes & 2 Dips", pr:"", pr2:"9,60"},
     {no:"51", nm:"KLEEFOOD Bucket",   ig:"je 4× plus Pommes & 4 Dips", pr:"",     pr2:"14,50", best:true}
   ]},
 
