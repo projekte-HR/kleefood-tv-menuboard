@@ -32,8 +32,10 @@ html,body{
 }
 
 /* ---------- Kopf ---------- */
-header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
-.mark{width:70px;height:70px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:38px;
+header{display:flex;align-items:center;flex:none;height:86px;}
+header .mark{margin-right:20px;}
+.mark{width:70px;height:70px;flex:none;border-radius:50%;font-size:38px;
+  display:flex;align-items:center;justify-content:center;
   border:3px solid var(--green);background:rgba(0,230,118,.08);box-shadow:0 0 28px rgba(0,230,118,.22) inset;}
 .brand h1{font-family:'Bebas Neue',sans-serif;font-size:62px;line-height:.88;letter-spacing:5px;
   background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
@@ -44,8 +46,9 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .hours .b{font-size:18px;font-weight:800;margin-top:4px;color:var(--muted);}
 
 /* ---------- Raster ---------- */
-#grid{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr 1fr .96fr;gap:20px;margin-top:8px;}
-.col{display:flex;flex-direction:column;gap:16px;min-height:0;}
+#grid{flex:1;min-height:0;display:grid;grid-gap:20px;grid-template-columns:1.08fr 1fr .96fr;gap:20px;margin-top:8px;}
+.col{display:flex;flex-direction:column;min-height:0;}
+.col > * + *{margin-top:16px;}
 .card{
   background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
   border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;
@@ -58,11 +61,11 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 
 /* ---------- Foto ---------- */
 .shot{position:relative;flex:1;min-height:120px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
-.shot .img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);}
+.shot .img{position:absolute;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;transform:scale(1.02);}
 /* kein Dauer-Zoom mehr – auf dem Fire TV Stick spart das spürbar Leistung */
-.shot::after{content:"";position:absolute;inset:0;
+.shot::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
   background:linear-gradient(0deg,rgba(10,12,14,.92) 0%,rgba(10,12,14,.12) 46%,transparent 70%);}
-.shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
+.shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;}
 .shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;letter-spacing:2px;}
 .shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0;}
 .shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:29px;
@@ -70,30 +73,31 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .play .shot .cap{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
 
 /* ---------- Kategorie-Kopf ---------- */
-.head{display:flex;align-items:flex-end;gap:10px;padding-bottom:7px;margin-bottom:4px;
+.head{display:flex;align-items:flex-end;padding-bottom:7px;margin-bottom:4px;
   border-bottom:2px solid rgba(255,255,255,.13);flex:none;}
 .sec + .sec .head{margin-top:10px;}
 .play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
-.head .ico{font-size:31px;line-height:1;}
+.head .ico{font-size:31px;line-height:1;margin-right:10px;}
 .head h2{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:2.5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
   -webkit-background-clip:text;background-clip:text;color:transparent;}
-.head .sizes{margin-left:auto;display:flex;gap:12px;}
+.head .sizes{margin-left:auto;display:flex;}
+.head .sizes span + span{margin-left:12px;}
 .head .sizes span{width:84px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* ---------- Zeile ---------- */
-.row{display:flex;align-items:center;gap:10px;padding:3px 5px;border-radius:9px;position:relative;}
+.row{display:flex;align-items:center;padding:3px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
 .play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
-.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--gold);width:30px;flex:none;}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--gold);width:30px;flex:none;margin-right:10px;}
 .row .tx{flex:1;min-width:0;}
 .row .nm{font-size:28px;font-weight:600;line-height:1.16;}
 .row .ig{font-size:17px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
 .row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:var(--gold);
-  width:84px;text-align:right;flex:none;white-space:nowrap;}
+  width:84px;text-align:right;flex:none;white-space:nowrap;margin-left:10px;}
 .row .pr.two{color:var(--white);}
 .play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
@@ -114,7 +118,7 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
   box-shadow:0 0 30px rgba(255,159,28,.20);
 }
 .play #deal{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
-#deal .top{display:flex;align-items:center;gap:14px;}
+#deal .top{display:flex;align-items:center;}
 #deal .kick{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:3px;color:var(--gold);line-height:1;}
 #deal .price{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#0b0f11;
   background:linear-gradient(135deg,var(--green),var(--gold));padding:8px 22px;border-radius:14px;white-space:nowrap;}

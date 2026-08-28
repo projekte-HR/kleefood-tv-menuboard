@@ -56,24 +56,28 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 #sub{font-size:30px;font-weight:300;color:var(--muted);margin-top:6px;}
 
 /* ---------- Menü-Karten ---------- */
-#menus{flex:1;min-height:0;display:flex;flex-direction:column;gap:22px;margin-top:26px;}
+#menus{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:26px;}
+.menu + .menu{margin-top:22px;}          /* statt flex-gap: laeuft auch auf aelteren Browsern */
 
 .menu{
-  flex:1;min-height:0;display:flex;align-items:stretch;gap:0;overflow:hidden;
+  flex:1;min-height:0;display:flex;align-items:stretch;overflow:hidden;
   background:linear-gradient(180deg,rgba(23,28,32,.96),rgba(17,20,23,.96));
   border:2px solid var(--line);border-radius:26px;position:relative;
 }
 .menu{transition:border-color .6s ease, box-shadow .6s ease;}
 .menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.22);}
 
-.menu .pic{width:470px;flex:none;position:relative;overflow:hidden;}
-.menu .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-.menu .pic::after{content:"";position:absolute;inset:0;
+.menu .pic{
+  width:470px;flex:none;position:relative;overflow:hidden;
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+}
+.menu .pic::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
   background:linear-gradient(90deg,transparent 68%,rgba(17,20,23,.96) 100%);}
 
 .menu .no{
   position:absolute;left:18px;top:16px;z-index:2;
-  width:74px;height:74px;border-radius:50%;display:grid;place-items:center;
+  width:74px;height:74px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
   font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;
   background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.5);
 }
@@ -145,7 +149,7 @@ const MENUS = [
 const menus = document.getElementById('menus');
 menus.innerHTML = MENUS.map((m,i) =>
   '<div class="menu' + (m.top ? ' top' : '') + '" style="--i:' + i + '">' +
-    '<div class="pic"><img src="' + m.img + '" alt=""><div class="no">' + m.no + '</div></div>' +
+    '<div class="pic" style="background-image:url(' + m.img + ')"><div class="no">' + m.no + '</div></div>' +
     (m.badge ? '<div class="badge">' + m.badge + '</div>' : '') +
     '<div class="txt">' +
       '<div class="nm">' + m.nm + '</div>' +
