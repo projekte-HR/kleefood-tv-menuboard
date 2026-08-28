@@ -7,16 +7,17 @@
 <style>
 /* =======================================================================
    KLEEFOOD – SCREEN 2 (1920x1080)
-   Zweite Hälfte der Karte – Screen 1 zeigt Burger, Smash und Pizza,
-   hier stehen Fingerfood, Beilagen, Vegetarisch, Getränke, Dips und das
-   Spar Menü. Zwei Seiten im Wechsel, alles groß und in Bewegung.
-   Fire TV Stick: animiert wird nur transform / opacity / clip-path.
-   Zeiten: PAGE_MS unten im Script · Preise: PAGES unten im Script.
+   Zweite Hälfte der Karte, alles gleichzeitig sichtbar, nichts wechselt:
+     links   Fingerfood + Vegetarisch
+     Mitte   Beilagen + Getränke + echtes Foto
+     rechts  Dips & Saucen + Spar Menü
+   Burger, Smash Burger und Pizza laufen auf Screen 1.
+   Fire TV Stick: nur transform / opacity / clip-path, keine Filter.
    ======================================================================= */
 
 :root{
   --bg:#111417; --green:#00E676; --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.66); --line:rgba(255,255,255,.09);
+  --white:#fff; --muted:rgba(255,255,255,.64); --line:rgba(255,255,255,.09);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
@@ -24,126 +25,117 @@ html,body{
   font-family:'Poppins',system-ui,sans-serif;transform-origin:top left;
 }
 #board{
-  position:relative;width:1920px;height:1080px;padding:26px 46px 0;display:flex;flex-direction:column;
+  position:relative;width:1920px;height:1080px;padding:18px 34px 0;display:flex;flex-direction:column;
   background:
-    radial-gradient(58% 46% at 18% 2%,  rgba(0,230,118,.15), transparent 62%),
-    radial-gradient(52% 44% at 90% 98%, rgba(255,159,28,.13), transparent 62%);
+    radial-gradient(56% 42% at 16% 2%,  rgba(0,230,118,.14), transparent 62%),
+    radial-gradient(50% 40% at 92% 98%, rgba(255,159,28,.12), transparent 62%);
 }
 
 /* ---------- Kopf ---------- */
-header{display:flex;align-items:center;gap:24px;flex:none;height:104px;}
-.mark{
-  width:88px;height:88px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:46px;
-  border:3px solid var(--green);background:rgba(0,230,118,.08);
-  box-shadow:0 0 34px rgba(0,230,118,.22) inset;
-}
-.brand h1{
-  font-family:'Bebas Neue',sans-serif;font-size:80px;line-height:.88;letter-spacing:6px;
+header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
+.mark{width:70px;height:70px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:38px;
+  border:3px solid var(--green);background:rgba(0,230,118,.08);box-shadow:0 0 28px rgba(0,230,118,.22) inset;}
+.brand h1{font-family:'Bebas Neue',sans-serif;font-size:62px;line-height:.88;letter-spacing:5px;
   background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.brand p{font-size:21px;letter-spacing:7px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand p{font-size:17px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
 .hours{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
-.hours .a{font-size:30px;font-weight:900;letter-spacing:2px;color:var(--gold);}
-.hours .b{font-size:22px;font-weight:800;margin-top:6px;color:var(--muted);}
+.hours .a{font-size:25px;font-weight:900;letter-spacing:2px;color:var(--gold);}
+.hours .b{font-size:18px;font-weight:800;margin-top:4px;color:var(--muted);}
 
-/* ---------- Ticker ---------- */
-#ticker{
-  margin:12px 0;height:58px;border-radius:12px;overflow:hidden;flex:none;
-  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);display:flex;align-items:center;
-}
-#ticker .tr{display:flex;white-space:nowrap;animation:scroll 36s linear infinite;}
-#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:4px;
-  padding:0 60px;text-transform:uppercase;}
-@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-
-/* ---------- Seiten ---------- */
-#pages{position:relative;flex:1;min-height:0;}
-.page{position:absolute;inset:0;display:grid;grid-template-columns:1.24fr 1fr .92fr;gap:24px;
-  opacity:0;visibility:hidden;}
-.page.on{opacity:1;visibility:visible;}
-
-.col{
+/* ---------- Raster ---------- */
+#grid{flex:1;min-height:0;display:grid;grid-template-columns:1.08fr 1fr .96fr;gap:20px;margin-top:8px;}
+.col{display:flex;flex-direction:column;gap:16px;min-height:0;}
+.card{
   background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
-  border:1.5px solid var(--line);border-radius:24px;padding:18px 24px 12px;
-  display:flex;flex-direction:column;overflow:hidden;position:relative;
+  border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;
+  display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;
 }
-.col::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;
   background:linear-gradient(90deg,var(--green),var(--gold));}
-.page.on .col{animation:colIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.12s) both;}
-@keyframes colIn{from{opacity:0;transform:translateY(46px);} to{opacity:1;transform:none;}}
-.col.wide{grid-column:span 2;}
+.play .card{animation:cardIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.1s) both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
-/* Kategorie-Überschrift */
-.head{display:flex;align-items:flex-end;gap:14px;padding-bottom:10px;margin-bottom:6px;
-  border-bottom:2px solid rgba(255,255,255,.13);}
-.sec + .sec .head{margin-top:12px;}
-.page.on .head{animation:wipe .75s cubic-bezier(.22,1,.36,1) calc(.15s + var(--c)*.12s) both;}
+/* ---------- Foto ---------- */
+.shot{position:relative;flex:1;min-height:120px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
+.shot .img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);}
+.play .shot .img{animation:ken 26s ease-in-out infinite alternate;}
+@keyframes ken{from{transform:scale(1.02);} to{transform:scale(1.16);}}
+.shot::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(10,12,14,.92) 0%,rgba(10,12,14,.12) 46%,transparent 70%);}
+.shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
+.shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;letter-spacing:2px;}
+.shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0;}
+.shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:29px;
+  color:#0b0f11;background:linear-gradient(135deg,var(--green),var(--gold));padding:6px 18px;border-radius:12px;white-space:nowrap;}
+.play .shot .cap{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
+
+/* ---------- Kategorie-Kopf ---------- */
+.head{display:flex;align-items:flex-end;gap:10px;padding-bottom:7px;margin-bottom:4px;
+  border-bottom:2px solid rgba(255,255,255,.13);flex:none;}
+.sec + .sec .head{margin-top:10px;}
+.play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
-.head .ico{font-size:40px;line-height:1;}
-.head h2{
-  font-family:'Bebas Neue',sans-serif;font-size:58px;letter-spacing:3px;line-height:1;
+.head .ico{font-size:28px;line-height:1;}
+.head h2{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2.5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.head .sizes{margin-left:auto;display:flex;gap:16px;}
-.head .sizes span{width:92px;text-align:right;font-size:18px;font-weight:800;color:var(--gold);
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.head .sizes{margin-left:auto;display:flex;gap:12px;}
+.head .sizes span{width:76px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
-/* Gericht */
-.row{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:12px;position:relative;}
+/* ---------- Zeile ---------- */
+.row{display:flex;align-items:center;gap:10px;padding:5px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
-.page.on .row{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.3s + var(--c)*.12s + var(--i)*.06s) both;}
-@keyframes rowIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
-.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;color:var(--gold);width:38px;flex:none;}
+.play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--gold);width:28px;flex:none;}
 .row .tx{flex:1;min-width:0;}
-.row .nm{font-size:32px;font-weight:600;line-height:1.15;}
-.row .ig{font-size:21px;font-weight:300;color:var(--muted);margin-top:2px;line-height:1.2;}
-.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:var(--gold);
-  width:92px;text-align:right;flex:none;white-space:nowrap;}
+.row .nm{font-size:25px;font-weight:600;line-height:1.18;}
+.row .ig{font-size:15px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--gold);
+  width:76px;text-align:right;flex:none;white-space:nowrap;}
 .row .pr.two{color:var(--white);}
-.page.on .row .pr{animation:pop .5s cubic-bezier(.34,1.56,.64,1) calc(.5s + var(--c)*.12s + var(--i)*.06s) both;}
-@keyframes pop{0%{opacity:0;transform:scale(.6);}60%{opacity:1;transform:scale(1.18);}100%{transform:scale(1);}}
+.play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
 
 .row.best{background:rgba(0,230,118,.09);box-shadow:inset 0 0 0 1.5px rgba(0,230,118,.32);}
-.page.on .row.best{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.3s + var(--c)*.12s + var(--i)*.06s) both,
-                             beat 6s ease-in-out 2.4s infinite;}
-@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.035);}}
-.tag{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:900;letter-spacing:1.3px;
-  padding:3px 10px;border-radius:99px;margin-left:10px;vertical-align:middle;white-space:nowrap;}
+.play .row.best{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both,
+                          beat 7s ease-in-out 2s infinite;}
+@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.03);}}
+.tag{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.1px;
+  padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
 .tag.b{background:var(--green);color:#0b0f11;}
 .tag.v{border:1px solid var(--green);color:var(--green);}
 
-/* Spar Menü als große Karte */
-.deal{display:flex;flex-direction:column;height:100%;justify-content:center;gap:26px;padding:10px 4px;}
-.deal .kick{font-family:'Bebas Neue',sans-serif;font-size:96px;letter-spacing:5px;line-height:.95;
-  background:linear-gradient(92deg,var(--green),var(--gold));
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
-.deal .sub{font-size:28px;color:var(--muted);margin-top:-10px;}
-.opt{
-  display:flex;align-items:center;gap:26px;padding:22px 28px;border-radius:20px;
-  background:linear-gradient(135deg,rgba(0,230,118,.15),rgba(255,159,28,.15));
-  border:2px solid rgba(255,159,28,.55);
+/* ---------- Spar Menü ---------- */
+#deal{
+  flex:none;border-radius:20px;padding:16px 20px;border:2px solid var(--gold);
+  background:linear-gradient(135deg,rgba(0,230,118,.16),rgba(255,159,28,.16));
+  box-shadow:0 0 30px rgba(255,159,28,.20);
 }
-.page.on .opt{animation:rowIn .6s cubic-bezier(.22,1,.36,1) calc(.5s + var(--i)*.14s) both;}
-.opt .n{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;width:52px;flex:none;}
-.opt .t{flex:1;font-size:31px;font-weight:600;line-height:1.3;}
-.opt .t b{display:block;font-weight:300;font-size:23px;color:var(--muted);margin-top:3px;}
-.opt .p{font-family:'Montserrat',sans-serif;font-weight:900;font-size:52px;color:#0b0f11;
-  background:linear-gradient(135deg,var(--green),var(--gold));padding:10px 26px;border-radius:16px;white-space:nowrap;}
+.play #deal{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
+#deal .top{display:flex;align-items:center;gap:14px;}
+#deal .kick{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--gold);line-height:1;}
+#deal .price{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#0b0f11;
+  background:linear-gradient(135deg,var(--green),var(--gold));padding:8px 22px;border-radius:14px;white-space:nowrap;}
+#deal ul{list-style:none;margin-top:10px;}
+#deal li{font-size:21px;font-weight:500;line-height:1.55;}
+#deal li::before{content:"▸ ";color:var(--green);font-weight:900;}
+#deal .note{font-size:15px;color:var(--muted);margin-top:6px;}
 
-/* Dips zweispaltig */
-
-/* ---------- Seitenanzeige ---------- */
-#pager{flex:none;height:56px;display:flex;align-items:center;justify-content:center;gap:14px;}
-#pager i{width:150px;height:9px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;display:block;}
-#pager i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));}
-#pager i.on b{animation:fill var(--ms) linear forwards;}
-@keyframes fill{from{width:0;}to{width:100%;}}
+/* ---------- Ticker ---------- */
+footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
+#ticker{flex:1;height:46px;border-radius:11px;overflow:hidden;display:flex;align-items:center;
+  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);}
+#ticker .tr{display:flex;white-space:nowrap;animation:scroll 38s linear infinite;}
+#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;letter-spacing:4px;
+  padding:0 52px;text-transform:uppercase;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 </style>
 </head>
 <body>
-<div id="board">
+<div id="board" class="play">
 
   <header>
     <div class="mark">☘</div>
@@ -157,149 +149,129 @@ header{display:flex;align-items:center;gap:24px;flex:none;height:104px;}
     </div>
   </header>
 
-  <div id="ticker"><div class="tr" id="tr"></div></div>
+  <div id="grid">
+    <div class="col" style="--c:0"><div class="card" id="c1"></div></div>
 
-  <div id="pages"></div>
-  <div id="pager"></div>
+    <div class="col" style="--c:1">
+      <div class="card" id="c2"></div>
+      <div class="shot">
+        <div class="img" id="imgFries"></div>
+        <div class="cap">
+          <div class="t">CHILI CHEESE FRIES<b>Knusprige Fries mit Jalapeños und Käse</b></div>
+          <div class="p">5,50 €</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col" style="--c:2">
+      <div class="card" id="c3"></div>
+      <div id="deal"></div>
+    </div>
+  </div>
+
+  <footer><div id="ticker"><div class="tr" id="tr"></div></div></footer>
 </div>
 
 <script>
 /* =======================================================================
    INHALTE – zweite Hälfte der KLEEFOOD-Karte.
-   Burger, Smash Burger und Pizza laufen auf Screen 1.
+   Eigenes Foto? URL in PHOTO auf z. B. "fotos/fries.jpg" ändern.
    ======================================================================= */
-const PAGE_MS = 18000;   // Anzeigedauer je Seite
+const PHOTO = "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1000&q=72";
 
 const TICKER = "🔥 TÄGLICH FRISCH • HAUSGEMACHTE SAUCEN • BURGER & PIZZA AUF DEM ANDEREN SCREEN • SPAR MENÜ 12,90 € 🔥";
 
-const PAGES = [
-  /* ---------------- Seite 1: Fingerfood, Beilagen, Vegetarisch ---------------- */
-  [
-    [ { ico:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], items:[
-        {no:"45", nm:"Zwiebelringe",      ig:"10 St. mit einem Dip",      pr:"–",    pr2:"4,50"},
-        {no:"46", nm:"Mozzarella-Sticks", ig:"5 / 10 St. mit einem Dip",  pr:"4,00", pr2:"7,00"},
-        {no:"47", nm:"Hot Chicken Wings", ig:"6 / 10 St. mit einem Dip",  pr:"6,40", pr2:"8,90", best:true},
-        {no:"48", nm:"Chicken Nuggets",   ig:"mit Pommes & einem Dip",    pr:"8,00", pr2:"10,00"},
-        {no:"49", nm:"Chicken Fingers",   ig:"6 / 10 St. mit einem Dip",  pr:"8,00", pr2:"12,00"},
-        {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× + Pommes & Dips", pr:"", pr2:"9,60"},
-        {no:"51", nm:"KLEEFOOD Bucket",   ig:"je 4× plus Pommes & Dips",  pr:"",     pr2:"14,50", best:true}
-      ]} ],
+const S = {
+  finger: { ico:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], items:[
+    {no:"45", nm:"Zwiebelringe",      ig:"10 St. mit einem Dip",       pr:"–",    pr2:"4,50"},
+    {no:"46", nm:"Mozzarella-Sticks", ig:"5 / 10 St. mit einem Dip",   pr:"4,00", pr2:"7,00"},
+    {no:"47", nm:"Hot Chicken Wings", ig:"6 / 10 St. mit einem Dip",   pr:"6,40", pr2:"8,90", best:true},
+    {no:"48", nm:"Chicken Nuggets",   ig:"mit Pommes & einem Dip",     pr:"8,00", pr2:"10,00"},
+    {no:"49", nm:"Chicken Fingers",   ig:"6 / 10 St. mit einem Dip",   pr:"8,00", pr2:"12,00"},
+    {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× Mozzarella, Zwiebelringe, Nuggets, Pommes, 2 Dips", pr:"", pr2:"9,60"},
+    {no:"51", nm:"KLEEFOOD Bucket",   ig:"je 4× plus Pommes & 4 Dips", pr:"",     pr2:"14,50", best:true}
+  ]},
 
-    [ { ico:"🍟", title:"BEILAGEN", items:[
-        {no:"25", nm:"BBQ Fries",          ig:"BBQ-Sauce, Bacon, Röstzwiebeln",  pr:"5,50"},
-        {no:"26", nm:"Chili Cheese Fries", ig:"Jalapeños, Käse",                 pr:"5,50", best:true},
-        {no:"27", nm:"Garlic Fries",       ig:"Parmesan, Petersilie, Knoblauch", pr:"5,50"},
-        {no:"28", nm:"Süßkartoffel-Pommes",ig:"",                                pr:"4,90", veg:true},
-        {no:"29", nm:"Pommes Fries",       ig:"",                                pr:"4,00", veg:true},
-        {no:"30", nm:"Curly Fries",        ig:"",                                pr:"5,00", veg:true},
-        {no:"31", nm:"Coleslaw",           ig:"Krautsalat",                      pr:"2,50", veg:true}
-      ]} ],
+  veg: { ico:"🥙", title:"VEGETARISCH", items:[
+    {no:"35", nm:"Falafel Rolle",       ig:"4 St. mit Salat & Soße",              pr:"5,50",  veg:true},
+    {no:"36", nm:"XL Falafel Rolle",    ig:"6 St. mit Salat & Soße",              pr:"6,50",  veg:true},
+    {no:"37", nm:"Falafel Teller",      ig:"8 St., Reis oder Pommes, Salat & Soße",pr:"10,00", veg:true},
+    {no:"38", nm:"Halloumi & Falafel",  ig:"3 Halloumi, 3 Falafel",               pr:"8,50",  veg:true},
+    {no:"39", nm:"Crispy Teller",       ig:"4 St. mit Reis oder Pommes",          pr:"10,00"}
+  ]},
 
-    [ { ico:"🥙", title:"VEGETARISCH", items:[
-        {no:"35", nm:"Falafel Rolle",      ig:"4 St. mit Salat & Soße",     pr:"5,50",  veg:true},
-        {no:"36", nm:"XL Falafel Rolle",   ig:"6 St. mit Salat & Soße",     pr:"6,50",  veg:true},
-        {no:"37", nm:"Falafel Teller",     ig:"8 St., Reis oder Pommes",    pr:"10,00", veg:true},
-        {no:"38", nm:"Halloumi & Falafel", ig:"3 Halloumi, 3 Falafel",      pr:"8,50",  veg:true},
-        {no:"39", nm:"Crispy Teller",      ig:"4 St. mit Reis oder Pommes", pr:"10,00"}
-      ]},
-      { ico:"🥤", title:"GETRÄNKE", items:[
-        {no:"", nm:"Softdrink 0,33 l", ig:"Cola, Fanta, Sprite und mehr", pr:"2,90"}
-      ]} ]
-  ],
+  beilagen: { ico:"🍟", title:"BEILAGEN", items:[
+    {no:"25", nm:"BBQ Fries",           ig:"BBQ-Sauce, Bacon, Röstzwiebeln",   pr:"5,50"},
+    {no:"26", nm:"Chili Cheese Fries",  ig:"Jalapeños, Käse",                  pr:"5,50", best:true},
+    {no:"27", nm:"Garlic Fries",        ig:"Parmesan, Petersilie, Knoblauch",  pr:"5,50"},
+    {no:"28", nm:"Süßkartoffel-Pommes", ig:"",                                 pr:"4,90", veg:true},
+    {no:"29", nm:"Pommes Fries",        ig:"",                                 pr:"4,00", veg:true},
+    {no:"30", nm:"Curly Fries",         ig:"",                                 pr:"5,00", veg:true},
+    {no:"31", nm:"Coleslaw",            ig:"Krautsalat",                       pr:"2,50", veg:true}
+  ]},
 
-  /* ---------------- Seite 2: Dips & Spar Menü ---------------- */
-  [
-    [ { ico:"🥣", title:"DIPS & SAUCEN", items:[
-        {no:"55", nm:"Ketchup",           pr:"0,50"},
-        {no:"56", nm:"Mayonnaise",        pr:"0,50"},
-        {no:"57", nm:"Aioli",             pr:"1,00"},
-        {no:"58", nm:"Sauer-Creme-Sauce", pr:"1,00"},
-        {no:"59", nm:"Juppi-Sauce",       pr:"1,00"},
-        {no:"60", nm:"Hanim Master",      pr:"1,00"},
-        {no:"61", nm:"Barbecue-Sauce",    pr:"1,00"},
-        {no:"62", nm:"Trüffel-Mayonnaise",pr:"1,00"},
-        {no:"63", nm:"Käsesauce",         pr:"2,50"}
-      ]} ],
-    { deal:true }
-  ]
-];
+  drinks: { ico:"🥤", title:"GETRÄNKE", items:[
+    {no:"", nm:"Softdrink 0,33 l", ig:"Cola, Fanta, Sprite und mehr", pr:"2,90"}
+  ]},
 
-const DEAL = {
-  kick:"SPAR MENÜ",
-  sub:"Mach dein Gericht zum Menü – täglich 11:00 – 23:00 Uhr, auch zum Mitnehmen",
-  price:"12,90 €",
-  opts:[
-    {n:"1", t:"Burger nach Wahl",       b:"+ Pommes + 0,33 l Softdrink"},
-    {n:"2", t:"2× Smash Burger n. Wahl",b:"+ Pommes + 0,33 l Softdrink"},
-    {n:"3", t:"Falafel Rolle",          b:"+ Pommes + 0,33 l Softdrink"}
-  ]
+  dips: { ico:"🥣", title:"DIPS & SAUCEN", items:[
+    {no:"55", nm:"Ketchup",            pr:"0,50"},
+    {no:"56", nm:"Mayonnaise",         pr:"0,50"},
+    {no:"57", nm:"Aioli",              pr:"1,00"},
+    {no:"58", nm:"Sauer-Creme-Sauce",  pr:"1,00"},
+    {no:"59", nm:"Juppi-Sauce",        pr:"1,00"},
+    {no:"60", nm:"Hanim Master Sauce", pr:"1,00"},
+    {no:"61", nm:"Barbecue-Sauce",     pr:"1,00"},
+    {no:"62", nm:"Trüffel-Mayonnaise", pr:"1,00"},
+    {no:"63", nm:"Käsesauce",          pr:"2,50"}
+  ]}
 };
 
-/* ---------- Ticker ---------- */
-document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
+const DEAL = {
+  kick:"SPAR MENÜ", price:"12,90 €",
+  lines:[
+    "Burger nach Wahl + Pommes + 0,33 l Softdrink",
+    "2× Smash Burger nach Wahl + Pommes + 0,33 l Softdrink",
+    "Falafel Rolle + Pommes + 0,33 l Softdrink"
+  ],
+  note:"Täglich 11:00 – 23:00 Uhr · auch zum Mitnehmen"
+};
 
 /* ---------- Aufbau ---------- */
-function renderRow(it,i){
-  return '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
-           '<div class="no">' + (it.no || '') + '</div>' +
-           '<div class="tx"><div class="nm">' + it.nm +
-             (it.best ? '<span class="tag b">★ TOP</span>' : '') +
-             (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
-           '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
-           '<div class="pr">' + it.pr + '</div>' +
-           (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
-         '</div>';
-}
+document.getElementById('imgFries').style.backgroundImage = 'url(' + PHOTO + ')';
+document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
 
 function renderSection(sec){
   const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
-  const rows = sec.items.map(renderRow).join('');
-  return '<div class="sec">' +
-           '<div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' + sizes + '</div>' +
-           rows +
-         '</div>';
+  const rows = sec.items.map((it,i) =>
+    '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
+      '<div class="no">' + (it.no || '') + '</div>' +
+      '<div class="tx"><div class="nm">' + it.nm +
+        (it.best ? '<span class="tag b">★ TOP</span>' : '') +
+        (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
+      '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
+      '<div class="pr">' + it.pr + '</div>' +
+      (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
+    '</div>').join('');
+  return '<div class="sec"><div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' +
+         sizes + '</div>' + rows + '</div>';
 }
 
-function renderDeal(){
-  return '<div class="deal">' +
-           '<div><div class="kick">' + DEAL.kick + '</div><div class="sub">' + DEAL.sub + '</div></div>' +
-           DEAL.opts.map((o,i) =>
-             '<div class="opt" style="--i:' + i + '">' +
-               '<div class="n">' + o.n + '</div>' +
-               '<div class="t">' + o.t + '<b>' + o.b + '</b></div>' +
-               '<div class="p">' + DEAL.price + '</div>' +
-             '</div>').join('') +
-         '</div>';
-}
+document.getElementById('c1').innerHTML = renderSection(S.finger) + renderSection(S.veg);
+document.getElementById('c2').innerHTML = renderSection(S.beilagen) + renderSection(S.drinks);
+document.getElementById('c3').innerHTML = renderSection(S.dips);
+document.getElementById('deal').innerHTML =
+  '<div class="top"><span class="kick">' + DEAL.kick + '</span><span class="price">' + DEAL.price + '</span></div>' +
+  '<ul>' + DEAL.lines.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
+  '<div class="note">' + DEAL.note + '</div>';
 
-const pagesBox = document.getElementById('pages');
-const pager = document.getElementById('pager');
-
-PAGES.forEach(cols => {
-  const page = document.createElement('div');
-  page.className = 'page';
-  page.innerHTML = cols.map((c,ci) => {
-    if (c.deal) return '<div class="col wide" style="--c:' + ci + '">' + renderDeal() + '</div>';
-    return '<div class="col" style="--c:' + ci + '">' + c.map(renderSection).join('') + '</div>';
-  }).join('');
-  pagesBox.appendChild(page);
-  pager.innerHTML += '<i><b></b></i>';
-});
-
-const pageEls = [...pagesBox.children], dotEls = [...pager.children];
-dotEls.forEach(d => d.style.setProperty('--ms', PAGE_MS + 'ms'));
-
-let p = -1;
-function showPage(i){
-  p = i % pageEls.length;
-  pageEls.forEach((el,n) => {
-    if (n === p){ el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
-    else el.classList.remove('on');
-  });
-  dotEls.forEach((el,n) => { el.classList.remove('on'); if (n === p){ void el.offsetWidth; el.classList.add('on'); } });
-}
-showPage(0);
-setInterval(() => showPage(p + 1), PAGE_MS);
+/* ---------- Einblendungen alle 60 s neu starten ---------- */
+const board = document.getElementById('board');
+setInterval(() => {
+  board.classList.remove('play');
+  void board.offsetWidth;
+  board.classList.add('play');
+}, 60000);
 
 /* ---------- Auto-Skalierung ---------- */
 function fit(){

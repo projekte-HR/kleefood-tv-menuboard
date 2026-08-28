@@ -7,225 +7,120 @@
 <style>
 /* =======================================================================
    KLEEFOOD – SCREEN 1 (1920x1080)
-   Zwei Szenen im Wechsel, beide zeigen die Karte:
-     Szene A  Burger klappt auf und zeigt Patty + Zutaten · Burgerpreise
-     Szene B  Pizza baut sich auf und wird aufgeschnitten · Pizzapreise
-   Alles gezeichnet (Inline-SVG) – kein Bild, kein Video, nichts nachzuladen.
-   Fire TV Stick: animiert wird nur transform / opacity / stroke-dashoffset.
-   Zeiten: SCENE_MS unten im Script · Preise: LISTS unten im Script.
+   Alles gleichzeitig sichtbar, nichts wechselt:
+     links   echte Fotos (Burger, Pizza) + Smash Burger
+     Mitte   alle Burger 01–13
+     rechts  alle Pizzen 65–76 mit 30 cm / 40 cm
+   Bewegung: Fotos mit langsamem Zoom, Einblendungen laufen alle 60 s neu.
+   Fire TV Stick: nur transform / opacity / clip-path, keine Filter.
    ======================================================================= */
 
 :root{
-  --bg:#111417; --card:#171c20;
-  --green:#00E676; --green-deep:#10B981; --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.66); --line:rgba(255,255,255,.09);
+  --bg:#111417; --green:#00E676; --gold:#FF9F1C;
+  --white:#fff; --muted:rgba(255,255,255,.64); --line:rgba(255,255,255,.09);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
   width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--white);
   font-family:'Poppins',system-ui,sans-serif;transform-origin:top left;
 }
-#stage{
-  position:relative;width:1920px;height:1080px;padding:26px 46px 0;
-  display:flex;flex-direction:column;
+#board{
+  position:relative;width:1920px;height:1080px;padding:18px 34px 0;display:flex;flex-direction:column;
   background:
-    radial-gradient(58% 46% at 22% 4%,  rgba(0,230,118,.15), transparent 62%),
-    radial-gradient(52% 44% at 88% 96%, rgba(255,159,28,.13), transparent 62%);
+    radial-gradient(56% 42% at 16% 2%,  rgba(0,230,118,.14), transparent 62%),
+    radial-gradient(50% 40% at 92% 98%, rgba(255,159,28,.12), transparent 62%);
 }
 
 /* ---------- Kopf ---------- */
-header{display:flex;align-items:center;gap:24px;flex:none;height:104px;}
-.mark{
-  width:88px;height:88px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:46px;
-  border:3px solid var(--green);background:rgba(0,230,118,.08);
-  box-shadow:0 0 34px rgba(0,230,118,.22) inset;
-}
-.brand h1{
-  font-family:'Bebas Neue',sans-serif;font-size:80px;line-height:.88;letter-spacing:6px;
+header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
+.mark{width:70px;height:70px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:38px;
+  border:3px solid var(--green);background:rgba(0,230,118,.08);box-shadow:0 0 28px rgba(0,230,118,.22) inset;}
+.brand h1{font-family:'Bebas Neue',sans-serif;font-size:62px;line-height:.88;letter-spacing:5px;
   background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.brand p{font-size:21px;letter-spacing:7px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand p{font-size:17px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
 .hours{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
-.hours .a{font-size:30px;font-weight:900;letter-spacing:2px;color:var(--gold);}
-.hours .b{font-size:22px;font-weight:800;margin-top:6px;color:var(--muted);}
+.hours .a{font-size:25px;font-weight:900;letter-spacing:2px;color:var(--gold);}
+.hours .b{font-size:18px;font-weight:800;margin-top:4px;color:var(--muted);}
 
-/* ---------- Szenen ---------- */
-#scenes{position:relative;flex:1;min-height:0;margin-top:10px;}
-.scene{
-  position:absolute;inset:0;display:grid;grid-template-columns:940px 1fr;gap:30px;
-  opacity:0;visibility:hidden;
-}
-.scene.on{opacity:1;visibility:visible;}
-
-/* ---------- Linke Seite: Zeichnung ---------- */
-.art{position:relative;height:100%;}
-.art svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;}
-
-/* Beschriftungen der Schichten */
-.lbl{
-  position:absolute;left:52%;display:flex;align-items:center;gap:14px;
-  transform:translateY(-50%);opacity:0;
-}
-.scene.on .lbl{
-  animation:lblIn .55s cubic-bezier(.22,1,.36,1) calc(2.4s + var(--i)*.34s) both,
-            lblOut .45s ease-in 9.1s forwards;
-}
-@keyframes lblIn {from{opacity:0;transform:translate(38px,-50%);} to{opacity:1;transform:translate(0,-50%);}}
-@keyframes lblOut{to{opacity:0;transform:translate(26px,-50%);}}
-.lbl i{display:block;height:3px;width:60px;background:var(--green);border-radius:2px;transform-origin:left;}
-.lbl span{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:28px;letter-spacing:1.2px;
-  white-space:nowrap;text-transform:uppercase;
-}
-.lbl b{display:block;font-family:'Poppins';font-weight:300;font-size:20px;color:var(--muted);letter-spacing:0;text-transform:none;}
-
-/* Bildunterschrift: Titel, Preis, Standardzutaten */
-.cap{position:absolute;left:14px;bottom:6px;right:14px;opacity:0;}
-.scene.on .cap{animation:capIn .8s cubic-bezier(.22,1,.36,1) 10.6s both;}
-@keyframes capIn{from{opacity:0;transform:translateY(50px);} to{opacity:1;transform:none;}}
-.cap .t{font-family:'Bebas Neue',sans-serif;font-size:74px;letter-spacing:3px;line-height:1;}
-.cap .t em{font-style:normal;color:var(--green);}
-.cap .row{display:flex;align-items:center;gap:26px;margin-top:12px;}
-.cap .p{
-  white-space:nowrap;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:54px;color:#0b0f11;
-  background:linear-gradient(135deg,var(--green),var(--gold));padding:8px 30px;border-radius:18px;
-}
-.cap .s{font-size:23px;font-weight:300;color:var(--muted);line-height:1.35;}
-
-/* ---------- Rechte Seite: Preisliste ---------- */
-.list{
-  position:relative;height:100%;
+/* ---------- Raster ---------- */
+#grid{flex:1;min-height:0;display:grid;grid-template-columns:470px 1fr 570px;gap:20px;margin-top:8px;}
+.col{display:flex;flex-direction:column;gap:16px;min-height:0;}
+.card{
   background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
-  border:1.5px solid var(--line);border-radius:24px;overflow:hidden;
+  border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;
+  display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;
 }
-.list::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;
   background:linear-gradient(90deg,var(--green),var(--gold));}
-.lpage{position:absolute;inset:0;padding:22px 28px;opacity:0;visibility:hidden;display:flex;flex-direction:column;}
-.lpage.on{opacity:1;visibility:visible;}
+.play .card{animation:cardIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.1s) both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
-.lhead{display:flex;align-items:flex-end;gap:14px;padding-bottom:10px;margin-bottom:6px;
-  border-bottom:2px solid rgba(255,255,255,.13);}
-.lpage.on .lhead{animation:wipe .7s cubic-bezier(.22,1,.36,1) both;}
+/* ---------- Fotos ---------- */
+.shot{position:relative;flex:1;min-height:0;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
+.shot .img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);}
+.play .shot .img{animation:ken 26s ease-in-out infinite alternate;}
+@keyframes ken{from{transform:scale(1.02);} to{transform:scale(1.16);}}
+.shot::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(0deg,rgba(10,12,14,.93) 0%,rgba(10,12,14,.15) 46%,transparent 70%);}
+.shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
+.shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;letter-spacing:2px;}
+.shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0;}
+.shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;
+  color:#0b0f11;background:linear-gradient(135deg,var(--green),var(--gold));padding:6px 18px;border-radius:12px;white-space:nowrap;}
+.play .shot .cap{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
+
+/* ---------- Kategorie-Kopf ---------- */
+.head{display:flex;align-items:flex-end;gap:10px;padding-bottom:7px;margin-bottom:4px;
+  border-bottom:2px solid rgba(255,255,255,.13);flex:none;}
+.sec + .sec .head{margin-top:10px;}
+.play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
 @keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
-.lhead .ico{font-size:40px;}
-.lhead h2{
-  font-family:'Bebas Neue',sans-serif;font-size:58px;letter-spacing:3px;line-height:1;
+.head .ico{font-size:28px;line-height:1;}
+.head h2{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2.5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
-  -webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.lhead .sizes{margin-left:auto;display:flex;gap:18px;}
-.lhead .sizes span{width:104px;text-align:right;font-size:18px;font-weight:800;color:var(--gold);
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.head .sizes{margin-left:auto;display:flex;gap:12px;}
+.head .sizes span{width:76px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
-.row{display:flex;align-items:center;gap:16px;padding:9px 6px;border-radius:12px;position:relative;}
+/* ---------- Zeile ---------- */
+.row{display:flex;align-items:center;gap:10px;padding:5px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
-.lpage.on .row{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.25s + var(--i)*.07s) both;}
-@keyframes rowIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
-.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;color:var(--gold);width:38px;flex:none;}
+.play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:16px;color:var(--gold);width:28px;flex:none;}
 .row .tx{flex:1;min-width:0;}
-.row .nm{font-size:34px;font-weight:600;line-height:1.15;}
-.row .ig{font-size:21px;font-weight:300;color:var(--muted);margin-top:2px;line-height:1.2;}
-.row .pr{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:var(--gold);
-  width:104px;text-align:right;flex:none;white-space:nowrap;
-}
+.row .nm{font-size:25px;font-weight:600;line-height:1.18;}
+.row .ig{font-size:15px;font-weight:300;color:var(--muted);line-height:1.2;margin-top:1px;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--gold);
+  width:76px;text-align:right;flex:none;white-space:nowrap;}
 .row .pr.two{color:var(--white);}
-.lpage.on .row .pr{animation:pop .5s cubic-bezier(.34,1.56,.64,1) calc(.45s + var(--i)*.07s) both;}
-@keyframes pop{0%{opacity:0;transform:scale(.6);}60%{opacity:1;transform:scale(1.18);}100%{transform:scale(1);}}
+.play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
 
 .row.best{background:rgba(0,230,118,.09);box-shadow:inset 0 0 0 1.5px rgba(0,230,118,.32);}
-.lpage.on .row.best{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.25s + var(--i)*.07s) both,
-                              beat 6s ease-in-out 2s infinite;}
-@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.035);}}
-.tag{
-  font-family:'Montserrat',sans-serif;font-size:15px;font-weight:900;letter-spacing:1.3px;
-  padding:3px 10px;border-radius:99px;margin-left:10px;vertical-align:middle;white-space:nowrap;
-}
+.play .row.best{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both,
+                          beat 7s ease-in-out 2s infinite;}
+@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.03);}}
+.tag{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.1px;
+  padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
 .tag.b{background:var(--green);color:#0b0f11;}
 .tag.v{border:1px solid var(--green);color:var(--green);}
-.hint{margin-top:auto;font-size:22px;font-style:italic;color:var(--green);padding-top:10px;}
+.hint{font-size:16px;font-style:italic;color:var(--green);padding-top:6px;}
 
-/* ---------- Fuß: Ticker + Szenenbalken ---------- */
-footer{flex:none;height:92px;display:flex;align-items:center;gap:26px;padding:14px 0 18px;}
-#ticker{flex:1;height:58px;border-radius:12px;overflow:hidden;display:flex;align-items:center;
+/* ---------- Ticker ---------- */
+footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
+#ticker{flex:1;height:46px;border-radius:11px;overflow:hidden;display:flex;align-items:center;
   border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);}
-#ticker .tr{display:flex;white-space:nowrap;animation:scroll 36s linear infinite;}
-#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:4px;
-  padding:0 60px;text-transform:uppercase;}
+#ticker .tr{display:flex;white-space:nowrap;animation:scroll 38s linear infinite;}
+#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;letter-spacing:4px;
+  padding:0 52px;text-transform:uppercase;}
 @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
-#bars{display:flex;gap:12px;}
-#bars i{width:130px;height:9px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;display:block;}
-#bars i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));}
-#bars i.on b{animation:fill var(--ms) linear forwards;}
-@keyframes fill{from{width:0;}to{width:100%;}}
-
-/* =======================================================================
-   SZENE A – BURGER: Aufklappen
-   Jede Schicht hat --o (Wohin beim Aufklappen) und --d (kleine Verzögerung)
-   ======================================================================= */
-.scene.on .burger{animation:bIn 15s cubic-bezier(.22,1,.36,1) both;}
-@keyframes bIn{
-  0%  {transform:translateY(300px) scale(.9);opacity:0;}
-  6%  {transform:translateY(-18px) scale(1);opacity:1;}
-  9%  {transform:translateY(0) scale(1);}
-  66% {transform:translateY(0);}
-  69% {transform:translateY(10px);}     /* Aufprall beim Zuklappen */
-  72% {transform:translateY(0);}
-  100%{transform:translateY(0);opacity:1;}
-}
-.layer{transform-box:fill-box;transform-origin:center;}
-.scene.on .layer{animation:bOpen 15s cubic-bezier(.5,0,.2,1) var(--d) both;}
-@keyframes bOpen{
-  0%,10% {transform:translateY(0) rotate(0deg);}
-  17%    {transform:translateY(var(--o)) rotate(var(--r));}
-  60%    {transform:translateY(var(--o)) rotate(var(--r));}
-  67%    {transform:translateY(0) rotate(0deg);}
-  100%   {transform:translateY(0) rotate(0deg);}
-}
-
-/* =======================================================================
-   SZENE B – PIZZA: Aufbauen, schneiden, ein Stück herausziehen
-   ======================================================================= */
-.dough,.pizza,.cheese,.slice{transform-box:fill-box;transform-origin:center;}
-.scene.on .dough{animation:dIn 1.4s cubic-bezier(.22,1,.36,1) both;}
-@keyframes dIn{from{transform:rotate(-120deg) scale(.2);opacity:0;} to{transform:rotate(0) scale(1);opacity:1;}}
-
-.sauce{stroke-dasharray:648;stroke-dashoffset:648;}
-.scene.on .sauce{animation:draw 1.6s ease-out 1.2s both;}
-@keyframes draw{to{stroke-dashoffset:0;}}
-
-.scene.on .cheese{animation:fade .9s ease-out 2.5s both;}
-@keyframes fade{from{opacity:0;transform:scale(.86);} to{opacity:1;transform:scale(1);}}
-
-.top{transform-box:fill-box;transform-origin:center;}
-.scene.on .top{animation:fly .8s cubic-bezier(.22,1,.36,1) calc(3.1s + var(--i)*.34s) both;}
-@keyframes fly{
-  from{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(-160deg) scale(.5);}
-  to  {opacity:1;transform:translate(0,0) rotate(0) scale(1);}
-}
-
-.cut{stroke-dasharray:240;stroke-dashoffset:240;}
-.scene.on .cut{animation:draw .5s ease-out calc(8.4s + var(--i)*.09s) both;}
-
-.scene.on .pizza{animation:spin 15s ease-in-out both;}
-@keyframes spin{
-  0%,55%{transform:rotate(0deg);}
-  70%   {transform:rotate(16deg);}
-  100%  {transform:rotate(16deg);}
-}
-.scene.on .slice{animation:pull 1.2s cubic-bezier(.22,1,.36,1) 10s both;}
-@keyframes pull{
-  from{transform:translate(0,0) rotate(0);}
-  to  {transform:translate(150px,-54px) rotate(9deg);}
-}
-.string{stroke-dasharray:200;stroke-dashoffset:200;}
-.scene.on .string{animation:draw .9s ease-out 10.2s both;}
 </style>
 </head>
 <body>
-<div id="stage">
+<div id="board" class="play">
 
   <header>
     <div class="mark">☘</div>
@@ -239,243 +134,98 @@ footer{flex:none;height:92px;display:flex;align-items:center;gap:26px;padding:14
     </div>
   </header>
 
-  <div id="scenes">
-
-    <!-- ============================ SZENE A ============================ -->
-    <div class="scene" id="sceneA">
-      <div class="art">
-        <svg viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg">
-          <g class="burger">
-            <!-- Brötchen-Boden -->
-            <g class="layer" style="--o:125px;--r:0deg;--d:0s">
-              <path d="M95,538 h410 v22 q0,30 -36,30 h-338 q-36,0 -36,-30 Z" fill="#C9832F"/>
-              <path d="M95,538 h410 v10 h-410 Z" fill="#B0701F"/>
-            </g>
-            <!-- Patty -->
-            <g class="layer" style="--o:80px;--r:-2deg;--d:.05s">
-              <rect x="88" y="494" width="424" height="46" rx="22" fill="#5A3620"/>
-              <rect x="88" y="494" width="424" height="14" rx="7" fill="#6B4327"/>
-              <circle cx="170" cy="518" r="4" fill="#452714"/><circle cx="250" cy="512" r="3.5" fill="#452714"/>
-              <circle cx="330" cy="522" r="4" fill="#452714"/><circle cx="410" cy="514" r="3.5" fill="#452714"/>
-            </g>
-            <!-- Cheddar -->
-            <g class="layer" style="--o:40px;--r:2deg;--d:.1s">
-              <path d="M104,470 h392 v22 q-28,30 -56,0 q-28,30 -56,0 q-28,30 -56,0 q-28,30 -56,0 q-28,30 -56,0 q-28,30 -56,0 Z" fill="#F5A623"/>
-              <path d="M104,470 h392 v8 h-392 Z" fill="#FFC155"/>
-            </g>
-            <!-- Saure Gurken -->
-            <g class="layer" style="--o:5px;--r:-3deg;--d:.15s">
-              <circle cx="160" cy="460" r="19" fill="#6FA046"/><circle cx="160" cy="460" r="11" fill="#8CBE5E"/>
-              <circle cx="255" cy="460" r="19" fill="#6FA046"/><circle cx="255" cy="460" r="11" fill="#8CBE5E"/>
-              <circle cx="350" cy="460" r="19" fill="#6FA046"/><circle cx="350" cy="460" r="11" fill="#8CBE5E"/>
-              <circle cx="445" cy="460" r="19" fill="#6FA046"/><circle cx="445" cy="460" r="11" fill="#8CBE5E"/>
-            </g>
-            <!-- Zwiebeln -->
-            <g class="layer" style="--o:-25px;--r:3deg;--d:.2s">
-              <ellipse cx="230" cy="438" rx="120" ry="15" fill="none" stroke="#EBDCF0" stroke-width="7"/>
-              <ellipse cx="230" cy="438" rx="78"  ry="9"  fill="none" stroke="#D9C4E0" stroke-width="6"/>
-              <ellipse cx="400" cy="440" rx="95"  ry="13" fill="none" stroke="#EBDCF0" stroke-width="7"/>
-            </g>
-            <!-- Tomate -->
-            <g class="layer" style="--o:-60px;--r:-2deg;--d:.25s">
-              <rect x="92" y="400" width="416" height="28" rx="14" fill="#E14434"/>
-              <ellipse cx="200" cy="414" rx="52" ry="9" fill="#FF6A57"/>
-              <ellipse cx="390" cy="414" rx="52" ry="9" fill="#FF6A57"/>
-            </g>
-            <!-- Salat -->
-            <g class="layer" style="--o:-100px;--r:2deg;--d:.3s">
-              <path d="M82,370 h436 v16 q-24,26 -48,4 q-24,26 -48,4 q-24,26 -48,0 q-24,26 -48,-2 q-24,26 -48,2 q-24,26 -48,0 q-24,24 -48,-4 q-24,24 -48,-4 Z" fill="#57B94B"/>
-              <path d="M82,370 h436 v9 h-436 Z" fill="#7CD26C"/>
-            </g>
-            <!-- Sesambrötchen -->
-            <g class="layer" style="--o:-150px;--r:-3deg;--d:.35s">
-              <path d="M92,372 C92,258 186,204 300,204 C414,204 508,258 508,372 Z" fill="#E2A44C"/>
-              <path d="M92,372 C92,300 150,258 300,258 C450,258 508,300 508,372 Z" fill="#D9973C" opacity=".55"/>
-              <g fill="#FFF3D6">
-                <ellipse cx="215" cy="290" rx="11" ry="6" transform="rotate(-18 215 290)"/>
-                <ellipse cx="300" cy="266" rx="11" ry="6" transform="rotate(6 300 266)"/>
-                <ellipse cx="385" cy="292" rx="11" ry="6" transform="rotate(20 385 292)"/>
-                <ellipse cx="256" cy="330" rx="10" ry="5.5" transform="rotate(-8 256 330)"/>
-                <ellipse cx="348" cy="332" rx="10" ry="5.5" transform="rotate(12 348 332)"/>
-              </g>
-            </g>
-          </g>
-        </svg>
-
-        <!-- Beschriftungen: top = Höhe der Schicht im aufgeklappten Zustand -->
-        <div class="lbl" style="top:18.6%;--i:0"><i></i><span>Sesam-Brioche<b>frisch gebacken</b></span></div>
-        <div class="lbl" style="top:36.5%;--i:1"><i></i><span>Mixed-Salat<b>täglich frisch geschnitten</b></span></div>
-        <div class="lbl" style="top:45.3%;--i:2"><i></i><span>Tomate</span></div>
-        <div class="lbl" style="top:52.9%;--i:3"><i></i><span>Zwiebeln</span></div>
-        <div class="lbl" style="top:59.6%;--i:4"><i></i><span>Saure Gurken</span></div>
-        <div class="lbl" style="top:66.9%;--i:5"><i></i><span>Cheddar-Käse</span></div>
-        <div class="lbl" style="top:76.4%;--i:6"><i></i><span>100 % Rind-Patty<b>frisch gegrillt</b></span></div>
-        <div class="lbl" style="top:88.3%;--i:7"><i></i><span>Brötchen-Boden</span></div>
-
+  <div id="grid">
+    <!-- Spalte 1: echte Fotos + Smash Burger -->
+    <div class="col" style="--c:0">
+      <div class="shot">
+        <div class="img" id="imgBurger"></div>
         <div class="cap">
-          <div class="t">CLASSIC <em>HAMBURGER</em></div>
-          <div class="row">
-            <span class="p">6,00 €</span>
-            <span class="s">In <b>jedem</b> Burger: Ketchup, Mayonnaise, Tomaten,<br>saure Gurken, Senf, Zwiebeln &amp; Mixed-Salat</span>
-          </div>
+          <div class="t">CLASSIC HAMBURGER<b>Rindfleisch-Patty, Salat, Tomate, Gurken, Zwiebeln</b></div>
+          <div class="p">6,00 €</div>
         </div>
       </div>
-      <div class="list" id="listA"></div>
-    </div>
-
-    <!-- ============================ SZENE B ============================ -->
-    <div class="scene" id="sceneB">
-      <div class="art">
-        <svg viewBox="0 0 900 780" xmlns="http://www.w3.org/2000/svg">
-          <g transform="translate(-46,-66) scale(.88)">
-          <g class="pizza">
-            <!-- Teig -->
-            <g class="dough">
-              <circle cx="330" cy="400" r="248" fill="#D8A051"/>
-              <circle cx="330" cy="400" r="248" fill="none" stroke="#B9822F" stroke-width="10"/>
-              <circle cx="330" cy="400" r="212" fill="#E8BC73"/>
-            </g>
-            <!-- Tomatensoße: wird als dicker Kreisstrich rundherum "aufgestrichen" -->
-            <circle class="sauce" cx="330" cy="400" r="103" fill="none" stroke="#C0392B" stroke-width="200"/>
-            <!-- Käse: halbtransparent, damit die Tomatensoße durchscheint -->
-            <g class="cheese">
-              <circle cx="330" cy="400" r="196" fill="#F5D06B" opacity=".72"/>
-              <ellipse cx="262" cy="336" rx="66" ry="44" fill="#FFE08A" opacity=".85" transform="rotate(-18 262 336)"/>
-              <ellipse cx="404" cy="352" rx="58" ry="40" fill="#FFE08A" opacity=".85" transform="rotate(14 404 352)"/>
-              <ellipse cx="300" cy="470" rx="70" ry="42" fill="#FFE08A" opacity=".85" transform="rotate(8 300 470)"/>
-              <ellipse cx="430" cy="474" rx="52" ry="36" fill="#FFE08A" opacity=".85" transform="rotate(-12 430 474)"/>
-            </g>
-            <!-- Beläge -->
-            <g class="top" style="--i:0;--dx:-420px;--dy:-260px">
-              <circle cx="235" cy="300" r="34" fill="#D6635A"/><circle cx="235" cy="300" r="34" fill="none" stroke="#B44A43" stroke-width="4"/>
-              <circle cx="420" cy="470" r="34" fill="#D6635A"/><circle cx="420" cy="470" r="34" fill="none" stroke="#B44A43" stroke-width="4"/>
-            </g>
-            <g class="top" style="--i:1;--dx:420px;--dy:-280px">
-              <rect x="380" y="286" width="74" height="52" rx="14" fill="#E9A24E"/>
-              <rect x="212" y="452" width="74" height="52" rx="14" fill="#E9A24E"/>
-            </g>
-            <g class="top" style="--i:2;--dx:-380px;--dy:300px">
-              <path d="M300,470 q34,-40 68,0 q-14,16 -34,16 q-20,0 -34,-16 Z" fill="#EDE2C8"/>
-              <path d="M186,352 q30,-36 60,0 q-12,14 -30,14 q-18,0 -30,-14 Z" fill="#EDE2C8"/>
-            </g>
-            <g class="top" style="--i:3;--dx:400px;--dy:300px">
-              <ellipse cx="330" cy="256" rx="30" ry="14" fill="#5FA83E"/>
-              <ellipse cx="452" cy="378" rx="30" ry="14" fill="#5FA83E" transform="rotate(35 452 378)"/>
-              <ellipse cx="230" cy="530" rx="30" ry="14" fill="#5FA83E" transform="rotate(-20 230 530)"/>
-            </g>
-            <!-- Schnittlinien -->
-            <g stroke="rgba(255,255,255,.55)" stroke-width="5" stroke-linecap="round">
-              <line class="cut" style="--i:0" x1="330" y1="400" x2="578" y2="400"/>
-              <line class="cut" style="--i:1" x1="330" y1="400" x2="505" y2="575"/>
-              <line class="cut" style="--i:2" x1="330" y1="400" x2="330" y2="648"/>
-              <line class="cut" style="--i:3" x1="330" y1="400" x2="155" y2="575"/>
-              <line class="cut" style="--i:4" x1="330" y1="400" x2="82"  y2="400"/>
-              <line class="cut" style="--i:5" x1="330" y1="400" x2="155" y2="225"/>
-              <line class="cut" style="--i:6" x1="330" y1="400" x2="330" y2="152"/>
-              <line class="cut" style="--i:7" x1="330" y1="400" x2="505" y2="225"/>
-            </g>
-            <!-- Ein Stück wird herausgezogen -->
-            <g class="slice">
-              <path d="M330,400 L559,305 A248,248 0 0,1 559,495 Z" fill="#E8BC73"/>
-              <path d="M330,400 L525,319 A212,212 0 0,1 525,481 Z" fill="#C0392B"/>
-              <path d="M330,400 L518,322 A204,204 0 0,1 518,478 Z" fill="#F5D06B" opacity=".78"/>
-              <circle cx="452" cy="400" r="32" fill="#D6635A"/>
-              <ellipse cx="392" cy="356" rx="28" ry="13" fill="#5FA83E"/>
-              <path class="string" fill="none" stroke="#F7DE9A" stroke-width="6" stroke-linecap="round"
-                d="M338,394 q-32,26 -56,10 M344,420 q-38,22 -70,6"/>
-            </g>
-          </g>
-          </g>
-        </svg>
-
-        <div class="lbl" style="top:33%;--i:0"><i></i><span>Fior di Latte<b>echter Pizzakäse</b></span></div>
-        <div class="lbl" style="top:44%;--i:1"><i></i><span>Putenschinken</span></div>
-        <div class="lbl" style="top:55%;--i:2"><i></i><span>Frische Champignons</span></div>
-        <div class="lbl" style="top:66%;--i:3"><i></i><span>Paprika &amp; Jalapeños</span></div>
-
+      <div class="shot">
+        <div class="img" id="imgPizza"></div>
         <div class="cap">
-          <div class="t">PIZZA <em>KLEEFOOD</em></div>
-          <div class="row">
-            <span class="p">9,50 €</span>
-            <span class="s">30 cm 9,50 € · 40 cm 16,00 €<br>Aus dem Steinofen – alle Pizzen mit Tomatensoße &amp; Käse</span>
-          </div>
+          <div class="t">PIZZA KLEEFOOD<b>Putenschinken, Paprika, Champignons, Jalapeños</b></div>
+          <div class="p">9,50 €</div>
         </div>
       </div>
-      <div class="list" id="listB"></div>
+      <div class="card" id="smash"></div>
     </div>
+
+    <!-- Spalte 2: alle Burger -->
+    <div class="col" style="--c:1"><div class="card" id="burger"></div></div>
+
+    <!-- Spalte 3: alle Pizzen -->
+    <div class="col" style="--c:2"><div class="card" id="pizza"></div></div>
   </div>
 
-  <footer>
-    <div id="ticker"><div class="tr" id="tr"></div></div>
-    <div id="bars"><i><b></b></i><i><b></b></i></div>
-  </footer>
+  <footer><div id="ticker"><div class="tr" id="tr"></div></div></footer>
 </div>
 
 <script>
 /* =======================================================================
-   INHALTE – Preise und Gerichte aus der KLEEFOOD-Karte.
-   Jede Szene hat mehrere Listen-Seiten, die während der Szene durchlaufen.
+   INHALTE – Burger, Smash Burger und Pizza aus der KLEEFOOD-Karte.
+   Fingerfood, Beilagen, Vegetarisch, Dips und Spar Menü laufen auf Screen 2.
+   Eigene Fotos? Einfach die URLs in PHOTOS auf z. B. "fotos/burger.jpg" ändern.
    ======================================================================= */
-const SCENE_MS = 15000;   // Dauer je Szene (muss zu den CSS-Keyframes passen)
+const PHOTOS = {
+  burger: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1000&q=72",
+  pizza:  "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1000&q=72"
+};
 
 const TICKER = "🔥 TÄGLICH FRISCH • 100 % RIND • HAUSGEMACHTE SAUCEN • STEINOFEN-PIZZA IN 30 & 40 CM • SPAR MENÜ 12,90 € 🔥";
 
-const LISTS = {
-  /* --- Szene A: Burger --- */
-  A: [
-    { ico:"🍔", title:"KLEE BURGER", items:[
-      {no:"01", nm:"Classic Hamburger",  ig:"Rindfleisch-Patty",                    pr:"6,00"},
-      {no:"02", nm:"Cheeseburger",       ig:"Rindfleisch-Patty, Cheddar-Käse",      pr:"6,50"},
-      {no:"03", nm:"Chili Cheeseburger", ig:"Cheddar, Jalapeños, Chili-Sauce",      pr:"7,00"},
-      {no:"04", nm:"Kleefood BBQ Burger",ig:"Cheddar, Bacon, Barbecue-Sauce",       pr:"7,50", best:true},
-      {no:"05", nm:"Cremig Avocado",     ig:"Guacamole, Beef-Patty",                pr:"7,50"},
-      {no:"06", nm:"Mushroom & Blue",    ig:"Pesto, Champignons, Schmorzwiebeln",   pr:"7,50"},
-      {no:"07", nm:"Halloumi & Aubergine",ig:"Halloumi, Honey Mustard",             pr:"7,50", veg:true}
-    ]},
-    { ico:"🍔", title:"KLEE BURGER", items:[
-      {no:"08", nm:"Mozzarella Burger",  ig:"Pesto, Aioli, Röstzwiebeln",           pr:"8,00"},
-      {no:"09", nm:"Chicken Classic",    ig:"Gegrilltes Chicken",                   pr:"5,50"},
-      {no:"10", nm:"Crunchy Chicken",    ig:"mit Cheese nach Wahl",                 pr:"6,50"},
-      {no:"11", nm:"Beyond Burger",      ig:"Pflanzliches Patty",                   pr:"8,00", veg:true},
-      {no:"12", nm:"BBQ Avocado",        ig:"Cheddar, BBQ-Sauce, Avocado",          pr:"9,00"},
-      {no:"13", nm:"Kleefeld Special",   ig:"Mozzarella-Sticks, Zwiebelringe",      pr:"10,00", best:true}
-    ]},
-    { ico:"🥩", title:"SMASH BURGER", hint:"Doppeltes Beef-Patty  +2,50 €", items:[
-      {no:"15", nm:"Hamburger Smash",    ig:"",                                     pr:"4,00"},
-      {no:"16", nm:"Cheeseburger Smash", ig:"",                                     pr:"4,50"},
-      {no:"17", nm:"Chili Cheese Smash", ig:"mit Jalapeños",                        pr:"5,00"},
-      {no:"18", nm:"BBQ Burger Smash",   ig:"mit BBQ-Sauce",                        pr:"5,00"},
-      {no:"19", nm:"Chicken Smash",      ig:"mit Aioli",                            pr:"5,00"}
-    ]}
-  ],
+const SECTIONS = {
+  burger: { ico:"🍔", title:"KLEE BURGER", items:[
+    {no:"01", nm:"Classic Hamburger",      ig:"Rindfleisch-Patty",                             pr:"6,00"},
+    {no:"02", nm:"Cheeseburger",           ig:"Rindfleisch-Patty, Cheddar-Käse",               pr:"6,50"},
+    {no:"03", nm:"Chili Cheeseburger",     ig:"Cheddar-Käse, Jalapeños, Chili-Sauce",          pr:"7,00"},
+    {no:"04", nm:"Kleefood BBQ Burger",    ig:"Cheddar-Käse, Bacon, Barbecue-Sauce",           pr:"7,50", best:true},
+    {no:"05", nm:"Cremig Avocado Burger",  ig:"Guacamole, Beef-Patty",                         pr:"7,50"},
+    {no:"06", nm:"Mushroom & Blue Cheese", ig:"Pesto, Champignons, Schmorzwiebeln",            pr:"7,50"},
+    {no:"07", nm:"Halloumi & Aubergine",   ig:"Halloumi, Aubergine, Honey Mustard",            pr:"7,50", veg:true},
+    {no:"08", nm:"Mozzarella Burger",      ig:"Pesto, Aioli, Mozzarella, Röstzwiebeln",        pr:"8,00"},
+    {no:"09", nm:"Chicken Classic Burger", ig:"Gegrilltes Chicken",                            pr:"5,50"},
+    {no:"10", nm:"Crunchy Chicken Burger", ig:"Crunchy Chicken mit Cheese nach Wahl",          pr:"6,50"},
+    {no:"11", nm:"Beyond Burger original", ig:"Pflanzliches Patty, Ketchup",                   pr:"8,00", veg:true},
+    {no:"12", nm:"BBQ Burger Avocado",     ig:"Cheddar, Barbecue-Sauce, Avocado",              pr:"9,00"},
+    {no:"13", nm:"Kleefeld Special Burger",ig:"2 Mozzarella-Sticks, Zwiebelringe, Röstzwiebeln",pr:"10,00", best:true}
+  ], note:"100 % Rind · alle Burger mit Ketchup, Mayonnaise, Tomaten, sauren Gurken, Senf, Zwiebeln & Mixed-Salat" },
 
-  /* --- Szene B: Pizza (zwei Preise: 30 cm / 40 cm) --- */
-  B: [
-    { ico:"🍕", title:"STONE OVEN PIZZA", sizes:["30 cm","40 cm"], items:[
-      {no:"65", nm:"Margharita",    ig:"Tomatensoße & Käse",                pr:"7,00",  pr2:"12,00"},
-      {no:"66", nm:"Tonno",         ig:"Thunfisch, Zwiebeln",               pr:"9,00",  pr2:"16,00"},
-      {no:"67", nm:"Kleefood",      ig:"Putenschinken, Paprika, Jalapeños", pr:"9,50",  pr2:"16,00", best:true},
-      {no:"68", nm:"Salami",        ig:"Geflügel-Salami",                   pr:"9,50",  pr2:"16,00"},
-      {no:"69", nm:"Putenschinken", ig:"",                                  pr:"9,50",  pr2:"16,00"},
-      {no:"70", nm:"Hawaii",        ig:"Putenschinken & Ananas",            pr:"9,50",  pr2:"16,00"}
-    ]},
-    { ico:"🍕", title:"STONE OVEN PIZZA", sizes:["30 cm","40 cm"], items:[
-      {no:"71", nm:"Funghi",   ig:"Champignons, Peperoni",               pr:"9,50",  pr2:"16,00"},
-      {no:"72", nm:"Fiori",    ig:"Salami, Champignons, Peperoni",       pr:"10,00", pr2:"18,00"},
-      {no:"73", nm:"Sucuk",    ig:"Knoblauchwurst",                      pr:"9,50",  pr2:"16,00"},
-      {no:"74", nm:"BBQ",      ig:"Hähnchenbrust, Zwiebeln, Mais",       pr:"10,00", pr2:"18,00"},
-      {no:"75", nm:"Picante",  ig:"Salami, Zwiebeln, Jalapeños, Oliven", pr:"10,00", pr2:"18,00"},
-      {no:"76", nm:"Garnelen", ig:"mit Knoblauch",                       pr:"10,00", pr2:"18,00"}
-    ]}
-  ]
+  smash: { ico:"🥩", title:"SMASH BURGER", hint:"Doppeltes Beef-Patty  +2,50 €", items:[
+    {no:"15", nm:"Hamburger Smash",    ig:"",              pr:"4,00"},
+    {no:"16", nm:"Cheeseburger Smash", ig:"",              pr:"4,50"},
+    {no:"17", nm:"Chili Cheese Smash", ig:"mit Jalapeños", pr:"5,00"},
+    {no:"18", nm:"BBQ Burger Smash",   ig:"mit BBQ-Sauce", pr:"5,00"},
+    {no:"19", nm:"Chicken Burger Smash",ig:"mit Aioli",    pr:"5,00"}
+  ]},
+
+  pizza: { ico:"🍕", title:"STONE OVEN PIZZA", sizes:["30 cm","40 cm"], items:[
+    {no:"65", nm:"Margharita",    ig:"Tomatensoße & Käse",                        pr:"7,00",  pr2:"12,00"},
+    {no:"66", nm:"Tonno",         ig:"Thunfisch, Zwiebeln",                       pr:"9,00",  pr2:"16,00"},
+    {no:"67", nm:"Kleefood",      ig:"Putenschinken, Paprika, Champignons, Jalapeños", pr:"9,50", pr2:"16,00", best:true},
+    {no:"68", nm:"Salami",        ig:"Geflügel-Salami",                           pr:"9,50",  pr2:"16,00"},
+    {no:"69", nm:"Putenschinken", ig:"Putenschinken",                             pr:"9,50",  pr2:"16,00"},
+    {no:"70", nm:"Hawaii",        ig:"Putenschinken & Ananas",                    pr:"9,50",  pr2:"16,00"},
+    {no:"71", nm:"Funghi",        ig:"Frische Champignons, Peperoni",             pr:"9,50",  pr2:"16,00"},
+    {no:"72", nm:"Fiori",         ig:"Geflügel-Salami, Champignons, Peperoni",    pr:"10,00", pr2:"18,00"},
+    {no:"73", nm:"Sucuk",         ig:"Knoblauchwurst",                            pr:"9,50",  pr2:"16,00"},
+    {no:"74", nm:"BBQ",           ig:"Hähnchenbrust, Zwiebeln, Mais, BBQ-Sauce",  pr:"10,00", pr2:"18,00"},
+    {no:"75", nm:"Picante",       ig:"Salami, Zwiebeln, Jalapeños, Oliven",       pr:"10,00", pr2:"18,00"},
+    {no:"76", nm:"Garnelen",      ig:"mit Knoblauch",                             pr:"10,00", pr2:"18,00"}
+  ], note:"Alle Pizzen mit Tomatensoße &amp; Käse" }
 };
 
-/* ---------- Ticker (doppelt für nahtlose Schleife) ---------- */
+/* ---------- Aufbau ---------- */
+document.getElementById('imgBurger').style.backgroundImage = 'url(' + PHOTOS.burger + ')';
+document.getElementById('imgPizza').style.backgroundImage  = 'url(' + PHOTOS.pizza  + ')';
 document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
 
-/* ---------- Listen aufbauen ---------- */
-function renderPage(pg){
-  const rows = pg.items.map((it,i) =>
+function renderSection(sec){
+  const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
+  const rows = sec.items.map((it,i) =>
     '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
       '<div class="no">' + it.no + '</div>' +
       '<div class="tx"><div class="nm">' + it.nm +
@@ -485,54 +235,21 @@ function renderPage(pg){
       '<div class="pr">' + it.pr + '</div>' +
       (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
     '</div>').join('');
-
-  const sizes = pg.sizes ? '<div class="sizes">' + pg.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
-  return '<div class="lpage">' +
-           '<div class="lhead"><span class="ico">' + pg.ico + '</span><h2>' + pg.title + '</h2>' + sizes + '</div>' +
-           rows + (pg.hint ? '<div class="hint">' + pg.hint + '</div>' : '') +
-         '</div>';
+  return '<div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' + sizes + '</div>' +
+         rows + (sec.hint ? '<div class="hint">' + sec.hint + '</div>' : '');
 }
-document.getElementById('listA').innerHTML = LISTS.A.map(renderPage).join('');
-document.getElementById('listB').innerHTML = LISTS.B.map(renderPage).join('');
 
-/* ---------- Szenen- und Seitensteuerung ---------- */
-const scenes = [
-  { el:document.getElementById('sceneA'), pages:[...document.getElementById('listA').children] },
-  { el:document.getElementById('sceneB'), pages:[...document.getElementById('listB').children] }
-];
-const bars = [...document.querySelectorAll('#bars i')];
-bars.forEach(b => b.style.setProperty('--ms', SCENE_MS + 'ms'));
+document.getElementById('burger').innerHTML = renderSection(SECTIONS.burger);
+document.getElementById('smash').innerHTML  = renderSection(SECTIONS.smash);
+document.getElementById('pizza').innerHTML  = renderSection(SECTIONS.pizza);
 
-let si = -1, pageTimer = null, sceneTimer = null;
-
-function playScene(i){
-  si = i % scenes.length;
-  const sc = scenes[si];
-
-  scenes.forEach((s,n) => {
-    if (n === si){ s.el.classList.remove('on'); void s.el.offsetWidth; s.el.classList.add('on'); }
-    else s.el.classList.remove('on');
-  });
-  bars.forEach((b,n) => { b.classList.remove('on'); if (n === si){ void b.offsetWidth; b.classList.add('on'); } });
-
-  // Listen-Seiten innerhalb der Szene durchlaufen
-  const step = SCENE_MS / sc.pages.length;
-  let p = 0;
-  const showPage = () => {
-    sc.pages.forEach((el,n) => {
-      if (n === p){ el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
-      else el.classList.remove('on');
-    });
-    p = (p + 1) % sc.pages.length;
-  };
-  clearInterval(pageTimer);
-  showPage();
-  pageTimer = setInterval(showPage, step);
-
-  clearTimeout(sceneTimer);
-  sceneTimer = setTimeout(() => playScene(si + 1), SCENE_MS);
-}
-playScene(0);
+/* ---------- Einblendungen alle 60 s neu starten, damit Bewegung drin bleibt ---------- */
+const board = document.getElementById('board');
+setInterval(() => {
+  board.classList.remove('play');
+  void board.offsetWidth;              // Reflow -> Animationen starten neu
+  board.classList.add('play');
+}, 60000);
 
 /* ---------- Auto-Skalierung auf abweichende Displaygrößen ---------- */
 function fit(){
