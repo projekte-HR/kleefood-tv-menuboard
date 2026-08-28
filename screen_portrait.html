@@ -63,7 +63,8 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   background:linear-gradient(180deg,rgba(23,28,32,.96),rgba(17,20,23,.96));
   border:2px solid var(--line);border-radius:26px;position:relative;
 }
-.menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.20);}
+.menu{transition:border-color .6s ease, box-shadow .6s ease;}
+.menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.22);}
 
 .menu .pic{width:390px;flex:none;position:relative;overflow:hidden;}
 .menu .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
@@ -86,7 +87,6 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   font-family:'Montserrat',sans-serif;font-weight:900;font-size:64px;color:#0b0f11;
   background:var(--gold);padding:10px 34px;border-radius:18px;
 }
-.menu.top .price{background:linear-gradient(135deg,var(--gold),#ffd166);}
 
 .badge{
   position:absolute;right:20px;top:18px;z-index:2;
@@ -121,8 +121,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   <div id="menus"></div>
 
   <div id="foot">
-    <div class="a">TÄGLICH 11:00 – 23:00 UHR</div>
-    <div class="b">Kirchröder Str. 77, 30625 Hannover · Tel. 0511 569 575 67</div>
+    <div class="a">TEL. 0511 569 575 67</div>
   </div>
 </div>
 
@@ -155,13 +154,16 @@ menus.innerHTML = MENUS.map((m,i) =>
     '</div>' +
   '</div>').join('');
 
-/* Einblendung alle 60 s einmal neu, damit die Tafel nicht tot wirkt */
+/* Dauerschleife: der goldene Rahmen wandert alle 6 Sekunden von Menü zu
+   Menü. Es wird nur eine Klasse umgehängt – die Tafel selbst bleibt stehen
+   und die Seite lädt sich nie neu.                                        */
 const stage = document.getElementById('stage');
+const cards = [...document.querySelectorAll('.menu')];
+let hi = 0;
 setInterval(() => {
-  stage.classList.remove('play');
-  void stage.offsetWidth;
-  stage.classList.add('play');
-}, 60000);
+  hi = (hi + 1) % cards.length;
+  cards.forEach((c,n) => c.classList.toggle('top', n === hi));
+}, 6000);
 
 /* ---------- Drehung & Skalierung ----------
    Querformat-Signal -> 90° drehen · Hochformat-Signal -> nur skalieren

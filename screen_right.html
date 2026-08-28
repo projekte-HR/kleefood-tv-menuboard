@@ -143,8 +143,7 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
       <p>Burger • Pizza • Fingerfood</p>
     </div>
     <div class="hours">
-      <div class="a">TÄGLICH 11:00 – 23:00 UHR</div>
-      <div class="b">TEL. 0511 569 575 67 · Kirchröder Str. 77, Hannover</div>
+      <div class="a">TEL. 0511 569 575 67</div>
     </div>
   </header>
 
@@ -264,13 +263,9 @@ document.getElementById('deal').innerHTML =
   '<ul>' + DEAL.lines.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
   '<div class="note">' + DEAL.note + '</div>';
 
-/* ---------- Einblendungen alle 60 s neu starten ---------- */
-const board = document.getElementById('board');
-setInterval(() => {
-  board.classList.remove('play');
-  void board.offsetWidth;
-  board.classList.add('play');
-}, 60000);
+/* Die Einblendung läuft nur einmal beim Start – danach bleibt die Karte
+   ruhig stehen, das Laufband unten läuft dauerhaft weiter.
+   Die Seite lädt sich nie neu.                                            */
 
 /* ---------- Auto-Skalierung ---------- */
 function fit(){
