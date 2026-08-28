@@ -56,9 +56,10 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 .play .card{animation:cardIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.1s) both;}
 @keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
-/* ---------- Videofenster (Burger- und Pizza-Zubereitung nacheinander) ---------- */
+/* ---------- Bildfenster (Burger und Pizza im Wechsel) ---------- */
 .shot{position:relative;flex:none;height:320px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);background:#000;}
-.shot video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease;}
+.shot img.on{opacity:1;}
 .shot::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:linear-gradient(0deg,rgba(10,12,14,.93) 0%,rgba(10,12,14,.12) 44%,transparent 68%);}
 .shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
@@ -135,7 +136,8 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
     <!-- Spalte 1: echte Fotos + Smash Burger -->
     <div class="col" style="--c:0">
       <div class="shot">
-        <video id="clip" muted playsinline preload="auto"></video>
+        <img id="shotA" alt="">
+        <img id="shotB" alt="">
         <div class="cap">
           <div class="t" id="clipTitle"></div>
           <div class="p" id="clipPrice"></div>
@@ -160,24 +162,13 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
    Fingerfood, Beilagen, Vegetarisch, Dips und Spar Menü laufen auf Screen 2.
    Eigene Fotos? Einfach die URLs in PHOTOS auf z. B. "fotos/burger.jpg" ändern.
    ======================================================================= */
-/* Videoschleife: erst wird der Burger gemacht, dann die Pizza.
-   vid = Mixkit-ID (eigene Aufnahme? stattdessen full:"videos/x.mp4")
-   secs = wie lange der Clip laufen soll                                   */
-const CLIP_RES = 360;                      // kleines Fenster -> 360p reicht
-const CLIPS = [
-  /* Burger */
-  {vid:12041, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Patty auf dem heißen Grill",         p:"ab 6,00 €"},
-  {vid:12016, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Frisch gestapelt, täglich geschnitten", p:"ab 6,00 €"},
-  {vid:11760, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Hausgemachte Saucen",                p:"ab 6,00 €"},
-  {vid:36582, secs:8, t:"SO ENTSTEHT DEIN BURGER", s:"Pommes dazu – mit Handschuhen angerichtet", p:"Menü 12,90 €"},
-  /* Pizza */
-  {vid:42473, secs:8, t:"STEINOFEN-PIZZA",         s:"Tomatensoße auf frischem Teig",      p:"ab 7,00 €"},
-  {vid:32415, secs:8, t:"STEINOFEN-PIZZA",         s:"Direkt aus dem Steinofen",           p:"ab 7,00 €"},
-  {vid:1666,  secs:8, t:"STEINOFEN-PIZZA",         s:"Frisch aufgeschnitten",              p:"ab 7,00 €"}
+/* Zwei Bilder im Wechsel – keine Videos mehr, damit der Fire TV Stick
+   nichts dekodieren muss. Bilder liegen lokal im Ordner fotos/.          */
+const SHOTS = [
+  {img:"fotos/burger.jpg", t:"CLASSIC HAMBURGER", s:"Rindfleisch-Patty, Salat, Tomate, Gurken, Zwiebeln", p:"6,00 €"},
+  {img:"fotos/pizza.jpg",  t:"PIZZA KLEEFOOD",    s:"Putenschinken, Paprika, Champignons, Jalapeños",     p:"9,50 €"}
 ];
-/* Eigenes Video (z. B. euer Koch mit Handschuhen beim Belegen)?
-   Datei nach videos/ legen und hier eintragen:
-   {full:"videos/pizza-belegen.mp4", secs:10, t:"STEINOFEN-PIZZA", s:"Frisch belegt", p:"ab 7,00 €"} */
+const SHOT_MS = 8000;   // Wechsel alle 8 Sekunden
 
 const TICKER = "🔥 TÄGLICH FRISCH • 100 % RIND • HAUSGEMACHTE SAUCEN • STEINOFEN-PIZZA IN 30 & 40 CM • SPAR MENÜ 12,90 € 🔥";
 
@@ -245,24 +236,23 @@ document.getElementById('burger').innerHTML = renderSection(SECTIONS.burger);
 document.getElementById('smash').innerHTML  = renderSection(SECTIONS.smash);
 document.getElementById('pizza').innerHTML  = renderSection(SECTIONS.pizza);
 
-/* ---------- Videoschleife: ein Clip nach dem anderen ---------- */
-const clip = document.getElementById('clip');
+/* ---------- Bildwechsel: zwei <img>, weich übergeblendet ---------- */
+const shotEls = [document.getElementById('shotA'), document.getElementById('shotB')];
 const clipTitle = document.getElementById('clipTitle');
 const clipPrice = document.getElementById('clipPrice');
-let ci = -1, clipTimer = null;
+let si = -1, front = 0;
 
-function nextClip(){
-  ci = (ci + 1) % CLIPS.length;
-  const c = CLIPS[ci];
-  clip.src = c.full || ('https://assets.mixkit.co/videos/' + c.vid + '/' + c.vid + '-' + CLIP_RES + '.mp4');
-  clip.loop = true;                       // kurze Clips laufen bis zum Weiterschalten
-  clip.play().catch(() => {});
-  clipTitle.innerHTML = c.t + '<b>' + c.s + '</b>';
-  clipPrice.textContent = c.p;
-  clearTimeout(clipTimer);
-  clipTimer = setTimeout(nextClip, c.secs * 1000);
+SHOTS.forEach((sh,i) => { shotEls[i].src = sh.img; });   // beide einmal laden, danach aus dem Cache
+
+function nextShot(){
+  si = (si + 1) % SHOTS.length;
+  const sh = SHOTS[si];
+  shotEls.forEach((el,n) => el.classList.toggle('on', n === si));
+  clipTitle.innerHTML = sh.t + '<b>' + sh.s + '</b>';
+  clipPrice.textContent = sh.p;
 }
-nextClip();
+nextShot();
+setInterval(nextShot, SHOT_MS);
 
 /* ---------- Einblendungen alle 60 s neu starten, damit Bewegung drin bleibt ---------- */
 const board = document.getElementById('board');

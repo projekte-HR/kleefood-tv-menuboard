@@ -59,8 +59,7 @@ header{display:flex;align-items:center;gap:20px;flex:none;height:86px;}
 /* ---------- Foto ---------- */
 .shot{position:relative;flex:1;min-height:120px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
 .shot .img{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.02);}
-.play .shot .img{animation:ken 26s ease-in-out infinite alternate;}
-@keyframes ken{from{transform:scale(1.02);} to{transform:scale(1.16);}}
+/* kein Dauer-Zoom mehr – auf dem Fire TV Stick spart das spürbar Leistung */
 .shot::after{content:"";position:absolute;inset:0;
   background:linear-gradient(0deg,rgba(10,12,14,.92) 0%,rgba(10,12,14,.12) 46%,transparent 70%);}
 .shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;gap:14px;}
@@ -177,7 +176,7 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
    INHALTE – zweite Hälfte der KLEEFOOD-Karte.
    Eigenes Foto? URL in PHOTO auf z. B. "fotos/fries.jpg" ändern.
    ======================================================================= */
-const PHOTO = "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1000&q=72";
+const PHOTO = "fotos/fries.jpg";   // lokal, damit der Stick nichts extern nachladen muss
 
 const TICKER = "🔥 TÄGLICH FRISCH • HAUSGEMACHTE SAUCEN • BURGER & PIZZA AUF DEM ANDEREN SCREEN • SPAR MENÜ 12,90 € 🔥";
 

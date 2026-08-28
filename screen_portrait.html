@@ -2,25 +2,26 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>KLEEFOOD – Screen 3 – Gerichte (Hochformat)</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<title>KLEEFOOD – Screen 3 – Spar Menüs</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 <style>
 /* =======================================================================
-   KLEEFOOD – SCREEN 3: GERICHTE IM HOCHFORMAT (1080x1920)
-   Für einen um 90° gedrehten TV, optimiert für den Fire TV Stick.
+   KLEEFOOD – SCREEN 3: SPAR MENÜS (1080x1920, Hochformat)
+   Menü-Tafel im Fast-Food-Stil: drei Menüs, jedes mit Bild, Inhalt und Preis.
 
-   QUALITÄT: Die Clips sind im Querformat (1280x720). Früher wurden sie auf
-   die volle Hochkant-Fläche gezoomt – dabei blieb nur der mittlere Streifen
-   übrig, 2,7-fach vergrößert = unscharf. Jetzt läuft das Video in einem
-   16:9-Fenster in Originalproportion (1020x574): das 720p-Bild wird leicht
-   VERKLEINERT statt vergrößert und ist dadurch gestochen scharf.
+   Für einen um 90° gedrehten TV:
+     Querformat-Signal -> Bühne dreht sich automatisch, Taste "R" kehrt um
+     Hochformat-Signal -> nur skalieren
+
+   Fire TV Stick: KEINE Videos, keine Dauer-Animationen, keine Filter.
+   Nur drei lokale Bilder (zusammen rund 300 KB).
    ======================================================================= */
 
 :root{
   --bg:#111417;
   --red:#FF3B21;        /* Rot aus dem KleeFood-Logo */
   --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.72);
+  --white:#fff; --muted:rgba(255,255,255,.66); --line:rgba(255,255,255,.10);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;}
@@ -31,179 +32,136 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   transform-origin:center center;overflow:hidden;
   font-family:'Poppins',system-ui,sans-serif;color:var(--white);
   background:
-    radial-gradient(70% 40% at 50% 0%,   rgba(255,59,33,.16), transparent 60%),
-    radial-gradient(80% 40% at 50% 100%, rgba(255,159,28,.12), transparent 60%),
+    radial-gradient(70% 34% at 50% 0%,   rgba(255,59,33,.16), transparent 62%),
+    radial-gradient(80% 30% at 50% 100%, rgba(255,159,28,.13), transparent 62%),
     var(--bg);
+  display:flex;flex-direction:column;padding:38px 40px 30px;
 }
 
-/* ---------- 1. Kopf mit Logo ---------- */
-#top{position:absolute;top:0;left:0;right:0;height:400px;z-index:8;padding-top:34px;text-align:center;}
+/* ---------- Kopf ---------- */
+#top{flex:none;text-align:center;}
 #logo{
-  width:300px;height:300px;object-fit:cover;margin:0 auto;display:block;
-  /* runde Maske: der dunkle Bildrand des Logos verschwindet weich im Hintergrund */
-  -webkit-mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
-          mask-image:radial-gradient(circle at 50% 50%, #000 63%, transparent 73%);
+  width:210px;height:210px;object-fit:cover;margin:0 auto;display:block;
+  border-radius:50%;              /* runder Zuschnitt statt Maske – deutlich günstiger */
 }
-#claim{margin-top:-6px;font-size:24px;letter-spacing:9px;text-transform:uppercase;color:var(--muted);}
+#kicker{
+  display:inline-block;margin-top:2px;padding:10px 34px;border-radius:999px;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:7px;
+  background:var(--red);color:#fff;
+}
+#title{
+  font-family:'Bebas Neue',sans-serif;font-size:132px;line-height:.9;letter-spacing:5px;margin-top:14px;
+  color:var(--white);
+}
+#sub{font-size:30px;font-weight:300;color:var(--muted);margin-top:6px;}
 
-/* ---------- 2. Video-Fenster (16:9, Originalproportion) ---------- */
-#band{
-  position:absolute;top:406px;left:30px;width:1020px;height:574px;z-index:2;
-  border-radius:26px;overflow:hidden;background:#000;
-  border:2px solid rgba(255,59,33,.35);
-  box-shadow:0 24px 70px rgba(0,0,0,.55);
-}
-.player{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  opacity:0;transition:opacity .7s ease-in-out;   /* weiche Blende statt Effekt-Video */
-}
-.player.on{opacity:1;z-index:2;}
+/* ---------- Menü-Karten ---------- */
+#menus{flex:1;min-height:0;display:flex;flex-direction:column;gap:22px;margin-top:26px;}
 
-/* ---------- 3. Gericht-Text ---------- */
-#bottom{position:absolute;left:0;right:0;top:1020px;bottom:0;z-index:8;padding:0 60px;}
-
-.reveal{opacity:0;transform:translateY(40px);}
-#bottom.play .reveal{animation:up .7s ease-out forwards;}
-@keyframes up{to{opacity:1;transform:translateY(0);}}
-
-#cat{
-  display:inline-block;font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;
-  letter-spacing:5px;color:#fff;background:var(--red);padding:11px 28px;border-radius:999px;
-  animation-delay:.05s;
+.menu{
+  flex:1;min-height:0;display:flex;align-items:stretch;gap:0;overflow:hidden;
+  background:linear-gradient(180deg,rgba(23,28,32,.96),rgba(17,20,23,.96));
+  border:2px solid var(--line);border-radius:26px;position:relative;
 }
-#head{
-  margin-top:24px;font-family:'Bebas Neue',sans-serif;font-size:130px;line-height:.93;letter-spacing:2px;
-  color:var(--white);animation-delay:.15s;
-}
-#sub{margin-top:20px;font-size:35px;font-weight:300;line-height:1.4;color:var(--muted);animation-delay:.25s;}
-#price{
-  display:inline-block;margin-top:34px;font-family:'Montserrat',sans-serif;font-weight:900;font-size:88px;
-  color:#0b0f11;background:var(--gold);padding:16px 50px;border-radius:24px;animation-delay:.35s;
+.menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.20);}
+
+.menu .pic{width:390px;flex:none;position:relative;overflow:hidden;}
+.menu .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+.menu .pic::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent 55%,rgba(17,20,23,.96) 100%);}
+
+.menu .no{
+  position:absolute;left:18px;top:16px;z-index:2;
+  width:74px;height:74px;border-radius:50%;display:grid;place-items:center;
+  font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;
+  background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.5);
 }
 
-/* Fortschrittsbalken je Gericht */
-#dots{position:absolute;left:60px;right:60px;bottom:196px;display:flex;gap:12px;}
-.dot-i{flex:1;height:8px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;}
-.dot-i i{display:block;height:100%;width:0;background:var(--red);}
-.dot-i.done i{width:100%;}
-.dot-i.now i{animation:grow linear forwards;}
-@keyframes grow{from{width:0}to{width:100%}}
+.menu .txt{flex:1;min-width:0;padding:26px 30px;display:flex;flex-direction:column;justify-content:center;}
+.menu .nm{font-family:'Bebas Neue',sans-serif;font-size:74px;line-height:.94;letter-spacing:2px;}
+.menu .ig{font-size:27px;font-weight:300;color:var(--muted);line-height:1.35;margin-top:12px;}
 
+.menu .price{
+  margin-top:auto;align-self:flex-start;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:64px;color:#0b0f11;
+  background:var(--gold);padding:10px 34px;border-radius:18px;
+}
+.menu.top .price{background:linear-gradient(135deg,var(--gold),#ffd166);}
+
+.badge{
+  position:absolute;right:20px;top:18px;z-index:2;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;
+  background:var(--gold);color:#0b0f11;padding:7px 18px;border-radius:999px;
+}
+
+/* Einblendung – läuft einmal, nicht dauerhaft */
+.play .menu{animation:up .7s cubic-bezier(.22,1,.36,1) calc(var(--i)*.14s) both;}
+@keyframes up{from{opacity:0;transform:translateY(46px);} to{opacity:1;transform:none;}}
+.play #top{animation:up .7s cubic-bezier(.22,1,.36,1) both;}
+
+/* ---------- Fuß ---------- */
 #foot{
-  position:absolute;left:60px;right:60px;bottom:90px;padding-top:26px;
-  border-top:1.5px solid rgba(255,255,255,.12);
-  font-family:'Montserrat',sans-serif;font-size:23px;font-weight:800;color:var(--muted);letter-spacing:1px;
+  flex:none;margin-top:24px;padding-top:20px;border-top:2px solid var(--line);text-align:center;
 }
-#foot b{color:var(--white);}
-
+#foot .a{font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:var(--gold);letter-spacing:2px;}
+#foot .b{font-size:24px;font-weight:500;color:var(--muted);margin-top:8px;}
 </style>
 </head>
 <body>
 
-<div id="stage">
+<div id="stage" class="play">
 
   <div id="top">
     <img id="logo" src="logo.jpg" alt="KleeFood">
-    <div id="claim">Burger • Pizza • Fingerfood</div>
+    <div id="kicker">MACH DEIN MENÜ DRAUS</div>
+    <div id="title">SPAR MENÜS</div>
+    <div id="sub">Jedes Menü mit Pommes und 0,33 l Softdrink</div>
   </div>
 
-  <!-- Video im 16:9-Fenster: keine Vergrößerung, dadurch scharf -->
-  <div id="band">
-    <video id="pA" class="player" muted playsinline preload="auto" loop></video>
-    <video id="pB" class="player" muted playsinline preload="auto" loop></video>
-  </div>
+  <div id="menus"></div>
 
-  <div id="bottom">
-    <span id="cat"  class="reveal"></span>
-    <h1   id="head" class="reveal"></h1>
-    <p    id="sub"  class="reveal"></p>
-    <div><span id="price" class="reveal"></span></div>
+  <div id="foot">
+    <div class="a">TÄGLICH 11:00 – 23:00 UHR</div>
+    <div class="b">Kirchröder Str. 77, 30625 Hannover · Tel. 0511 569 575 67</div>
   </div>
-
-  <div id="dots"></div>
-  <div id="foot"><b>TÄGLICH 11:00 – 23:00 UHR</b> · Kirchröder Str. 77, Hannover · Tel. 0511 569 575 67</div>
 </div>
 
 <script>
 /* =======================================================================
-   INHALTE – Gerichte direkt aus der KLEEFOOD-Speisekarte.
-   vid  : Mixkit-Video-ID (eigene Aufnahme? stattdessen full:"videos/x.mp4")
-   secs : Anzeigedauer in Sekunden
-   Hinweis: Es sind nur Clips ausgewählt, in denen entweder gar keine Hände
-   zu sehen sind oder die Hand einen Handschuh trägt (z. B. 36582).
+   INHALTE – die drei Spar Menüs.
+   Bilder liegen lokal im Ordner fotos/ (zusammen rund 300 KB).
    ======================================================================= */
-
-/* Videoqualität: 720 = scharf (die Clips gibt es nicht höher aufgelöst)
-   360 = Notfallstufe, falls das WLAN am Stick zu langsam ist            */
-const RES = 720;
-
-const DISHES = [
-  { cat:"Nr. 04 · Burger", head:"Kleefood<br>BBQ Burger",  sub:"Rindfleisch-Patty, Cheddar-Käse, Bacon, Barbecue-Sauce",
-    price:"7,50 €",  vid:12041, secs:10 },
-  { cat:"Nr. 13 · Burger", head:"Kleefeld<br>Special",     sub:"2 Mozzarella-Sticks, 2 Zwiebelringe, Röstzwiebeln, Sauce nach Wahl",
-    price:"10,00 €", vid:12016, secs:10 },
-  { cat:"Nr. 03 · Burger", head:"Chili<br>Cheeseburger",   sub:"Rindfleisch-Patty, Cheddar-Käse, Jalapeños, Chili-Sauce",
-    price:"7,00 €",  vid:3538,  secs:10 },
-  { cat:"Nr. 17 · Smash",  head:"Chili Cheese<br>Smash",   sub:"Smash-Patty mit Käse und Jalapeños · doppeltes Patty +2,50 €",
-    price:"5,00 €",  vid:11760, secs:10 },
-  { cat:"Nr. 26 · Beilage",head:"Chili<br>Cheese Fries",   sub:"Knusprige Fries mit Jalapeños und Käse",
-    price:"5,50 €",  vid:36582, secs:10 },
-  { cat:"Spar Menü",       head:"Menü statt<br>nur Burger",sub:"Burger nach Wahl + Pommes + 0,33 l Softdrink",
-    price:"12,90 €", vid:14010, secs:10 }
+const MENUS = [
+  { no:"1", nm:"BURGER MENÜ",
+    ig:"Burger nach Wahl · Pommes · 0,33 l Softdrink",
+    price:"12,90 €", img:"fotos/menu1.jpg", top:true, badge:"BELIEBT" },
+  { no:"2", nm:"SMASH MENÜ",
+    ig:"2× Smash Burger nach Wahl · Pommes · 0,33 l Softdrink",
+    price:"12,90 €", img:"fotos/menu2.jpg" },
+  { no:"3", nm:"FALAFEL MENÜ",
+    ig:"Falafel Rolle · Pommes · 0,33 l Softdrink",
+    price:"12,90 €", img:"fotos/menu3.jpg" }
 ];
 
-/* Kein Effekt-Video zwischen den Gerichten – es wird weich übergeblendet.
-   Dauer der Blende steht im CSS bei .player (transition).                */
+const menus = document.getElementById('menus');
+menus.innerHTML = MENUS.map((m,i) =>
+  '<div class="menu' + (m.top ? ' top' : '') + '" style="--i:' + i + '">' +
+    '<div class="pic"><img src="' + m.img + '" alt=""><div class="no">' + m.no + '</div></div>' +
+    (m.badge ? '<div class="badge">' + m.badge + '</div>' : '') +
+    '<div class="txt">' +
+      '<div class="nm">' + m.nm + '</div>' +
+      '<div class="ig">' + m.ig + '</div>' +
+      '<div class="price">' + m.price + '</div>' +
+    '</div>' +
+  '</div>').join('');
 
-const url = (d) => d.full || ('https://assets.mixkit.co/videos/' + d.vid + '/' + d.vid + '-' + RES + '.mp4');
-
-/* ---------- Aufbau ---------- */
-let front = document.getElementById('pA');   // läuft gerade
-let back  = document.getElementById('pB');   // lädt schon das nächste Gericht
-const bottom = document.getElementById('bottom');
-const dots   = document.getElementById('dots');
-
-DISHES.forEach(() => {
-  const d = document.createElement('div');
-  d.className = 'dot-i'; d.innerHTML = '<i></i>';
-  dots.appendChild(d);
-});
-const dotEls = [...dots.children];
-
-let idx = -1, timer = null;
-
-function preload(i){                        // nächsten Clip schon puffern
-  const d = DISHES[(i + DISHES.length) % DISHES.length];
-  if (back.src !== url(d)){ back.src = url(d); back.load(); }
-}
-
-function show(i){
-  idx = (i + DISHES.length) % DISHES.length;
-  const d = DISHES[idx];
-
-  if (back.src !== url(d)) back.src = url(d);
-  back.play().catch(() => {});
-  back.classList.add('on');                 // nächsten Clip einblenden …
-  front.classList.remove('on');             // … alten ausblenden
-  const tmp = front; front = back; back = tmp;
-  setTimeout(() => { back.pause(); preload(idx + 1); }, 800);
-
-  bottom.classList.remove('play');
-  void bottom.offsetWidth;                  // Reflow -> Animationen starten neu
-  document.getElementById('cat').innerHTML     = d.cat;
-  document.getElementById('head').innerHTML    = d.head;
-  document.getElementById('sub').textContent   = d.sub;
-  document.getElementById('price').textContent = d.price;
-  bottom.classList.add('play');
-
-  dotEls.forEach((el,n) => {
-    el.className = 'dot-i' + (n < idx ? ' done' : n === idx ? ' now' : '');
-    el.firstChild.style.animationDuration = d.secs + 's';
-  });
-
-  clearTimeout(timer);
-  timer = setTimeout(() => show(idx + 1), d.secs * 1000);
-}
+/* Einblendung alle 60 s einmal neu, damit die Tafel nicht tot wirkt */
+const stage = document.getElementById('stage');
+setInterval(() => {
+  stage.classList.remove('play');
+  void stage.offsetWidth;
+  stage.classList.add('play');
+}, 60000);
 
 /* ---------- Drehung & Skalierung ----------
    Querformat-Signal -> 90° drehen · Hochformat-Signal -> nur skalieren
@@ -216,15 +174,13 @@ function fit(){
   const rot = innerWidth >= innerHeight ? dir : 0;
   const w = rot ? 1920 : 1080, h = rot ? 1080 : 1920;
   const s = Math.min(innerWidth / w, innerHeight / h);
-  document.getElementById('stage').style.transform = 'rotate(' + rot + 'deg) scale(' + s + ')';
+  stage.style.transform = 'rotate(' + rot + 'deg) scale(' + s + ')';
 }
 addEventListener('resize', fit);
 addEventListener('keydown', e => {
   if (e.key.toLowerCase() === 'r'){ dir = dir === 90 ? 270 : 90; store(dir); fit(); }
 });
 fit();
-
-show(0);
 </script>
 </body>
 </html>
