@@ -66,10 +66,10 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 .menu{transition:border-color .6s ease, box-shadow .6s ease;}
 .menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.22);}
 
-.menu .pic{width:390px;flex:none;position:relative;overflow:hidden;}
+.menu .pic{width:470px;flex:none;position:relative;overflow:hidden;}
 .menu .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
 .menu .pic::after{content:"";position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 55%,rgba(17,20,23,.96) 100%);}
+  background:linear-gradient(90deg,transparent 68%,rgba(17,20,23,.96) 100%);}
 
 .menu .no{
   position:absolute;left:18px;top:16px;z-index:2;
@@ -78,13 +78,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
   background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.5);
 }
 
-.menu .txt{flex:1;min-width:0;padding:26px 30px;display:flex;flex-direction:column;justify-content:center;}
-.menu .nm{font-family:'Bebas Neue',sans-serif;font-size:74px;line-height:.94;letter-spacing:2px;}
-.menu .ig{font-size:27px;font-weight:300;color:var(--muted);line-height:1.35;margin-top:12px;}
+.menu .txt{flex:1;min-width:0;padding:24px 26px;display:flex;flex-direction:column;justify-content:center;}
+.menu .nm{font-family:'Bebas Neue',sans-serif;font-size:66px;line-height:.94;letter-spacing:2px;}
+.menu .ig{font-size:25px;font-weight:300;color:var(--muted);line-height:1.35;margin-top:12px;}
 
 .menu .price{
   margin-top:auto;align-self:flex-start;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:64px;color:#0b0f11;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:58px;color:#0b0f11;
   background:var(--gold);padding:10px 34px;border-radius:18px;
 }
 
@@ -168,9 +168,9 @@ setInterval(() => {
 /* ---------- Drehung & Skalierung ----------
    Querformat-Signal -> 90° drehen · Hochformat-Signal -> nur skalieren
    Taste "R" schaltet die Drehrichtung um.                                */
-function store(v){ try{ if(v===undefined) return localStorage.getItem('kleefood-rot');
-                        localStorage.setItem('kleefood-rot', v); }catch(e){ return null; } }
-let dir = +(store() || 90);
+function store(v){ try{ if(v===undefined) return localStorage.getItem('kleefood-rot2');
+                        localStorage.setItem('kleefood-rot2', v); }catch(e){ return null; } }
+let dir = +(store() || 270);        // 270 = andere Drehrichtung, Taste "R" schaltet um
 
 function fit(){
   const rot = innerWidth >= innerHeight ? dir : 0;
@@ -180,7 +180,7 @@ function fit(){
 }
 addEventListener('resize', fit);
 addEventListener('keydown', e => {
-  if (e.key.toLowerCase() === 'r'){ dir = dir === 90 ? 270 : 90; store(dir); fit(); }
+  if (e.key.toLowerCase() === 'r'){ dir = dir === 270 ? 90 : 270; store(dir); fit(); }
 });
 fit();
 </script>
