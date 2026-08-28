@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KLEEFOOD – Bildtest</title>
+<style>
+  body{margin:0;background:#111417;color:#fff;font-family:system-ui,Arial,sans-serif;padding:24px;}
+  h1{font-size:34px;margin:0 0 6px;color:#00E676;}
+  p.l{font-size:18px;color:#bbb;margin:0 0 18px;}
+  .row{margin-bottom:22px;border:2px solid #333;border-radius:12px;padding:14px;}
+  .row h2{font-size:26px;margin:0 0 10px;}
+  .box{width:320px;height:200px;background:#000;border:2px solid #555;}
+  .bg{background-position:center;background-size:cover;background-repeat:no-repeat;}
+  .ok{color:#00E676;font-weight:bold;font-size:24px;}
+  .bad{color:#FF3B21;font-weight:bold;font-size:24px;}
+  #ua{font-size:20px;line-height:1.5;word-break:break-all;background:#000;padding:14px;border-radius:10px;color:#FF9F1C;}
+  img{display:block;}
+</style>
+</head>
+<body>
+<h1>KLEEFOOD Bildtest</h1>
+<p class="l">Bitte ein Foto von dieser Seite schicken. Jeder Kasten testet eine andere Technik.</p>
+
+<div class="row">
+  <h2>1 · Hintergrundbild (so macht es Screen 3)</h2>
+  <div class="box bg" id="b1" style="background-image:url(fotos/menu1.jpg)"></div>
+</div>
+
+<div class="row">
+  <h2>2 · Normales Bild-Tag</h2>
+  <img class="box" id="b2" src="fotos/menu2.jpg" alt="">
+  <div id="s2">lädt …</div>
+</div>
+
+<div class="row">
+  <h2>3 · Bild direkt im Code (ohne Nachladen)</h2>
+  <img class="box" id="b3" alt=""
+    src="data:image/gif;base64,R0lGODlhCgAKAIAAAADmdgAAACH5BAAAAAAALAAAAAAKAAoAAAIIhI+py+0PYysAOw==">
+  <div>Wenn dieser Kasten grün ist, kann der Browser Bilder grundsätzlich anzeigen.</div>
+</div>
+
+<div class="row">
+  <h2>4 · Browser-Kennung</h2>
+  <div id="ua"></div>
+</div>
+
+<div class="row">
+  <h2>5 · Was der Browser kann</h2>
+  <div id="feat" style="font-size:20px;line-height:1.7"></div>
+</div>
+
+<script>
+document.getElementById('ua').textContent = navigator.userAgent;
+
+var img2 = document.getElementById('b2');
+img2.onload  = function(){ document.getElementById('s2').innerHTML = '<span class="ok">GELADEN (' + img2.naturalWidth + 'x' + img2.naturalHeight + ')</span>'; };
+img2.onerror = function(){ document.getElementById('s2').innerHTML = '<span class="bad">FEHLER beim Laden</span>'; };
+
+function can(prop, val){
+  try { var d = document.createElement('div'); d.style[prop] = val; return !!d.style[prop]; }
+  catch(e){ return false; }
+}
+var tests = [
+  ['inset (Chrome 87+)',        can('inset','0px')],
+  ['flex gap (Chrome 84+)',     can('gap','10px')],
+  ['object-fit',                can('objectFit','cover')],
+  ['CSS-Variablen',             window.CSS && CSS.supports && CSS.supports('--a','0')],
+  ['clip-path',                 can('clipPath','inset(0)')],
+  ['background-size cover',     can('backgroundSize','cover')]
+];
+document.getElementById('feat').innerHTML = tests.map(function(t){
+  return t[0] + ': ' + (t[1] ? '<span class="ok">JA</span>' : '<span class="bad">NEIN</span>');
+}).join('<br>');
+</script>
+</body>
+</html>
