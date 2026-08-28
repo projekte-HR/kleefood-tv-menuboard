@@ -2,172 +2,162 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>KLEEFOOD – Screen 2 – Menükarte</title>
+<title>KLEEFOOD – Screen 2 – Fingerfood, Beilagen & Deals</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 <style>
 /* =======================================================================
-   KLEEFOOD – SCREEN 2: MENÜKARTE (1920x1080)
-
-   GROSSE SCHRIFT: Die komplette Karte passt in großer Schrift nicht auf
-   einen Screen. Sie läuft deshalb als ZWEI SEITEN, die alle 16 Sekunden
-   wechseln – dadurch ist alles rund doppelt so groß wie vorher und aus
-   mehreren Metern Entfernung lesbar.
-   Umschaltzeit: PAGE_MS im Script.  Inhalte: PAGES im Script.
-   Für Fire TV Stick: keine Dauer-Animationen, keine Filter, keine Masken.
+   KLEEFOOD – SCREEN 2 (1920x1080)
+   Zweite Hälfte der Karte – Screen 1 zeigt Burger, Smash und Pizza,
+   hier stehen Fingerfood, Beilagen, Vegetarisch, Getränke, Dips und das
+   Spar Menü. Zwei Seiten im Wechsel, alles groß und in Bewegung.
+   Fire TV Stick: animiert wird nur transform / opacity / clip-path.
+   Zeiten: PAGE_MS unten im Script · Preise: PAGES unten im Script.
    ======================================================================= */
 
 :root{
-  --bg:#111417; --card:#171c20;
-  --green:#00E676; --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.62); --line:rgba(255,255,255,.08);
+  --bg:#111417; --green:#00E676; --gold:#FF9F1C;
+  --white:#fff; --muted:rgba(255,255,255,.66); --line:rgba(255,255,255,.09);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{
   width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--white);
   font-family:'Poppins',system-ui,sans-serif;transform-origin:top left;
 }
-body::before{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+#board{
+  position:relative;width:1920px;height:1080px;padding:26px 46px 0;display:flex;flex-direction:column;
   background:
-    radial-gradient(60% 50% at 12% 0%,  rgba(0,230,118,.14), transparent 65%),
-    radial-gradient(55% 50% at 92% 8%,  rgba(255,159,28,.12), transparent 65%);
+    radial-gradient(58% 46% at 18% 2%,  rgba(0,230,118,.15), transparent 62%),
+    radial-gradient(52% 44% at 90% 98%, rgba(255,159,28,.13), transparent 62%);
 }
 
-#board{position:relative;z-index:1;width:1920px;height:1080px;padding:20px 40px;display:flex;flex-direction:column;}
-
-/* ---------- Header ---------- */
-header{display:flex;align-items:center;gap:26px;flex:none;}
-.logo-mark{
-  width:84px;height:84px;flex:none;border-radius:50%;display:grid;place-items:center;
-  font-size:44px;border:3px solid var(--green);background:rgba(0,230,118,.08);
-  box-shadow:0 0 30px rgba(0,230,118,.25) inset;
+/* ---------- Kopf ---------- */
+header{display:flex;align-items:center;gap:24px;flex:none;height:104px;}
+.mark{
+  width:88px;height:88px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:46px;
+  border:3px solid var(--green);background:rgba(0,230,118,.08);
+  box-shadow:0 0 34px rgba(0,230,118,.22) inset;
 }
-.logo-text h1{
-  font-family:'Bebas Neue',sans-serif;font-size:76px;line-height:.9;letter-spacing:5px;
+.brand h1{
+  font-family:'Bebas Neue',sans-serif;font-size:80px;line-height:.88;letter-spacing:6px;
   background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.logo-text p{font-size:20px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
-.header-note{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
-.header-note .big{font-size:30px;font-weight:900;letter-spacing:2px;color:var(--gold);}
-.header-note .mid{font-size:23px;font-weight:800;letter-spacing:1px;margin-top:5px;}
+.brand p{font-size:21px;letter-spacing:7px;text-transform:uppercase;color:var(--muted);margin-top:4px;}
+.hours{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
+.hours .a{font-size:30px;font-weight:900;letter-spacing:2px;color:var(--gold);}
+.hours .b{font-size:22px;font-weight:800;margin-top:6px;color:var(--muted);}
 
 /* ---------- Ticker ---------- */
 #ticker{
-  margin:14px 0;height:56px;border-radius:12px;overflow:hidden;flex:none;
-  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);
-  display:flex;align-items:center;
+  margin:12px 0;height:58px;border-radius:12px;overflow:hidden;flex:none;
+  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);display:flex;align-items:center;
 }
-#ticker .track{display:flex;white-space:nowrap;animation:scroll 34s linear infinite;}
-#ticker .track span{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:4px;
-  padding:0 60px;text-transform:uppercase;
-}
+#ticker .tr{display:flex;white-space:nowrap;animation:scroll 36s linear infinite;}
+#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:4px;
+  padding:0 60px;text-transform:uppercase;}
 @keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
 
 /* ---------- Seiten ---------- */
 #pages{position:relative;flex:1;min-height:0;}
-.page{
-  position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,1fr);gap:22px;
-  opacity:0;visibility:hidden;transition:opacity .6s ease;
-}
+.page{position:absolute;inset:0;display:grid;grid-template-columns:1.24fr 1fr .92fr;gap:24px;
+  opacity:0;visibility:hidden;}
 .page.on{opacity:1;visibility:visible;}
 
 .col{
   background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
-  border:1.5px solid var(--line);border-radius:22px;padding:14px 20px;
+  border:1.5px solid var(--line);border-radius:24px;padding:18px 24px 12px;
   display:flex;flex-direction:column;overflow:hidden;position:relative;
 }
-.col::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,var(--green),var(--gold));
-}
+.col::before{content:"";position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,var(--green),var(--gold));}
+.page.on .col{animation:colIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.12s) both;}
+@keyframes colIn{from{opacity:0;transform:translateY(46px);} to{opacity:1;transform:none;}}
+.col.wide{grid-column:span 2;}
 
 /* Kategorie-Überschrift */
-.sec-head{display:flex;align-items:flex-end;gap:12px;margin:2px 0 6px;padding-bottom:6px;border-bottom:2px solid rgba(255,255,255,.12);}
-.sec + .sec .sec-head{margin-top:14px;}
-.sec-head .ico{font-size:34px;line-height:1;}
-.sec-head h2{
-  font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:3px;line-height:1;
+.head{display:flex;align-items:flex-end;gap:14px;padding-bottom:10px;margin-bottom:6px;
+  border-bottom:2px solid rgba(255,255,255,.13);}
+.sec + .sec .head{margin-top:12px;}
+.page.on .head{animation:wipe .75s cubic-bezier(.22,1,.36,1) calc(.15s + var(--c)*.12s) both;}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
+.head .ico{font-size:40px;line-height:1;}
+.head h2{
+  font-family:'Bebas Neue',sans-serif;font-size:58px;letter-spacing:3px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
   -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.sec-head .note{font-size:16px;color:var(--muted);margin-left:auto;text-align:right;line-height:1.3;}
-.sec-head .sizes{display:flex;gap:16px;margin-left:auto;}
-.sec-head .sizes span{
-  width:96px;text-align:right;font-size:17px;font-weight:800;letter-spacing:1px;
-  color:var(--gold);text-transform:uppercase;
-}
+.head .sizes{margin-left:auto;display:flex;gap:16px;}
+.head .sizes span{width:92px;text-align:right;font-size:18px;font-weight:800;color:var(--gold);
+  font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* Gericht */
-.item{display:flex;align-items:center;gap:14px;padding:8px 8px;border-radius:10px;position:relative;}
-.item + .item{border-top:1px solid rgba(255,255,255,.06);}
-.item .no{font-family:'Montserrat',sans-serif;font-size:19px;font-weight:900;color:var(--gold);width:34px;flex:none;}
-.item .txt{flex:1;min-width:0;}
-.item .name{font-size:31px;font-weight:600;line-height:1.2;}
-.item .ing{display:block;font-size:20px;font-weight:300;color:var(--muted);margin-top:2px;line-height:1.25;}
-.item .price{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:34px;color:var(--gold);
-  white-space:nowrap;width:96px;text-align:right;flex:none;
+.row{display:flex;align-items:center;gap:12px;padding:8px 6px;border-radius:12px;position:relative;}
+.row + .row{border-top:1px solid rgba(255,255,255,.06);}
+.page.on .row{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.3s + var(--c)*.12s + var(--i)*.06s) both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;color:var(--gold);width:38px;flex:none;}
+.row .tx{flex:1;min-width:0;}
+.row .nm{font-size:32px;font-weight:600;line-height:1.15;}
+.row .ig{font-size:21px;font-weight:300;color:var(--muted);margin-top:2px;line-height:1.2;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:var(--gold);
+  width:92px;text-align:right;flex:none;white-space:nowrap;}
+.row .pr.two{color:var(--white);}
+.page.on .row .pr{animation:pop .5s cubic-bezier(.34,1.56,.64,1) calc(.5s + var(--c)*.12s + var(--i)*.06s) both;}
+@keyframes pop{0%{opacity:0;transform:scale(.6);}60%{opacity:1;transform:scale(1.18);}100%{transform:scale(1);}}
+
+.row.best{background:rgba(0,230,118,.09);box-shadow:inset 0 0 0 1.5px rgba(0,230,118,.32);}
+.page.on .row.best{animation:rowIn .55s cubic-bezier(.22,1,.36,1) calc(.3s + var(--c)*.12s + var(--i)*.06s) both,
+                             beat 6s ease-in-out 2.4s infinite;}
+@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.035);}}
+.tag{font-family:'Montserrat',sans-serif;font-size:15px;font-weight:900;letter-spacing:1.3px;
+  padding:3px 10px;border-radius:99px;margin-left:10px;vertical-align:middle;white-space:nowrap;}
+.tag.b{background:var(--green);color:#0b0f11;}
+.tag.v{border:1px solid var(--green);color:var(--green);}
+
+/* Spar Menü als große Karte */
+.deal{display:flex;flex-direction:column;height:100%;justify-content:center;gap:26px;padding:10px 4px;}
+.deal .kick{font-family:'Bebas Neue',sans-serif;font-size:96px;letter-spacing:5px;line-height:.95;
+  background:linear-gradient(92deg,var(--green),var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.deal .sub{font-size:28px;color:var(--muted);margin-top:-10px;}
+.opt{
+  display:flex;align-items:center;gap:26px;padding:22px 28px;border-radius:20px;
+  background:linear-gradient(135deg,rgba(0,230,118,.15),rgba(255,159,28,.15));
+  border:2px solid rgba(255,159,28,.55);
 }
-.item .price.second{color:var(--white);}
+.page.on .opt{animation:rowIn .6s cubic-bezier(.22,1,.36,1) calc(.5s + var(--i)*.14s) both;}
+.opt .n{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;width:52px;flex:none;}
+.opt .t{flex:1;font-size:31px;font-weight:600;line-height:1.3;}
+.opt .t b{display:block;font-weight:300;font-size:23px;color:var(--muted);margin-top:3px;}
+.opt .p{font-family:'Montserrat',sans-serif;font-weight:900;font-size:52px;color:#0b0f11;
+  background:linear-gradient(135deg,var(--green),var(--gold));padding:10px 26px;border-radius:16px;white-space:nowrap;}
 
-.item.best{background:rgba(0,230,118,.08);box-shadow:inset 0 0 0 1px rgba(0,230,118,.30);}
-.badge{
-  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:900;letter-spacing:1.2px;
-  padding:3px 9px;border-radius:99px;margin-left:9px;vertical-align:middle;white-space:nowrap;
-}
-.badge.best{color:#0b0f11;background:var(--green);}
-.badge.veg{color:var(--green);border:1px solid var(--green);}
+/* Dips zweispaltig */
 
-.hint{font-size:19px;font-style:italic;color:var(--green);padding:8px 8px 0;}
-
-/* Dips */
-#dips{margin-top:12px;padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid var(--line);}
-#dips .t{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:2px;margin-bottom:8px;}
-#dips .grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px;}
-#dips .d{display:flex;justify-content:space-between;font-size:22px;color:rgba(255,255,255,.85);}
-#dips .d b{font-family:'Montserrat',sans-serif;font-weight:900;color:var(--gold);}
-
-/* Spar Menü */
-#combo{
-  margin-top:auto;border-radius:20px;padding:22px 24px;
-  background:linear-gradient(135deg,rgba(0,230,118,.18),rgba(255,159,28,.18));
-  border:2px solid var(--gold);box-shadow:0 0 34px rgba(255,159,28,.22);
-}
-#combo .head{display:flex;align-items:center;gap:14px;}
-#combo .kicker{font-family:'Bebas Neue',sans-serif;font-size:62px;letter-spacing:3px;color:var(--gold);line-height:1;}
-#combo .price{
-  margin-left:auto;padding:10px 26px;border-radius:99px;color:#0b0f11;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:46px;
-  background:linear-gradient(135deg,var(--green),var(--gold));
-}
-#combo ul{list-style:none;margin-top:12px;}
-#combo li{font-size:25px;font-weight:500;line-height:1.65;}
-#combo li::before{content:"▸ ";color:var(--green);font-weight:900;}
-
-/* Seiten-Anzeige */
-#pager{display:flex;gap:10px;justify-content:center;align-items:center;height:26px;flex:none;margin-top:8px;}
-#pager i{width:54px;height:7px;border-radius:99px;background:rgba(255,255,255,.18);display:block;}
-#pager i.on{background:var(--green);}
+/* ---------- Seitenanzeige ---------- */
+#pager{flex:none;height:56px;display:flex;align-items:center;justify-content:center;gap:14px;}
+#pager i{width:150px;height:9px;border-radius:99px;background:rgba(255,255,255,.16);overflow:hidden;display:block;}
+#pager i b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--gold));}
+#pager i.on b{animation:fill var(--ms) linear forwards;}
+@keyframes fill{from{width:0;}to{width:100%;}}
 </style>
 </head>
 <body>
-
 <div id="board">
+
   <header>
-    <div class="logo-mark">☘</div>
-    <div class="logo-text">
+    <div class="mark">☘</div>
+    <div class="brand">
       <h1>KLEEFOOD</h1>
       <p>Burger • Pizza • Fingerfood</p>
     </div>
-    <div class="header-note">
-      <div class="big">TÄGLICH 11:00 – 23:00 UHR</div>
-      <div class="mid">TEL. 0511 569 575 67 · Kirchröder Str. 77, Hannover</div>
+    <div class="hours">
+      <div class="a">TÄGLICH 11:00 – 23:00 UHR</div>
+      <div class="b">TEL. 0511 569 575 67 · Kirchröder Str. 77, Hannover</div>
     </div>
   </header>
 
-  <div id="ticker"><div class="track" id="ticker-track"></div></div>
+  <div id="ticker"><div class="tr" id="tr"></div></div>
 
   <div id="pages"></div>
   <div id="pager"></div>
@@ -175,159 +165,111 @@ header{display:flex;align-items:center;gap:26px;flex:none;}
 
 <script>
 /* =======================================================================
-   INHALTE – Gerichte, Zutaten und Preise der KLEEFOOD-Karte.
-   Aufbau: PAGES -> Seite -> Spalte -> Kategorie -> Gerichte
-     best:true = Bestseller-Markierung · veg:true = Veggie-Markierung
-     price2    = zweiter Preis (Pizza 40 cm bzw. große Portion)
+   INHALTE – zweite Hälfte der KLEEFOOD-Karte.
+   Burger, Smash Burger und Pizza laufen auf Screen 1.
    ======================================================================= */
-const PAGE_MS = 16000;   // Anzeigedauer je Seite
+const PAGE_MS = 18000;   // Anzeigedauer je Seite
 
-const TICKER_TEXT = "🔥 TÄGLICH FRISCH • 100% RIND • HAUSGEMACHTE SAUCEN • ALLE PIZZEN IN 30 CM & 40 CM • SPAR MENÜ 12,90 € 🔥";
+const TICKER = "🔥 TÄGLICH FRISCH • HAUSGEMACHTE SAUCEN • BURGER & PIZZA AUF DEM ANDEREN SCREEN • SPAR MENÜ 12,90 € 🔥";
 
 const PAGES = [
-  /* ======================= SEITE 1: BURGER ======================= */
+  /* ---------------- Seite 1: Fingerfood, Beilagen, Vegetarisch ---------------- */
   [
-    [ { icon:"🍔", title:"BURGER", note:"100 % Rind", items:[
-        {no:"01", name:"Classic Hamburger",  ing:"Rindfleisch-Patty",                         price:"6,00"},
-        {no:"02", name:"Cheeseburger",       ing:"Rindfleisch-Patty, Cheddar-Käse",           price:"6,50"},
-        {no:"03", name:"Chili Cheeseburger", ing:"Cheddar-Käse, Jalapeños, Chili-Sauce",      price:"7,00"},
-        {no:"04", name:"Kleefood BBQ Burger",ing:"Cheddar-Käse, Bacon, Barbecue-Sauce",       price:"7,50", best:true},
-        {no:"05", name:"Cremig Avocado",     ing:"Guacamole, Beef-Patty",                     price:"7,50"}
+    [ { ico:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], items:[
+        {no:"45", nm:"Zwiebelringe",      ig:"10 St. mit einem Dip",      pr:"–",    pr2:"4,50"},
+        {no:"46", nm:"Mozzarella-Sticks", ig:"5 / 10 St. mit einem Dip",  pr:"4,00", pr2:"7,00"},
+        {no:"47", nm:"Hot Chicken Wings", ig:"6 / 10 St. mit einem Dip",  pr:"6,40", pr2:"8,90", best:true},
+        {no:"48", nm:"Chicken Nuggets",   ig:"mit Pommes & einem Dip",    pr:"8,00", pr2:"10,00"},
+        {no:"49", nm:"Chicken Fingers",   ig:"6 / 10 St. mit einem Dip",  pr:"8,00", pr2:"12,00"},
+        {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× + Pommes & Dips", pr:"", pr2:"9,60"},
+        {no:"51", nm:"KLEEFOOD Bucket",   ig:"je 4× plus Pommes & Dips",  pr:"",     pr2:"14,50", best:true}
       ]} ],
-    [ { icon:"🍔", title:"BURGER", items:[
-        {no:"06", name:"Mushroom & Blue Cheese", ing:"Pesto, Champignons, Schmorzwiebeln",    price:"7,50"},
-        {no:"07", name:"Halloumi & Aubergine",   ing:"Halloumi, Aubergine, Honey Mustard",    price:"7,50", veg:true},
-        {no:"08", name:"Mozzarella Burger",      ing:"Pesto, Aioli, Mozzarella, Röstzwiebeln",price:"8,00"},
-        {no:"09", name:"Chicken Classic",        ing:"Gegrilltes Chicken",                    price:"5,50"},
-        {no:"10", name:"Crunchy Chicken",        ing:"Crunchy Chicken mit Cheese nach Wahl",  price:"6,50"}
-      ]} ],
-    [ { icon:"🍔", title:"BURGER", items:[
-        {no:"11", name:"Beyond Burger",   ing:"Pflanzliches Patty, Ketchup",                  price:"8,00", veg:true},
-        {no:"12", name:"BBQ Avocado",     ing:"Cheddar, Barbecue-Sauce, Avocado",             price:"9,00"},
-        {no:"13", name:"Kleefeld Special",ing:"Mozzarella-Sticks, Zwiebelringe, Röstzwiebeln",price:"10,00", best:true}
-      ]},
-      { icon:"🥩", title:"SMASH BURGER", note:"Doppeltes Beef-Patty<br>+2,50 €", items:[
-        {no:"15", name:"Hamburger Smash",   ing:"",              price:"4,00"},
-        {no:"16", name:"Cheeseburger Smash",ing:"",              price:"4,50"},
-        {no:"17", name:"Chili Cheese Smash",ing:"mit Jalapeños", price:"5,00"},
-        {no:"18", name:"BBQ Burger Smash",  ing:"mit BBQ-Sauce", price:"5,00"},
-        {no:"19", name:"Chicken Smash",     ing:"mit Aioli",     price:"5,00"}
-      ] } ]
-  ],
 
-  /* =================== SEITE 2: PIZZA & VEGGIE =================== */
-  [
-    [ { icon:"🍕", title:"PIZZA", sizes:["30 cm","40 cm"], items:[
-        {no:"65", name:"Margharita",    ing:"Tomatensoße & Käse",                 price:"7,00",  price2:"12,00"},
-        {no:"66", name:"Tonno",         ing:"Thunfisch, Zwiebeln",                price:"9,00",  price2:"16,00"},
-        {no:"67", name:"Kleefood",      ing:"Putenschinken, Paprika, Jalapeños",  price:"9,50",  price2:"16,00", best:true},
-        {no:"68", name:"Salami",        ing:"Geflügel-Salami",                    price:"9,50",  price2:"16,00"},
-        {no:"69", name:"Putenschinken", ing:"Putenschinken",                      price:"9,50",  price2:"16,00"},
-        {no:"70", name:"Hawaii",        ing:"Putenschinken & Ananas",             price:"9,50",  price2:"16,00"}
+    [ { ico:"🍟", title:"BEILAGEN", items:[
+        {no:"25", nm:"BBQ Fries",          ig:"BBQ-Sauce, Bacon, Röstzwiebeln",  pr:"5,50"},
+        {no:"26", nm:"Chili Cheese Fries", ig:"Jalapeños, Käse",                 pr:"5,50", best:true},
+        {no:"27", nm:"Garlic Fries",       ig:"Parmesan, Petersilie, Knoblauch", pr:"5,50"},
+        {no:"28", nm:"Süßkartoffel-Pommes",ig:"",                                pr:"4,90", veg:true},
+        {no:"29", nm:"Pommes Fries",       ig:"",                                pr:"4,00", veg:true},
+        {no:"30", nm:"Curly Fries",        ig:"",                                pr:"5,00", veg:true},
+        {no:"31", nm:"Coleslaw",           ig:"Krautsalat",                      pr:"2,50", veg:true}
       ]} ],
-    [ { icon:"🍕", title:"PIZZA", sizes:["30 cm","40 cm"], items:[
-        {no:"71", name:"Funghi",   ing:"Champignons, Peperoni",                   price:"9,50",  price2:"16,00"},
-        {no:"72", name:"Fiori",    ing:"Salami, Champignons, Peperoni",           price:"10,00", price2:"18,00"},
-        {no:"73", name:"Sucuk",    ing:"Knoblauchwurst",                          price:"9,50",  price2:"16,00"},
-        {no:"74", name:"BBQ",      ing:"Hähnchenbrust, Zwiebeln, Mais",           price:"10,00", price2:"18,00"},
-        {no:"75", name:"Picante",  ing:"Salami, Zwiebeln, Jalapeños, Oliven",     price:"10,00", price2:"18,00"},
-        {no:"76", name:"Garnelen", ing:"mit Knoblauch",                           price:"10,00", price2:"18,00"}
-      ]} ],
-    [ { icon:"🥙", title:"VEGETARISCH", items:[
-        {no:"35", name:"Falafel Rolle",     ing:"4 St. mit Salat & Soße",     price:"5,50",  veg:true},
-        {no:"36", name:"XL Falafel Rolle",  ing:"6 St. mit Salat & Soße",     price:"6,50",  veg:true},
-        {no:"37", name:"Falafel Teller",    ing:"8 St., Reis oder Pommes",    price:"10,00", veg:true},
-        {no:"38", name:"Halloumi & Falafel",ing:"3 Halloumi, 3 Falafel",      price:"8,50",  veg:true},
-        {no:"39", name:"Crispy Teller",     ing:"4 St. mit Reis oder Pommes", price:"10,00"}
+
+    [ { ico:"🥙", title:"VEGETARISCH", items:[
+        {no:"35", nm:"Falafel Rolle",      ig:"4 St. mit Salat & Soße",     pr:"5,50",  veg:true},
+        {no:"36", nm:"XL Falafel Rolle",   ig:"6 St. mit Salat & Soße",     pr:"6,50",  veg:true},
+        {no:"37", nm:"Falafel Teller",     ig:"8 St., Reis oder Pommes",    pr:"10,00", veg:true},
+        {no:"38", nm:"Halloumi & Falafel", ig:"3 Halloumi, 3 Falafel",      pr:"8,50",  veg:true},
+        {no:"39", nm:"Crispy Teller",      ig:"4 St. mit Reis oder Pommes", pr:"10,00"}
+      ]},
+      { ico:"🥤", title:"GETRÄNKE", items:[
+        {no:"", nm:"Softdrink 0,33 l", ig:"Cola, Fanta, Sprite und mehr", pr:"2,90"}
       ]} ]
   ],
 
-  /* ============= SEITE 3: FINGERFOOD, BEILAGEN & DEALS ============ */
+  /* ---------------- Seite 2: Dips & Spar Menü ---------------- */
   [
-    [ { icon:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], items:[
-        {no:"45", name:"Zwiebelringe",     ing:"10 St. mit einem Dip",          price:"–",    price2:"4,50"},
-        {no:"46", name:"Mozzarella-Sticks",ing:"5 / 10 St. mit einem Dip",      price:"4,00", price2:"7,00"},
-        {no:"47", name:"Hot Chicken Wings",ing:"6 / 10 St. mit einem Dip",      price:"6,40", price2:"8,90", best:true},
-        {no:"48", name:"Chicken Nuggets",  ing:"mit Pommes & einem Dip",        price:"8,00", price2:"10,00"},
-        {no:"49", name:"Chicken Fingers",  ing:"6 / 10 St. mit einem Dip",      price:"8,00", price2:"12,00"},
-        {no:"50", name:"Tex-Mex-Teller",   ing:"je 2× Mozzarella, Nuggets, Pommes", price:"", price2:"9,60"},
-        {no:"51", name:"KLEEFOOD Bucket",  ing:"je 4× plus Pommes & Dips",    price:"",     price2:"14,50", best:true}
+    [ { ico:"🥣", title:"DIPS & SAUCEN", items:[
+        {no:"55", nm:"Ketchup",           pr:"0,50"},
+        {no:"56", nm:"Mayonnaise",        pr:"0,50"},
+        {no:"57", nm:"Aioli",             pr:"1,00"},
+        {no:"58", nm:"Sauer-Creme-Sauce", pr:"1,00"},
+        {no:"59", nm:"Juppi-Sauce",       pr:"1,00"},
+        {no:"60", nm:"Hanim Master",      pr:"1,00"},
+        {no:"61", nm:"Barbecue-Sauce",    pr:"1,00"},
+        {no:"62", nm:"Trüffel-Mayonnaise",pr:"1,00"},
+        {no:"63", nm:"Käsesauce",         pr:"2,50"}
       ]} ],
-    [ { icon:"🍟", title:"BEILAGEN", items:[
-        {no:"25", name:"BBQ Fries",           ing:"BBQ-Sauce, Bacon, Röstzwiebeln", price:"5,50"},
-        {no:"26", name:"Chili Cheese Fries",  ing:"Jalapeños, Käse",                price:"5,50", best:true},
-        {no:"27", name:"Garlic Fries",        ing:"Parmesan, Petersilie, Knoblauch",price:"5,50"},
-        {no:"28", name:"Süßkartoffel-Pommes", ing:"",                               price:"4,90", veg:true},
-        {no:"29", name:"Pommes Fries",        ing:"",                               price:"4,00", veg:true},
-        {no:"30", name:"Curly Fries",         ing:"",                               price:"5,00", veg:true},
-        {no:"31", name:"Coleslaw",            ing:"Krautsalat",                     price:"2,50", veg:true}
-      ]} ],
-    [ { icon:"🥤", title:"GETRÄNKE", items:[
-        {no:"", name:"Softdrink 0,33 l", ing:"Cola, Fanta, Sprite und mehr", price:"2,90"}
-      ], dips:true } ]
+    { deal:true }
   ]
 ];
 
-const DIPS = [
-  ["55 Ketchup","0,50"], ["56 Mayonnaise","0,50"],
-  ["57 Aioli","1,00"],   ["58 Sauer-Creme","1,00"],
-  ["59 Juppi-Sauce","1,00"], ["60 Hanim Master","1,00"],
-  ["61 Barbecue","1,00"],    ["62 Trüffel-Mayo","1,00"],
-  ["63 Käsesauce","2,50"]
-];
-
-const SPAR = {
-  kicker:"SPAR MENÜ", price:"12,90 €",
-  lines:[
-    "Burger nach Wahl + Pommes & Drink",
-    "2× Smash Burger + Pommes & Drink",
-    "Falafel Rolle + Pommes & Drink"
+const DEAL = {
+  kick:"SPAR MENÜ",
+  sub:"Mach dein Gericht zum Menü – täglich 11:00 – 23:00 Uhr, auch zum Mitnehmen",
+  price:"12,90 €",
+  opts:[
+    {n:"1", t:"Burger nach Wahl",       b:"+ Pommes + 0,33 l Softdrink"},
+    {n:"2", t:"2× Smash Burger n. Wahl",b:"+ Pommes + 0,33 l Softdrink"},
+    {n:"3", t:"Falafel Rolle",          b:"+ Pommes + 0,33 l Softdrink"}
   ]
 };
 
-/* ---------- Ticker (Text doppelt für nahtlose Schleife) ---------- */
-document.getElementById('ticker-track').innerHTML =
-  '<span>' + TICKER_TEXT + '</span><span>' + TICKER_TEXT + '</span>';
+/* ---------- Ticker ---------- */
+document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
 
 /* ---------- Aufbau ---------- */
-function renderItem(it){
-  const cls = 'item' + (it.best ? ' best' : '');
-  const p2  = (it.price2 !== undefined) ? '<div class="price second">' + it.price2 + '</div>' : '';
-  return '<div class="' + cls + '">' +
+function renderRow(it,i){
+  return '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
            '<div class="no">' + (it.no || '') + '</div>' +
-           '<div class="txt"><div class="name">' + it.name +
-             (it.best ? '<span class="badge best">★ TOP</span>' : '') +
-             (it.veg  ? '<span class="badge veg">VEGGIE</span>' : '') +
-             (it.ing  ? '<span class="ing">' + it.ing + '</span>' : '') +
-           '</div></div>' +
-           '<div class="price">' + it.price + '</div>' + p2 +
+           '<div class="tx"><div class="nm">' + it.nm +
+             (it.best ? '<span class="tag b">★ TOP</span>' : '') +
+             (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
+           '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
+           '<div class="pr">' + it.pr + '</div>' +
+           (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
          '</div>';
 }
 
 function renderSection(sec){
-  const right = sec.sizes
-      ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>'
-      : (sec.note ? '<div class="note">' + sec.note + '</div>' : '');
+  const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
+  const rows = sec.items.map(renderRow).join('');
   return '<div class="sec">' +
-           '<div class="sec-head"><span class="ico">' + sec.icon + '</span><h2>' + sec.title + '</h2>' + right + '</div>' +
-           sec.items.map(renderItem).join('') +
-           (sec.hint ? '<div class="hint">' + sec.hint + '</div>' : '') +
-           (sec.dips ? dipsBlock() + comboBlock() : '') +
+           '<div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' + sizes + '</div>' +
+           rows +
          '</div>';
 }
 
-function dipsBlock(){
-  return '<div id="dips"><div class="t">DIPS & SAUCEN</div><div class="grid">' +
-    DIPS.map(d => '<div class="d"><span>' + d[0] + '</span><b>' + d[1] + '</b></div>').join('') +
-  '</div></div>';
-}
-
-function comboBlock(){
-  return '<div id="combo">' +
-    '<div class="head"><span class="kicker">' + SPAR.kicker + '</span>' +
-    '<span class="price">' + SPAR.price + '</span></div>' +
-    '<ul>' + SPAR.lines.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
-  '</div>';
+function renderDeal(){
+  return '<div class="deal">' +
+           '<div><div class="kick">' + DEAL.kick + '</div><div class="sub">' + DEAL.sub + '</div></div>' +
+           DEAL.opts.map((o,i) =>
+             '<div class="opt" style="--i:' + i + '">' +
+               '<div class="n">' + o.n + '</div>' +
+               '<div class="t">' + o.t + '<b>' + o.b + '</b></div>' +
+               '<div class="p">' + DEAL.price + '</div>' +
+             '</div>').join('') +
+         '</div>';
 }
 
 const pagesBox = document.getElementById('pages');
@@ -336,22 +278,30 @@ const pager = document.getElementById('pager');
 PAGES.forEach(cols => {
   const page = document.createElement('div');
   page.className = 'page';
-  page.innerHTML = cols.map(secs => '<div class="col">' + secs.map(renderSection).join('') + '</div>').join('');
+  page.innerHTML = cols.map((c,ci) => {
+    if (c.deal) return '<div class="col wide" style="--c:' + ci + '">' + renderDeal() + '</div>';
+    return '<div class="col" style="--c:' + ci + '">' + c.map(renderSection).join('') + '</div>';
+  }).join('');
   pagesBox.appendChild(page);
-  pager.innerHTML += '<i></i>';
+  pager.innerHTML += '<i><b></b></i>';
 });
 
 const pageEls = [...pagesBox.children], dotEls = [...pager.children];
-let p = 0;
+dotEls.forEach(d => d.style.setProperty('--ms', PAGE_MS + 'ms'));
+
+let p = -1;
 function showPage(i){
   p = i % pageEls.length;
-  pageEls.forEach((el,n) => el.classList.toggle('on', n === p));
-  dotEls.forEach((el,n) => el.classList.toggle('on', n === p));
+  pageEls.forEach((el,n) => {
+    if (n === p){ el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+    else el.classList.remove('on');
+  });
+  dotEls.forEach((el,n) => { el.classList.remove('on'); if (n === p){ void el.offsetWidth; el.classList.add('on'); } });
 }
 showPage(0);
 setInterval(() => showPage(p + 1), PAGE_MS);
 
-/* ---------- Auto-Skalierung auf abweichende Displaygrößen ---------- */
+/* ---------- Auto-Skalierung ---------- */
 function fit(){
   const s = Math.min(innerWidth/1920, innerHeight/1080);
   document.body.style.transform = 'scale(' + s + ')';
