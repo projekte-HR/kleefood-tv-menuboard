@@ -38,15 +38,12 @@ body::before{
     radial-gradient(60% 50% at 12% 0%,  rgba(0,230,118,.16), transparent 65%),
     radial-gradient(55% 50% at 92% 8%,  rgba(255,159,28,.13), transparent 65%),
     radial-gradient(70% 60% at 50% 115%,rgba(16,185,129,.12), transparent 65%);
-  animation:breathe 12s ease-in-out infinite alternate;
 }
-@keyframes breathe{from{opacity:.65;}to{opacity:1;}}
 body::after{
-  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.32;
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.16;
   background-image:linear-gradient(var(--line) 1px,transparent 1px),
                    linear-gradient(90deg,var(--line) 1px,transparent 1px);
   background-size:64px 64px;
-  mask-image:radial-gradient(80% 70% at 50% 40%,#000,transparent 100%);
 }
 
 #board{position:relative;z-index:1;width:1920px;height:1080px;padding:22px 40px 22px;display:flex;flex-direction:column;}
@@ -57,22 +54,14 @@ header{display:flex;align-items:center;gap:26px;}
 .logo-mark{
   width:66px;height:66px;flex:none;border-radius:50%;display:grid;place-items:center;
   font-size:40px;border:3px solid var(--green);background:rgba(0,230,118,.08);
-  animation:markGlow 3s ease-in-out infinite;
-}
-@keyframes markGlow{
-  0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.40),0 0 30px rgba(0,230,118,.25) inset;}
-  50%    {box-shadow:0 0 0 14px rgba(0,230,118,0), 0 0 52px rgba(0,230,118,.45) inset;}
+  box-shadow:0 0 30px rgba(0,230,118,.28) inset, 0 0 18px rgba(0,230,118,.20);
 }
 
 .logo-text h1{
   font-family:'Bebas Neue',sans-serif;font-size:60px;line-height:.9;letter-spacing:5px;
   background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  animation:neon 3.4s ease-in-out infinite;
-}
-@keyframes neon{
-  0%,100%{filter:drop-shadow(0 0 18px rgba(0,230,118,.30));}
-  50%    {filter:drop-shadow(0 0 40px rgba(0,230,118,.65));}
+  filter:drop-shadow(0 0 22px rgba(0,230,118,.35));   /* statisch statt Dauer-Animation */
 }
 .logo-text p{font-size:16px;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
 
@@ -87,7 +76,7 @@ header{display:flex;align-items:center;gap:26px;}
   border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);
   display:flex;align-items:center;
 }
-#ticker .track{display:flex;white-space:nowrap;will-change:transform;animation:scroll 28s linear infinite;}
+#ticker .track{display:flex;white-space:nowrap;will-change:transform;animation:scroll 34s linear infinite;}
 #ticker .track span{
   font-family:'Montserrat',sans-serif;font-weight:800;font-size:21px;letter-spacing:4px;
   padding:0 55px;text-transform:uppercase;
@@ -159,9 +148,9 @@ header{display:flex;align-items:center;gap:26px;}
 .item.best::after{
   content:"";position:absolute;top:0;left:-60%;width:45%;height:100%;
   background:linear-gradient(100deg,transparent,rgba(255,255,255,.20),transparent);
-  animation:shimmer 5.5s ease-in-out infinite;
+  animation:shimmer 9s ease-in-out infinite;
 }
-@keyframes shimmer{0%,72%{left:-60%;}100%{left:130%;}}
+@keyframes shimmer{0%,85%{left:-60%;}100%{left:130%;}}
 .col:nth-child(2) .item.best::after{animation-delay:1.6s;}
 .col:nth-child(3) .item.best::after{animation-delay:3.2s;}
 
@@ -185,11 +174,7 @@ header{display:flex;align-items:center;gap:26px;}
   margin-top:8px;border-radius:16px;padding:11px 14px;position:relative;overflow:hidden;
   background:linear-gradient(135deg,rgba(0,230,118,.16),rgba(255,159,28,.16));
   border:2px solid var(--gold);
-  animation:comboPulse 2.6s ease-in-out infinite;
-}
-@keyframes comboPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,159,28,.42);}
-  50%    {box-shadow:0 0 0 14px rgba(255,159,28,0),0 0 40px rgba(255,159,28,.30);}
+  box-shadow:0 0 34px rgba(255,159,28,.28);
 }
 #combo .head{display:flex;align-items:center;gap:12px;}
 #combo .kicker{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2.5px;color:var(--gold);}

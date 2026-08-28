@@ -64,18 +64,10 @@ html,body{
 }
 
 /* ---------- 3. Licht- & Partikeleffekte ---------- */
-.beam{
-  position:absolute;top:-40%;left:-25%;width:60%;height:180%;
-  background:linear-gradient(90deg,transparent,rgba(0,230,118,.10),transparent);
-  transform:rotate(14deg);filter:blur(28px);
-  animation:beam 11s linear infinite;pointer-events:none;z-index:3;
-}
-@keyframes beam{0%{left:-30%}100%{left:120%}}
-
 #particles{position:absolute;inset:0;z-index:4;pointer-events:none;}
 .particle{
   position:absolute;bottom:-20px;border-radius:50%;
-  background:var(--green);opacity:.0;filter:blur(.5px);
+  background:var(--green);opacity:0;
   animation:rise linear infinite;
 }
 @keyframes rise{
@@ -92,14 +84,13 @@ html,body{
   display:inline-flex;align-items:center;gap:20px;align-self:flex-start;
   padding:18px 34px;border-radius:999px;
   background:rgba(23,28,32,.72);border:2px solid rgba(0,230,118,.45);
-  backdrop-filter:blur(8px);
   animation:badgePulse 2.8s ease-in-out infinite;
 }
 @keyframes badgePulse{
   0%,100%{box-shadow:0 0 0 0 rgba(0,230,118,.42), 0 0 26px rgba(0,230,118,.18);}
   50%    {box-shadow:0 0 0 18px rgba(0,230,118,0), 0 0 46px rgba(0,230,118,.34);}
 }
-#badge .clover{font-size:34px;filter:drop-shadow(0 0 10px var(--green));}
+#badge .clover{font-size:34px;text-shadow:0 0 10px var(--green);}
 #badge .name{
   font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:5px;line-height:1;
   background:linear-gradient(90deg,var(--white),var(--green));
@@ -123,7 +114,6 @@ html,body{
   font-family:'Bebas Neue',sans-serif;font-size:132px;line-height:.94;letter-spacing:2px;
   background:linear-gradient(92deg,var(--white) 8%,var(--green) 52%,var(--gold) 100%);
   -webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 12px 40px rgba(0,0,0,.65));
   animation-delay:.3s;
 }
 #desc{
@@ -137,7 +127,7 @@ html,body{
 .tag{
   padding:12px 24px;border-radius:999px;font-size:17px;font-weight:600;letter-spacing:1.5px;
   text-transform:uppercase;border:1.5px solid rgba(255,255,255,.22);
-  background:rgba(255,255,255,.06);backdrop-filter:blur(6px);
+  background:rgba(255,255,255,.06);
 }
 .tag.hot{border-color:var(--gold);color:var(--gold);background:rgba(255,159,28,.10);}
 .tag.klee{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.10);}
@@ -196,7 +186,6 @@ html,body{
 
 <div id="stage">
   <!-- Slides werden per JS aus dem SLIDES-Array erzeugt -->
-  <div class="beam"></div>
   <div id="particles"></div>
 
   <!-- Text-Overlay -->
@@ -240,7 +229,7 @@ const SLIDES = [
     desc:  "Rindfleisch-Patty mit 2 Mozzarella-Sticks, 2 Zwiebelringen, Röstzwiebeln und Sauce nach Wahl – Nr. 13 auf der Karte.",
     price: "10,00 €",
     tags:  [["Bestseller","hot"],["100% Rind","klee"],["Nr. 13",""]],
-    img:   "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1600&q=70"
   },
   {
     title: "Pizza<br>Kleefood",
@@ -248,7 +237,7 @@ const SLIDES = [
     desc:  "Putenschinken, Paprika, frische Champignons und Jalapeños auf Tomatensoße & Käse. 30 cm 9,50 € • 40 cm 16,00 €.",
     price: "9,50 €",
     tags:  [["KLEE Special","klee"],["30 cm & 40 cm",""],["Scharf 🔥","hot"]],
-    img:   "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1604382354936-07c5d9983bd3?auto=format&fit=crop&w=1600&q=70"
   },
   {
     title: "Hot Chicken<br>Wings",
@@ -256,7 +245,7 @@ const SLIDES = [
     desc:  "Knusprige Hot Wings mit einem Dip nach Wahl. 6 Stück 6,40 € • 10 Stück 8,90 €.",
     price: "8,90 €",
     tags:  [["10 Stück","klee"],["Extra Crispy",""],["Scharf 🔥","hot"]],
-    img:   "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?auto=format&fit=crop&w=1600&q=70"
   },
   {
     title: "Chili Cheese<br>Fries",
@@ -264,7 +253,7 @@ const SLIDES = [
     desc:  "Goldene Fries mit Jalapeños und cremigem Käse – auch als BBQ Fries oder Garlic Fries für 5,50 €.",
     price: "5,50 €",
     tags:  [["Beilage",""],["Vegetarisch","klee"],["Sharing Size","hot"]],
-    img:   "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=1600&q=70"
   },
   {
     title: "KLEEFOOD<br>Bucket",
@@ -272,7 +261,7 @@ const SLIDES = [
     desc:  "4× Mozzarella, 4× Zwiebelringe, 4× Chicken Nuggets, Pommes & 4 Dips nach Wahl – zum Teilen.",
     price: "14,50 €",
     tags:  [["Bestseller","hot"],["KLEE Special","klee"],["Für 2–3 Personen",""]],
-    img:   "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=1600&q=70"
   },
   {
     title: "Spar Menü",
@@ -280,11 +269,14 @@ const SLIDES = [
     desc:  "Burger nach Wahl · 2× Smash Burger nach Wahl · oder Falafel Rolle – jeweils mit Pommes und 0,33 l Softdrink.",
     price: "12,90 €",
     tags:  [["Spar Menü","hot"],["Inkl. Pommes & Drink","klee"],["Täglich 11–23 Uhr",""]],
-    img:   "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1920&q=80"
+    img:   "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1600&q=70"
   }
 ];
 
 const SLIDE_MS = 6000;   // Anzeigedauer je Slide (CSS --slide-time anpassen!)
+
+/* Kleine Variante derselben Unsplash-URL für die Vorschauleiste */
+const thumbUrl = (u) => u.replace('w=1600&q=70', 'w=320&q=60');
 
 /* ---------- Aufbau ---------- */
 const stage = document.getElementById('stage');
@@ -298,7 +290,7 @@ SLIDES.forEach((s, i) => {
 
   const t = document.createElement('div');
   t.className = 'thumb';
-  t.style.backgroundImage = 'url(' + s.img + ')';
+  t.style.backgroundImage = 'url(' + thumbUrl(s.img) + ')';
   t.innerHTML = '<span>' + s.short + '</span>';
   t.onclick = () => show(i);                          // optional: Touch/Klick
   thumbsBox.appendChild(t);
@@ -334,13 +326,17 @@ function show(i){
   // Progress-Bar neu starten
   bar.classList.remove('run'); void bar.offsetWidth; bar.classList.add('run');
 
+  // nächstes Bild im Hintergrund laden, damit der Wechsel nicht ruckelt
+  const next = new Image();
+  next.src = SLIDES[(idx + 1) % SLIDES.length].img;
+
   clearTimeout(timer);
   timer = setTimeout(() => show(idx + 1), SLIDE_MS);
 }
 
 /* ---------- Partikel (dezente Lichtpunkte) ---------- */
 const pBox = document.getElementById('particles');
-for (let i = 0; i < 26; i++){
+for (let i = 0; i < 12; i++){
   const p = document.createElement('div');
   const size = 2 + Math.random() * 5;
   p.className = 'particle';
