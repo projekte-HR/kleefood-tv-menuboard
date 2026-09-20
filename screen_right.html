@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>KLEEFOOD – Screen 2 – Fingerfood, Beilagen & Deals</title>
+<title>KLEEFOOD – Screen 2 – Pizza & Menüs</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 <style>
 /* =======================================================================
@@ -52,7 +52,7 @@ header .mark{margin-right:20px;}
 .col:nth-child(1){flex:1.08 1 0%;margin-right:20px;}
 .col:nth-child(2){flex:1 1 0%;margin-right:20px;}
 .col:nth-child(3){flex:.96 1 0%;}
-.col > * + *{margin-top:16px;}
+.col > * + *{margin-top:12px;}
 .card{
   background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
   border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;
@@ -64,7 +64,7 @@ header .mark{margin-right:20px;}
 @keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
 /* ---------- Foto ---------- */
-.shot{position:relative;flex:1;min-height:120px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
+.shot{position:relative;flex:1;min-height:96px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
 .shot .img{position:absolute;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;transform:scale(1.02);}
 /* kein Dauer-Zoom mehr – auf dem Fire TV Stick spart das spürbar Leistung */
 .shot::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
@@ -92,7 +92,7 @@ header .mark{margin-right:20px;}
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* ---------- Zeile ---------- */
-.row{display:flex;align-items:center;padding:3px 5px;border-radius:9px;position:relative;}
+.row{display:flex;align-items:center;padding:2px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
 .play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
@@ -114,6 +114,12 @@ header .mark{margin-right:20px;}
   padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
 .tag.b{background:var(--green);color:#0b0f11;}
 .tag.v{border:1px solid var(--green);color:var(--green);}
+.tag.d{background:var(--gold);color:#0b0f11;}
+.row.deal{box-shadow:inset 0 0 0 1.5px rgba(255,159,28,.42);background:rgba(255,159,28,.09);}
+.row .alt{
+  font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:rgba(255,255,255,.45);
+  text-decoration:line-through;margin-left:10px;white-space:nowrap;flex:none;
+}
 
 /* ---------- Spar Menü ---------- */
 #deal{
@@ -163,8 +169,8 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
       <div class="shot">
         <div class="img" id="imgFries"></div>
         <div class="cap">
-          <div class="t">CHILI CHEESE FRIES<b>Knusprige Fries mit Jalapeños und Käse</b></div>
-          <div class="p">5,50 €</div>
+          <div class="t">PIZZA KLEEFOOD<b>Putenschinken, Paprika, fr. Champignon, Jalapeños</b></div>
+          <div class="p">11,50 €</div>
         </div>
       </div>
     </div>
@@ -183,64 +189,59 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
    INHALTE – zweite Hälfte der KLEEFOOD-Karte.
    Eigenes Foto? URL in PHOTO auf z. B. "fotos/fries.jpg" ändern.
    ======================================================================= */
-const PHOTO = "fotos/fries.jpg?v=2";   // lokal; ?v= erzwingt Neuladen nach Bildtausch
+const PHOTO = "fotos/pizza.jpg?v=2";   // lokal; ?v= erzwingt Neuladen nach Bildtausch
 
-const TICKER = "🔥 TÄGLICH FRISCH • HAUSGEMACHTE SAUCEN • BURGER & PIZZA AUF DEM ANDEREN SCREEN • SPAR MENÜ 12,90 € 🔥";
+const TICKER = "🔥 17 PIZZEN AUS DEM STEINOFEN • BURGER & BEILAGEN AUF DEM ANDEREN SCREEN • SPAR MENÜ AB 14,90 € • KIDS MENÜ 9,50 € 🔥";
 
 const S = {
-  finger: { ico:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], items:[
-    {no:"45", nm:"Zwiebelringe",      ig:"10 St. mit einem Dip",       pr:"–",    pr2:"4,50"},
-    {no:"46", nm:"Mozzarella-Sticks", ig:"5 / 10 St. mit einem Dip",   pr:"4,00", pr2:"7,00"},
-    {no:"47", nm:"Hot Chicken Wings", ig:"6 / 10 St. mit einem Dip",   pr:"6,40", pr2:"8,90", best:true},
-    {no:"48", nm:"Chicken Nuggets",   ig:"mit Pommes & einem Dip",     pr:"8,00", pr2:"10,00"},
-    {no:"49", nm:"Chicken Fingers",   ig:"6 / 10 St. mit einem Dip",   pr:"8,00", pr2:"12,00"},
-    {no:"50", nm:"Tex-Mex-Teller",    ig:"je 2× plus Pommes & 2 Dips", pr:"", pr2:"9,60"},
-    {no:"51", nm:"KLEEFOOD Bucket",   ig:"je 4× plus Pommes & 4 Dips", pr:"",     pr2:"14,50", best:true}
+  pizzaA: { ico:"🍕", title:"PIZZA", items:[
+    {no:"65", nm:"Margharita",    ig:"Mit Tomatensoße und Käse",                        pr:"10,00"},
+    {no:"66", nm:"Tonno",         ig:"Thunfisch, Zwiebeln",                             pr:"11,50"},
+    {no:"67", nm:"Kleefood",      ig:"Putenschinken, Paprika, fr. Champignon, Jalapeños",pr:"11,50"},
+    {no:"68", nm:"Salami",        ig:"Geflügel-Salami",                                 pr:"10,50"},
+    {no:"69", nm:"Putenschinken", ig:"Putenschinken",                                   pr:"10,50"},
+    {no:"70", nm:"Hawaii",        ig:"Putenschinken und Ananas",                        pr:"10,50"},
+    {no:"71", nm:"Funghi",        ig:"Fr. Champignons, Peperoni",                       pr:"10,50"},
+    {no:"72", nm:"Fiori",         ig:"Geflügel-Salami, fr. Champignons, Peperoni",      pr:"11,04"},
+    {no:"73", nm:"Sucuk",         ig:"Knoblauchwurst",                                  pr:"10,50"}
   ]},
 
-  veg: { ico:"🥙", title:"VEGETARISCH", items:[
-    {no:"35", nm:"Falafel Rolle",       ig:"4 St. mit Salat & Soße",              pr:"5,50",  veg:true},
-    {no:"36", nm:"XL Falafel Rolle",    ig:"6 St. mit Salat & Soße",              pr:"6,50",  veg:true},
-    {no:"37", nm:"Falafel Teller",      ig:"8 St., Reis oder Pommes, Salat & Soße",pr:"10,00", veg:true},
-    {no:"38", nm:"Halloumi & Falafel",  ig:"3 Halloumi, 3 Falafel",               pr:"8,50",  veg:true},
-    {no:"39", nm:"Crispy Teller",       ig:"4 St. mit Reis oder Pommes",          pr:"10,00"}
+  pizzaB: { ico:"🍕", title:"PIZZA", items:[
+    {no:"74", nm:"BBQ",           ig:"Hähnchenbrust, Zwiebeln, Mais und BBQ-Sauce",     pr:"11,04"},
+    {no:"75", nm:"Picante",       ig:"Geflügel-Salami, Zwiebeln, Jalapeños, Oliven",    pr:"11,04"},
+    {no:"76", nm:"Garnelen",      ig:"Mit Knoblauch",                                   pr:"11,04"},
+    {no:"77", nm:"Spinata",       ig:"Weichkäse, fr. Knoblauch",                        pr:"11,04"},
+    {no:"78", nm:"Hollandaise",   ig:"Hähnchenbrust, Peperoni, Sauce Hollandaise",      pr:"11,04"},
+    {no:"79", nm:"New York",      ig:"Putenschinken, Broccoli, Sauce Hollandaise",      pr:"10,50"},
+    {no:"80", nm:"Veggie",        ig:"Broccoli, Champignons, Peperoni, Tomaten, Zwiebeln, Oliven", pr:"11,04", veg:true},
+    {no:"81", nm:"Mix",           ig:"Putenschinken, Geflügel-Salami, Champignons, Peperoni",      pr:"11,04"}
   ]},
 
-  beilagen: { ico:"🍟", title:"BEILAGEN", items:[
-    {no:"25", nm:"BBQ Fries",           ig:"BBQ-Sauce, Bacon, Röstzwiebeln",   pr:"5,50"},
-    {no:"26", nm:"Chili Cheese Fries",  ig:"Jalapeños, Käse",                  pr:"5,50", best:true},
-    {no:"27", nm:"Garlic Fries",        ig:"Parmesan, Petersilie, Knoblauch",  pr:"5,50"},
-    {no:"28", nm:"Süßkartoffel-Pommes", ig:"",                                 pr:"4,90", veg:true},
-    {no:"29", nm:"Pommes Fries",        ig:"",                                 pr:"4,00", veg:true},
-    {no:"30", nm:"Curly Fries",         ig:"",                                 pr:"5,00", veg:true},
-    {no:"31", nm:"Coleslaw",            ig:"Krautsalat",                       pr:"2,50", veg:true}
+  finger: { ico:"🍗", title:"FINGERFOOD", items:[
+    {no:"45", nm:"Zwiebelringe 10 Stück",   ig:"Mit einem Dip nach Wahl", pr:"6,00"},
+    {no:"46", nm:"Mozzarella-Sticks 5 St.", ig:"Mit einem Dip nach Wahl", pr:"7,00"}
+  ]},
+
+  dips: { ico:"🥣", title:"DIPS", items:[
+    {no:"55", nm:"Ketchup Dip",    pr:"0,50"},
+    {no:"56", nm:"Mayonnaise Dip", pr:"0,50"}
   ]},
 
   drinks: { ico:"🥤", title:"GETRÄNKE", items:[
-    {no:"", nm:"Softdrink 0,33 l", ig:"Cola, Fanta, Sprite und mehr", pr:"2,90"}
-  ]},
-
-  dips: { ico:"🥣", title:"DIPS & SAUCEN", items:[
-    {no:"55", nm:"Ketchup",            pr:"0,50"},
-    {no:"56", nm:"Mayonnaise",         pr:"0,50"},
-    {no:"57", nm:"Aioli",              pr:"1,00"},
-    {no:"58", nm:"Sauer-Creme-Sauce",  pr:"1,00"},
-    {no:"59", nm:"Juppi-Sauce",        pr:"1,00"},
-    {no:"60", nm:"Hanim Master Sauce", pr:"1,00"},
-    {no:"61", nm:"Barbecue-Sauce",     pr:"1,00"},
-    {no:"62", nm:"Trüffel-Mayonnaise", pr:"1,00"},
-    {no:"63", nm:"Käsesauce",          pr:"2,50"}
+    {no:"", nm:"Fanta 0,33 l",  ig:"inkl. 0,25 € Pfand", pr:"2,00"},
+    {no:"", nm:"Sprite 0,33 l", ig:"inkl. 0,25 € Pfand", pr:"2,00"}
   ]}
 };
 
 const DEAL = {
-  kick:"SPAR MENÜ", price:"12,90 €",
+  kick:"SPAR MENÜ", price:"ab 14,90 €",
   lines:[
-    "Burger nach Wahl + Pommes + 0,33 l Softdrink",
-    "2× Smash Burger nach Wahl + Pommes + 0,33 l Softdrink",
-    "Falafel Rolle + Pommes + 0,33 l Softdrink"
+    "Burger nach Wahl + Pommes + 0,33 l Softdrink — 15,90 €",
+    "2× Smash Burger nach Wahl + Pommes + 0,33 l — 15,90 €",
+    "Falafel Rolle + Pommes + 0,33 l Softdrink — 14,90 €",
+    "Kids Menü: Smash Burger, 4 Nuggets, Pommes & Capri Sun — 9,50 €"
   ],
-  note:"Täglich 11:00 – 23:00 Uhr · auch zum Mitnehmen"
+  note:"Menüs und Angebote gelten auch zum Mitnehmen"
 };
 
 /* ---------- Aufbau ---------- */
@@ -250,22 +251,24 @@ document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + 
 function renderSection(sec){
   const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
   const rows = sec.items.map((it,i) =>
-    '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
+    '<div class="row' + (it.best ? ' best' : '') + (it.alt ? ' deal' : '') + '" style="--i:' + i + '">' +
       '<div class="no">' + (it.no || '') + '</div>' +
       '<div class="tx"><div class="nm">' + it.nm +
-        (it.best ? '<span class="tag b">★ TOP</span>' : '') +
+        (it.best ? '<span class="tag b">\u2605 TOP ' + it.best + '</span>' : '') +
         (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
+        (it.alt  ? '<span class="tag d">ANGEBOT</span>' : '') +
       '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
+      (it.alt ? '<div class="alt">' + it.alt + '</div>' : '') +
       '<div class="pr">' + it.pr + '</div>' +
       (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
     '</div>').join('');
-  return '<div class="sec"><div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' +
-         sizes + '</div>' + rows + '</div>';
+  return '<div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' + sizes + '</div>' +
+         rows + (sec.hint ? '<div class="hint">' + sec.hint + '</div>' : '');
 }
 
-document.getElementById('c1').innerHTML = renderSection(S.finger) + renderSection(S.veg);
-document.getElementById('c2').innerHTML = renderSection(S.beilagen) + renderSection(S.drinks);
-document.getElementById('c3').innerHTML = renderSection(S.dips);
+document.getElementById('c1').innerHTML = renderSection(S.pizzaA);
+document.getElementById('c2').innerHTML = renderSection(S.pizzaB) + renderSection(S.finger);
+document.getElementById('c3').innerHTML = renderSection(S.dips) + renderSection(S.drinks);
 document.getElementById('deal').innerHTML =
   '<div class="top"><span class="kick">' + DEAL.kick + '</span><span class="price">' + DEAL.price + '</span></div>' +
   '<ul>' + DEAL.lines.map(l => '<li>' + l + '</li>').join('') + '</ul>' +
