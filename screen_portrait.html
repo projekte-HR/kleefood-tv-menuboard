@@ -125,7 +125,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 <div id="stage" class="play">
 
   <div id="top">
-    <img id="logo" src="logo.jpg?v=4" alt="KleeFood">
+    <img id="logo" src="logo.jpg?v=3" alt="KleeFood">
     <div id="kicker">MACH DEIN MENÜ DRAUS</div>
     <div id="title">SPAR MENÜS</div>
     <div id="sub">Jedes Menü mit Pommes und 0,33 l Softdrink</div>
@@ -147,18 +147,18 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 /* Versionsnummer an den Bildpfaden: erzwingt nach einem Bildtausch das
    Neuladen, sonst zeigt der Browser auf dem Stick das alte Bild aus dem
    Cache. Bei jedem Bildwechsel einfach hochzaehlen.                      */
-const V = "?v=4";
+const V = "?v=3";
 
 const MENUS = [
   { no:"1", nm:"BURGER MENÜ",
     ig:"Burger nach Wahl · Pommes · 0,33 l Softdrink",
-    price:"15,90 €", img:"fotos/menu1.jpg", badge:"TOP 5" },
+    price:"12,90 €", img:"fotos/menu1.jpg", top:true, badge:"BELIEBT" },
   { no:"2", nm:"SMASH MENÜ",
     ig:"2× Smash Burger nach Wahl · Pommes · 0,33 l Softdrink",
-    price:"15,90 €", img:"fotos/menu2.jpg", top:true, badge:"TOP 2" },
+    price:"12,90 €", img:"fotos/menu2.jpg" },
   { no:"3", nm:"FALAFEL MENÜ",
     ig:"Falafel Rolle · Pommes · 0,33 l Softdrink",
-    price:"14,90 €", img:"fotos/menu3.jpg" }
+    price:"12,90 €", img:"fotos/menu3.jpg" }
 ];
 
 const menus = document.getElementById('menus');

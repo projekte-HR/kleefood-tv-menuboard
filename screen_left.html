@@ -64,7 +64,7 @@ header .mark{margin-right:20px;}
 @keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
 
 /* ---------- Bildfenster (Burger und Pizza im Wechsel) ---------- */
-.shot{position:relative;flex:none;height:320px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);background:#000;}
+.shot{position:relative;flex:none;height:262px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);background:#000;}
 .shot .pic{
   position:absolute;top:0;left:0;right:0;bottom:0;
   background-position:center;background-size:cover;background-repeat:no-repeat;
@@ -95,7 +95,7 @@ header .mark{margin-right:20px;}
   font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
 
 /* ---------- Zeile ---------- */
-.row{display:flex;align-items:center;padding:2px 5px;border-radius:9px;position:relative;}
+.row{display:flex;align-items:center;padding:3px 5px;border-radius:9px;position:relative;}
 .row + .row{border-top:1px solid rgba(255,255,255,.06);}
 .play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
 @keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
@@ -117,12 +117,6 @@ header .mark{margin-right:20px;}
   padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
 .tag.b{background:var(--green);color:#0b0f11;}
 .tag.v{border:1px solid var(--green);color:var(--green);}
-.tag.d{background:var(--gold);color:#0b0f11;}
-.row.deal{box-shadow:inset 0 0 0 1.5px rgba(255,159,28,.42);background:rgba(255,159,28,.09);}
-.row .alt{
-  font-family:'Montserrat',sans-serif;font-weight:800;font-size:19px;color:rgba(255,255,255,.45);
-  text-decoration:line-through;margin-left:10px;white-space:nowrap;flex:none;
-}
 .hint{font-size:18px;font-style:italic;color:var(--green);padding-top:6px;}
 
 /* ---------- Ticker ---------- */
@@ -184,56 +178,57 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
 const V = "?v=2";                       // erzwingt Neuladen nach Bildtausch
 
 const SHOTS = [
-  {img:"fotos/burger.jpg", t:"KLEEFOOD BBQ BURGER", s:"Cheddar-Käse, Bacon, Barbecue-Sauce · statt 12,50 €", p:"9,90 €"},
-  {img:"fotos/pizza.jpg",  t:"PIZZA KLEEFOOD",    s:"Putenschinken, Paprika, fr. Champignon, Jalapeños",  p:"11,50 €"}
+  {img:"fotos/burger.jpg", t:"KLEEFOOD BBQ BURGER", s:"Rindfleisch-Patty, Cheddar-Käse, Bacon, Barbecue-Sauce", p:"7,50 €"},
+  {img:"fotos/pizza.jpg",  t:"PIZZA KLEEFOOD",    s:"Putenschinken, Paprika, Champignons, Jalapeños",     p:"9,50 €"}
 ];
 const SHOT_MS = 8000;   // Wechsel alle 8 Sekunden
 
-const TICKER = "🔥 ANGEBOTE: KLEEFOOD BBQ BURGER 9,90 € • MOZZARELLA BURGER 9,00 € • BBQ AVOCADO 9,00 € • SPAR MENÜ AB 14,90 € • PIZZA AUF DEM ANDEREN SCREEN 🔥";
+const TICKER = "🔥 TÄGLICH FRISCH • 100 % RIND • HAUSGEMACHTE SAUCEN • STEINOFEN-PIZZA IN 30 & 40 CM • SPAR MENÜ 12,90 € • KIDS MENÜ 9,50 € 🔥";
 
 const SECTIONS = {
-  hamburger: { ico:"🍔", title:"HAMBURGER", items:[
-    {no:"01", nm:"Classic Hamburger",          ig:"Rindfleisch-Patty",                                          pr:"9,50"},
-    {no:"02", nm:"Cheeseburger",               ig:"Rindfleisch-Patty, Cheddar-Käse",                            pr:"10,50", best:"6"},
-    {no:"04", nm:"Kleefood BBQ Burger",        ig:"Cheddar-Käse, Bacon, Barbecue-Sauce",                        pr:"9,90",  alt:"12,50"},
-    {no:"05", nm:"Kleefood cremig Avocado",    ig:"Guacamole, Beef-Patty",                                      pr:"8,00"},
-    {no:"06", nm:"Grilled Mushroom & Blue Cheese", ig:"Pesto, gegrillte Champignons, Schmorzwiebeln, Blue Cheese", pr:"13,50"},
-    {no:"07", nm:"Halloumi & Aubergine",       ig:"Halloumi, gegrillte Aubergine, Honey Mustard Soße",          pr:"9,50"},
-    {no:"08", nm:"Mozzarella Burger",          ig:"Beef-Patty, Pesto, Aioli, Mozzarella, Röstzwiebeln",         pr:"9,00",  alt:"11,50"},
-    {no:"10", nm:"Crunchy Chicken Burger",     ig:"Crunchy Chicken mit Cheese nach Wahl",                       pr:"11,50"},
-    {no:"11", nm:"Beyond Burger Original",     ig:"Pflanzliches Patty, Ketchup",                                pr:"12,50", veg:true},
-    {no:"12", nm:"BBQ Burger Avocado",         ig:"Cheddar, Bacon, Barbecue-Sauce, Avocado",                    pr:"9,00",  alt:"13,90"},
-    {no:"13", nm:"Kleefeld Special Burger",    ig:"2 Mozzarella-Sticks, 2 Zwiebelringe, Röstzwiebeln, Sauce nach Wahl", pr:"11,00", alt:"12,00"}
-  ]},
+  burger: { ico:"🍔", title:"KLEE BURGER", items:[
+    {no:"01", nm:"Classic Hamburger",      ig:"Rindfleisch-Patty",                             pr:"6,00"},
+    {no:"02", nm:"Cheeseburger",           ig:"Rindfleisch-Patty, Cheddar-Käse",               pr:"6,50"},
+    {no:"03", nm:"Chili Cheeseburger",     ig:"Cheddar-Käse, Jalapeños, Chili-Sauce",          pr:"7,00"},
+    {no:"04", nm:"Kleefood BBQ Burger",    ig:"Cheddar-Käse, Bacon, Barbecue-Sauce",           pr:"7,50", best:true},
+    {no:"05", nm:"Cremig Avocado Burger",  ig:"Guacamole, Beef-Patty",                         pr:"7,50"},
+    {no:"06", nm:"Mushroom & Blue Cheese", ig:"Pesto, Champignons, Schmorzwiebeln",            pr:"7,50"},
+    {no:"07", nm:"Halloumi & Aubergine",   ig:"Halloumi, Aubergine, Honey Mustard",            pr:"7,50", veg:true},
+    {no:"08", nm:"Mozzarella Burger",      ig:"Pesto, Aioli, Mozzarella, Röstzwiebeln",        pr:"8,00"},
+    {no:"09", nm:"Chicken Classic Burger", ig:"Gegrilltes Chicken",                            pr:"5,50"},
+    {no:"10", nm:"Crunchy Chicken Burger", ig:"Crunchy Chicken mit Cheese nach Wahl",          pr:"6,50"},
+    {no:"11", nm:"Beyond Burger original", ig:"Pflanzliches Patty, Ketchup",                   pr:"8,00", veg:true},
+    {no:"12", nm:"BBQ Burger Avocado",     ig:"Cheddar, Barbecue-Sauce, Avocado",              pr:"9,00"},
+    {no:"13", nm:"Kleefeld Special Burger",ig:"2 Mozzarella-Sticks, Zwiebelringe, Röstzwiebeln",pr:"10,00", best:true}
+  ], note:"100 % Rind · alle Burger mit Ketchup, Mayonnaise, Tomaten, sauren Gurken, Senf, Zwiebeln & Mixed-Salat" },
 
-  smash: { ico:"🥩", title:"SMASH BURGER", items:[
-    {no:"15", nm:"Hamburger Smash",        ig:"",                 pr:"5,00"},
-    {no:"16", nm:"Cheeseburger Smash",     ig:"",                 pr:"5,50", best:"1"},
-    {no:"17", nm:"Chili Cheese Burger Smash", ig:"Mit Jalapeños", pr:"6,00", best:"3"},
-    {no:"18", nm:"BBQ Burger Smash",       ig:"Mit BBQ-Sauce",    pr:"6,00"},
-    {no:"19", nm:"Chicken Burger",         ig:"Mit Aioli",        pr:"6,00"}
+  smash: { ico:"🥩", title:"SMASH BURGER", hint:"Doppeltes Beef-Patty  +2,50 €", items:[
+    {no:"15", nm:"Hamburger Smash",    ig:"",              pr:"4,00"},
+    {no:"16", nm:"Cheeseburger Smash", ig:"",              pr:"4,50"},
+    {no:"17", nm:"Chili Cheese Smash", ig:"mit Jalapeños", pr:"5,00"},
+    {no:"18", nm:"BBQ Burger Smash",   ig:"mit BBQ-Sauce", pr:"5,00"},
+    {no:"19", nm:"Chicken Burger Smash",ig:"mit Aioli",    pr:"5,00"}
   ]},
 
   kids: { ico:"🧒", title:"KIDS MENÜ", items:[
     {no:"", nm:"Kids Menü Smash Burger", ig:"4 Nuggets + Pommes + Capri Sun", pr:"9,50"}
   ]},
 
-  beilagen: { ico:"🍟", title:"BEILAGEN", items:[
-    {no:"25", nm:"BBQ Fries",           ig:"BBQ-Sauce, Bacon, Röstzwiebeln",   pr:"6,00"},
-    {no:"26", nm:"Chili Cheese Fries",  ig:"Jalapeños, Käse",                  pr:"6,00"},
-    {no:"27", nm:"Garlic Fries",        ig:"Parmesan, Petersilie, Knoblauch",  pr:"6,00"},
-    {no:"28", nm:"Süßkartoffel-Pommes", ig:"",                                 pr:"5,90", best:"7", veg:true},
-    {no:"29", nm:"Pommes Fries",        ig:"",                                 pr:"4,50", best:"4", veg:true},
-    {no:"30", nm:"Curly Fries",         ig:"",                                 pr:"5,50", veg:true},
-    {no:"31", nm:"Coleslaw",            ig:"Krautsalat",                       pr:"2,50", veg:true}
-  ]},
 
-  veg: { ico:"🥙", title:"VEGETARISCH", items:[
-    {no:"35", nm:"Falafel Rolle",          ig:"4 Stück mit Salat und Soße",              pr:"6,50",  veg:true},
-    {no:"36", nm:"XL Falafel Rolle",       ig:"6 Stück mit Salat und Soße",              pr:"8,00",  veg:true},
-    {no:"37", nm:"Falafel Teller",         ig:"6 Stück, Reis oder Pommes, Salat & Soße", pr:"12,00", veg:true},
-    {no:"38", nm:"Halloumi mit Falafel Rolle", ig:"3 Halloumi, 3 Falafel mit Salat und Soße", pr:"9,50", veg:true}
-  ]}
+  pizza: { ico:"🍕", title:"STONE OVEN PIZZA", sizes:["30 cm","40 cm"], items:[
+    {no:"65", nm:"Margharita",    ig:"Tomatensoße & Käse",                        pr:"7,00",  pr2:"12,00"},
+    {no:"66", nm:"Tonno",         ig:"Thunfisch, Zwiebeln",                       pr:"9,00",  pr2:"16,00"},
+    {no:"67", nm:"Kleefood",      ig:"Putenschinken, Paprika, Champignons, Jalapeños", pr:"9,50", pr2:"16,00", best:true},
+    {no:"68", nm:"Salami",        ig:"Geflügel-Salami",                           pr:"9,50",  pr2:"16,00"},
+    {no:"69", nm:"Putenschinken", ig:"Putenschinken",                             pr:"9,50",  pr2:"16,00"},
+    {no:"70", nm:"Hawaii",        ig:"Putenschinken & Ananas",                    pr:"9,50",  pr2:"16,00"},
+    {no:"71", nm:"Funghi",        ig:"Frische Champignons, Peperoni",             pr:"9,50",  pr2:"16,00"},
+    {no:"72", nm:"Fiori",         ig:"Geflügel-Salami, Champignons, Peperoni",    pr:"10,00", pr2:"18,00"},
+    {no:"73", nm:"Sucuk",         ig:"Knoblauchwurst",                            pr:"9,50",  pr2:"16,00"},
+    {no:"74", nm:"BBQ",           ig:"Hähnchenbrust, Zwiebeln, Mais, BBQ-Sauce",  pr:"10,00", pr2:"18,00"},
+    {no:"75", nm:"Picante",       ig:"Salami, Zwiebeln, Jalapeños, Oliven",       pr:"10,00", pr2:"18,00"},
+    {no:"76", nm:"Garnelen",      ig:"mit Knoblauch",                             pr:"10,00", pr2:"18,00"}
+  ], note:"77–81 auf dem anderen Screen" }
 };
 
 /* ---------- Aufbau ---------- */
@@ -242,14 +237,12 @@ document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + 
 function renderSection(sec){
   const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
   const rows = sec.items.map((it,i) =>
-    '<div class="row' + (it.best ? ' best' : '') + (it.alt ? ' deal' : '') + '" style="--i:' + i + '">' +
-      '<div class="no">' + (it.no || '') + '</div>' +
+    '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
+      '<div class="no">' + it.no + '</div>' +
       '<div class="tx"><div class="nm">' + it.nm +
-        (it.best ? '<span class="tag b">\u2605 TOP ' + it.best + '</span>' : '') +
+        (it.best ? '<span class="tag b">★ TOP</span>' : '') +
         (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
-        (it.alt  ? '<span class="tag d">ANGEBOT</span>' : '') +
       '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
-      (it.alt ? '<div class="alt">' + it.alt + '</div>' : '') +
       '<div class="pr">' + it.pr + '</div>' +
       (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
     '</div>').join('');
@@ -257,9 +250,9 @@ function renderSection(sec){
          rows + (sec.hint ? '<div class="hint">' + sec.hint + '</div>' : '');
 }
 
+document.getElementById('burger').innerHTML = renderSection(SECTIONS.burger);
 document.getElementById('smash').innerHTML  = renderSection(SECTIONS.smash) + renderSection(SECTIONS.kids);
-document.getElementById('burger').innerHTML = renderSection(SECTIONS.hamburger);
-document.getElementById('pizza').innerHTML  = renderSection(SECTIONS.beilagen) + renderSection(SECTIONS.veg);
+document.getElementById('pizza').innerHTML  = renderSection(SECTIONS.pizza);
 
 /* ---------- Bildwechsel: zwei <img>, weich übergeblendet ---------- */
 const shotEls = [document.getElementById('shotA'), document.getElementById('shotB')];
