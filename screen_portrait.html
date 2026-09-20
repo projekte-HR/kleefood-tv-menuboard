@@ -116,7 +116,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 <div id="stage" class="play">
 
   <div id="top">
-    <img id="logo" src="logo.jpg" alt="KleeFood">
+    <img id="logo" src="logo.jpg?v=2" alt="KleeFood">
     <div id="kicker">MACH DEIN MENÜ DRAUS</div>
     <div id="title">SPAR MENÜS</div>
     <div id="sub">Jedes Menü mit Pommes und 0,33 l Softdrink</div>
@@ -134,6 +134,11 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000;}
    INHALTE – die drei Spar Menüs.
    Bilder liegen lokal im Ordner fotos/ (zusammen rund 300 KB).
    ======================================================================= */
+/* Versionsnummer an den Bildpfaden: erzwingt nach einem Bildtausch das
+   Neuladen, sonst zeigt der Browser auf dem Stick das alte Bild aus dem
+   Cache. Bei jedem Bildwechsel einfach hochzaehlen.                      */
+const V = "?v=2";
+
 const MENUS = [
   { no:"1", nm:"BURGER MENÜ",
     ig:"Burger nach Wahl · Pommes · 0,33 l Softdrink",
@@ -149,7 +154,7 @@ const MENUS = [
 const menus = document.getElementById('menus');
 menus.innerHTML = MENUS.map((m,i) =>
   '<div class="menu' + (m.top ? ' top' : '') + '" style="--i:' + i + '">' +
-    '<div class="pic" style="background-image:url(' + m.img + ')"><div class="no">' + m.no + '</div></div>' +
+    '<div class="pic" style="background-image:url(' + m.img + V + ')"><div class="no">' + m.no + '</div></div>' +
     (m.badge ? '<div class="badge">' + m.badge + '</div>' : '') +
     '<div class="txt">' +
       '<div class="nm">' + m.nm + '</div>' +

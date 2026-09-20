@@ -171,6 +171,8 @@ footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
    ======================================================================= */
 /* Zwei Bilder im Wechsel – keine Videos mehr, damit der Fire TV Stick
    nichts dekodieren muss. Bilder liegen lokal im Ordner fotos/.          */
+const V = "?v=2";                       // erzwingt Neuladen nach Bildtausch
+
 const SHOTS = [
   {img:"fotos/burger.jpg", t:"KLEEFOOD BBQ BURGER", s:"Rindfleisch-Patty, Cheddar-Käse, Bacon, Barbecue-Sauce", p:"7,50 €"},
   {img:"fotos/pizza.jpg",  t:"PIZZA KLEEFOOD",    s:"Putenschinken, Paprika, Champignons, Jalapeños",     p:"9,50 €"}
@@ -249,7 +251,7 @@ const clipTitle = document.getElementById('clipTitle');
 const clipPrice = document.getElementById('clipPrice');
 let si = -1, front = 0;
 
-SHOTS.forEach((sh,i) => { shotEls[i].style.backgroundImage = 'url(' + sh.img + ')'; });
+SHOTS.forEach((sh,i) => { shotEls[i].style.backgroundImage = 'url(' + sh.img + V + ')'; });
 
 function nextShot(){
   si = (si + 1) % SHOTS.length;
