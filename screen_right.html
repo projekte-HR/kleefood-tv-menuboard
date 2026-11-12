@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KLEEFOOD – Screen 2 – Pizza & Veggie</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+<style>
+/* =======================================================================
+   KLEEFOOD – SCREEN 2 (1920x1080)
+   Zweite Hälfte der Karte, alles gleichzeitig sichtbar, nichts wechselt:
+     links   Fingerfood + Vegetarisch
+     Mitte   Beilagen + Getränke + echtes Foto
+     rechts  Dips & Saucen + Spar Menü
+   Burger, Smash Burger und Pizza laufen auf Screen 1.
+   Fire TV Stick: nur transform / opacity / clip-path, keine Filter.
+   ======================================================================= */
+
+:root{
+  --bg:#111417; --green:#00E676; --gold:#FF9F1C;
+  --white:#fff; --muted:rgba(255,255,255,.64); --line:rgba(255,255,255,.09);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{
+  width:1920px;height:1080px;overflow:hidden;background:var(--bg);color:var(--white);
+  font-family:'Poppins',system-ui,sans-serif;transform-origin:top left;
+}
+#board{
+  position:relative;width:1920px;height:1080px;padding:18px 34px 0;display:flex;flex-direction:column;
+  background:
+    radial-gradient(56% 42% at 16% 2%,  rgba(0,230,118,.14), transparent 62%),
+    radial-gradient(50% 40% at 92% 98%, rgba(255,159,28,.12), transparent 62%);
+}
+
+/* ---------- Kopf ---------- */
+header{display:flex;align-items:center;flex:none;height:86px;}
+header .mark{margin-right:20px;}
+.mark{width:70px;height:70px;flex:none;border-radius:50%;font-size:38px;
+  display:flex;align-items:center;justify-content:center;
+  border:3px solid var(--green);background:rgba(0,230,118,.08);box-shadow:0 0 28px rgba(0,230,118,.22) inset;}
+.brand h1{font-family:'Bebas Neue',sans-serif;font-size:62px;line-height:.88;letter-spacing:5px;
+  background:linear-gradient(92deg,var(--white),var(--green) 55%,var(--gold));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.brand p{font-size:17px;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:3px;}
+.hours{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
+.hours .a{font-size:25px;font-weight:900;letter-spacing:2px;color:var(--gold);}
+.hours .b{font-size:18px;font-weight:800;margin-top:4px;color:var(--muted);}
+
+/* ---------- Raster ---------- */
+/* Flexbox statt CSS Grid: laeuft auch auf sehr alten TV-Browsern */
+#grid{flex:1;min-height:0;display:flex;margin-top:8px;}
+.col{display:flex;flex-direction:column;min-height:0;min-width:0;}
+.col:nth-child(1){flex:1.08 1 0%;margin-right:20px;}
+.col:nth-child(2){flex:1 1 0%;margin-right:20px;}
+.col:nth-child(3){flex:.96 1 0%;}
+.col > * + *{margin-top:16px;}
+.card{
+  background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
+  border:1.5px solid var(--line);border-radius:20px;padding:14px 18px;
+  display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;
+}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--green),var(--gold));}
+.play .card{animation:cardIn .7s cubic-bezier(.22,1,.36,1) calc(var(--c)*.1s) both;}
+@keyframes cardIn{from{opacity:0;transform:translateY(34px);} to{opacity:1;transform:none;}}
+
+/* ---------- Foto ---------- */
+.shot{position:relative;flex:1;min-height:120px;border-radius:20px;overflow:hidden;border:1.5px solid var(--line);}
+.shot .img{position:absolute;top:0;left:0;right:0;bottom:0;background-size:cover;background-position:center;transform:scale(1.02);}
+/* kein Dauer-Zoom mehr – auf dem Fire TV Stick spart das spürbar Leistung */
+.shot::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
+  background:linear-gradient(0deg,rgba(10,12,14,.92) 0%,rgba(10,12,14,.12) 46%,transparent 70%);}
+.shot .cap{position:absolute;left:18px;right:18px;bottom:14px;z-index:2;display:flex;align-items:flex-end;}
+.shot .cap .t{font-family:'Bebas Neue',sans-serif;font-size:38px;line-height:1;letter-spacing:2px;}
+.shot .cap .t b{display:block;font-family:'Poppins';font-weight:300;font-size:16px;color:var(--muted);letter-spacing:0;}
+.shot .cap .p{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:29px;
+  color:#0b0f11;background:linear-gradient(135deg,var(--green),var(--gold));padding:6px 18px;border-radius:12px;white-space:nowrap;}
+.play .shot .cap{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
+
+/* ---------- Kategorie-Kopf ---------- */
+.head{display:flex;align-items:flex-end;padding-bottom:5px;margin-bottom:3px;
+  border-bottom:2px solid rgba(255,255,255,.13);flex:none;}
+.sec + .sec .head{margin-top:8px;}
+.play .head{animation:wipe .7s cubic-bezier(.22,1,.36,1) calc(.12s + var(--c)*.1s) both;}
+@keyframes wipe{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
+.head .ico{font-size:27px;line-height:1;margin-right:9px;}
+.head h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2.5px;line-height:1;
+  background:linear-gradient(90deg,var(--white),var(--green));
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.head .sizes{margin-left:auto;display:flex;}
+.head .sizes span + span{margin-left:12px;}
+.head .sizes span{width:80px;text-align:right;font-size:14px;font-weight:800;color:var(--gold);
+  font-family:'Montserrat',sans-serif;letter-spacing:1px;text-transform:uppercase;}
+
+/* ---------- Zeile ---------- */
+.row{display:flex;align-items:center;padding:1px 4px;border-radius:9px;position:relative;}
+.row + .row{border-top:1px solid rgba(255,255,255,.06);}
+.play .row{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes rowIn{from{opacity:0;transform:translateY(26px);} to{opacity:1;transform:none;}}
+.row .no{font-family:'Montserrat',sans-serif;font-weight:900;font-size:18px;color:var(--gold);width:30px;flex:none;margin-right:10px;}
+.row .tx{flex:1;min-width:0;}
+.row .nm{font-size:25px;font-weight:600;line-height:1.14;}
+.row .ig{font-size:15px;font-weight:300;color:var(--muted);line-height:1.15;margin-top:0;}
+.row .pr{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--gold);
+  width:80px;text-align:right;flex:none;white-space:nowrap;margin-left:10px;}
+.row .pr.two{color:var(--white);}
+.play .row .pr{animation:pop .45s cubic-bezier(.34,1.56,.64,1) calc(.4s + var(--c)*.1s + var(--i)*.045s) both;}
+@keyframes pop{0%{opacity:0;transform:scale(.65);}60%{opacity:1;transform:scale(1.16);}100%{transform:scale(1);}}
+
+.row.best{background:rgba(0,230,118,.09);box-shadow:inset 0 0 0 1.5px rgba(0,230,118,.32);}
+.play .row.best{animation:rowIn .5s cubic-bezier(.22,1,.36,1) calc(.25s + var(--c)*.1s + var(--i)*.045s) both,
+                          beat 7s ease-in-out 2s infinite;}
+@keyframes beat{0%,88%,100%{transform:scale(1);}94%{transform:scale(1.03);}}
+.tag{font-family:'Montserrat',sans-serif;font-size:12px;font-weight:900;letter-spacing:1.1px;
+  padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle;white-space:nowrap;}
+.tag.b{background:var(--green);color:#0b0f11;}
+.tag.v{border:1px solid var(--green);color:var(--green);}
+
+/* Dips kompakt in zwei Spalten */
+.dipgrid{display:flex;flex-wrap:wrap;margin-top:2px;}
+.dip{
+  width:50%;display:flex;align-items:baseline;
+  padding:4px 14px 4px 0;font-size:21px;color:rgba(255,255,255,.86);
+}
+.dip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dip b{font-family:'Montserrat',sans-serif;font-weight:900;font-size:22px;color:var(--gold);margin-left:10px;}
+
+/* ---------- Spar Menü ---------- */
+#deal{
+  flex:none;border-radius:20px;padding:12px 18px;position:relative;
+  background:linear-gradient(180deg,rgba(23,28,32,.94),rgba(17,20,23,.94));
+  border:1.5px solid var(--line);
+}
+#deal::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0;
+  background:linear-gradient(90deg,var(--green),var(--gold));}
+.dipgrid{display:flex;flex-wrap:wrap;margin-top:2px;}
+.dip{width:50%;display:flex;align-items:baseline;padding:4px 14px 4px 0;font-size:19px;color:rgba(255,255,255,.86);}
+.dip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dip b{font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:var(--gold);margin-left:8px;}
+.play #deal{animation:cardIn .7s cubic-bezier(.22,1,.36,1) .5s both;}
+#deal .top{display:flex;align-items:center;}
+#deal .kick{font-family:'Bebas Neue',sans-serif;font-size:56px;letter-spacing:3px;color:var(--gold);line-height:1;}
+#deal .price{margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:38px;color:#0b0f11;
+  background:linear-gradient(135deg,var(--green),var(--gold));padding:8px 22px;border-radius:14px;white-space:nowrap;}
+#deal ul{list-style:none;margin-top:10px;}
+#deal li{font-size:23px;font-weight:500;line-height:1.55;}
+#deal li::before{content:"▸ ";color:var(--green);font-weight:900;}
+#deal .note{font-size:15px;color:var(--muted);margin-top:6px;}
+
+/* ---------- Ticker ---------- */
+footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0;}
+#ticker{flex:1;height:46px;border-radius:11px;overflow:hidden;display:flex;align-items:center;
+  border:1.5px solid rgba(0,230,118,.28);background:rgba(0,230,118,.06);}
+#ticker .tr{display:flex;white-space:nowrap;animation:scroll 38s linear infinite;}
+#ticker .tr span{font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;letter-spacing:4px;
+  padding:0 52px;text-transform:uppercase;}
+@keyframes scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+</style>
+</head>
+<body>
+<div id="board" class="play">
+
+  <header>
+    <div class="mark">☘</div>
+    <div class="brand">
+      <h1>KLEEFOOD</h1>
+      <p>Burger • Pizza • Fingerfood</p>
+    </div>
+    <div class="hours">
+      <div class="a">TEL. 0511 569 575 67</div>
+    </div>
+  </header>
+
+  <div id="grid">
+    <div class="col" style="--c:0"><div class="card" id="c1"></div></div>
+
+    <div class="col" style="--c:1"><div class="card" id="c2"></div></div>
+
+    <div class="col" style="--c:2">
+      <div class="card" id="c3"></div>
+      <div id="deal"></div>
+    </div>
+  </div>
+
+  <footer><div id="ticker"><div class="tr" id="tr"></div></div></footer>
+</div>
+
+<script>
+/* =======================================================================
+   INHALTE – zweite Hälfte der KLEEFOOD-Karte.
+   Eigenes Foto? URL in PHOTO auf z. B. "fotos/fries.jpg" ändern.
+   ======================================================================= */
+const TICKER = "🔥 ALLE PIZZEN IN 30 CM & 40 CM • BURGER, BEILAGEN & SPAR MENÜ AUF DEM ANDEREN SCREEN • SCHÜLER-AKTION: POMMES 2,00 € 🔥";
+
+const S = {
+  pizzaA: { ico:"🍕", title:"PIZZA", sizes:["30 cm","40 cm"], note:"65 – 73", items:[
+    {no:"65", nm:"Margherita",    ig:"Tomatensoße & Käse",                               pr:"8,50",  pr2:"14,00"},
+    {no:"66", nm:"Tonno",         ig:"Thunfisch, Zwiebeln",                              pr:"10,00", pr2:"17,00"},
+    {no:"67", nm:"Kleefood",      ig:"Putenschinken, Paprika, frische Champignons, Jalapeños", pr:"10,00", pr2:"16,50", best:true},
+    {no:"68", nm:"Salami",        ig:"Geflügel-Salami",                                  pr:"10,00", pr2:"16,50"},
+    {no:"69", nm:"Putenschinken", ig:"Putenschinken",                                    pr:"10,00", pr2:"16,50"},
+    {no:"70", nm:"Hawaii",        ig:"Putenschinken, Ananas",                            pr:"10,00", pr2:"16,50"},
+    {no:"71", nm:"Funghi",        ig:"Frische Champignons, Peperoni",                    pr:"10,00", pr2:"16,50"},
+    {no:"72", nm:"Fiori",         ig:"Geflügel-Salami, frische Champignons, Peperoni",   pr:"11,00", pr2:"19,00"},
+    {no:"73", nm:"Sucuk",         ig:"Knoblauchwurst",                                   pr:"10,50", pr2:"17,00"}
+  ]},
+
+  pizzaB: { ico:"🍕", title:"PIZZA", sizes:["30 cm","40 cm"], note:"74 – 82", items:[
+    {no:"74", nm:"BBQ",           ig:"Hähnchenbrust, Zwiebeln, Mais, BBQ-Soße",          pr:"11,00", pr2:"19,00"},
+    {no:"75", nm:"Picante",       ig:"Geflügel-Salami, Zwiebeln, Jalapeños, Oliven",     pr:"11,00", pr2:"19,00"},
+    {no:"76", nm:"Garnelen",      ig:"mit Knoblauch",                                    pr:"11,00", pr2:"19,00"},
+    {no:"77", nm:"Spinat",        ig:"Weichkäse, frischer Knoblauch",                    pr:"10,50", pr2:"18,50"},
+    {no:"78", nm:"Hollandaise",   ig:"Hähnchenbrust, Peperoni, Sauce Hollandaise",       pr:"11,00", pr2:"19,00"},
+    {no:"79", nm:"New York",      ig:"Putenschinken, Broccoli, Sauce Hollandaise",       pr:"10,00", pr2:"16,50"},
+    {no:"80", nm:"Veggie",        ig:"Broccoli, Champignons, Peperoni, Tomaten, Zwiebeln, Oliven", pr:"10,50", pr2:"18,50", veg:true},
+    {no:"81", nm:"Mix",           ig:"Putenschinken, Geflügel-Salami, Champignons, Peperoni",      pr:"11,00", pr2:"19,00"},
+    {no:"82", nm:"Pizzabrötchen", ig:"6 Stück mit Käse und 1 Zutat",                     pr:"10,50", pr2:"–"}
+  ]},
+
+  finger: { ico:"🍗", title:"FINGERFOOD", sizes:["klein","groß"], note:"45 – 51", items:[
+    {no:"45", nm:"Zwiebelringe",      ig:"10 St. mit einem Dip nach Wahl",          pr:"–",     pr2:"5,00"},
+    {no:"46", nm:"Mozzarella-Sticks", ig:"5 St. / 10 St. mit einem Dip",            pr:"4,50",  pr2:"8,00"},
+    {no:"47", nm:"Hot Chicken Wings", ig:"6 St. / 10 St. mit einem Dip",            pr:"7,00",  pr2:"9,50", best:true},
+    {no:"48", nm:"Chicken Nuggets",   ig:"6 St. / 10 St. mit Pommes & einem Dip",   pr:"8,50",  pr2:"10,50"},
+    {no:"49", nm:"Chicken Fingers",   ig:"6 St. / 10 St. mit einem Dip",            pr:"8,50",  pr2:"12,50"},
+    {no:"50", nm:"Tex-Mex-Teller",    ig:"2× Mozzarella, 2× Zwiebelring, 2× Nuggets, Pommes, 2 Dips", pr:"", pr2:"10,50"},
+    {no:"51", nm:"Kleefood Bucket",   ig:"4× Mozzarella, 4× Zwiebelring, 4× Nuggets, Pommes, 4 Dips", pr:"", pr2:"16,00", best:true}
+  ]},
+
+  veg: { ico:"🥙", title:"VEGETARISCH", note:"35 – 39", items:[
+    {no:"35", nm:"Falafel Rolle",      ig:"4 St. mit Salat & Soße",                 pr:"6,50",  veg:true},
+    {no:"36", nm:"XL Falafel Rolle",   ig:"6 St. mit Salat & Soße",                 pr:"7,50",  veg:true},
+    {no:"37", nm:"Falafel Teller",     ig:"8 St., Reis oder Pommes, Salat & Soße",  pr:"11,00", veg:true},
+    {no:"38", nm:"Halloumi & Falafel", ig:"3 Halloumi, 3 Falafel, Salat & Soße",    pr:"9,50",  veg:true},
+    {no:"39", nm:"Crispy Teller",      ig:"4 St. mit Reis oder Pommes",             pr:"11,00"}
+  ]},
+
+  dips: { ico:"🥣", title:"DIPS & SAUCEN", note:"55 – 63", items:[
+    {no:"55", nm:"Ketchup",      pr:"0,50"}, {no:"56", nm:"Mayonnaise",   pr:"0,50"},
+    {no:"57", nm:"Aioli",        pr:"1,00"}, {no:"58", nm:"Sauer-Creme",  pr:"1,00"},
+    {no:"59", nm:"Juppi-Sauce",  pr:"1,00"}, {no:"60", nm:"Hanim Master", pr:"1,00"},
+    {no:"61", nm:"Barbecue",     pr:"1,00"}, {no:"62", nm:"Trüffel-Mayo", pr:"1,00"},
+    {no:"63", nm:"Käsesauce",    pr:"2,50"}
+  ]}
+};
+
+/* ---------- Aufbau ---------- */
+document.getElementById('tr').innerHTML = '<span>' + TICKER + '</span><span>' + TICKER + '</span>';
+
+/* Dips in zwei Spalten statt als einzelne Zeilen - spart die halbe Hoehe */
+function dipsKompakt(sec){
+  return '<div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2></div>' +
+    '<div class="dipgrid">' + sec.items.map(it =>
+      '<div class="dip"><span>' + it.no + ' ' + it.nm + '</span><b>' + it.pr + '</b></div>').join('') +
+    '</div>';
+}
+
+function renderSection(sec){
+  const sizes = sec.sizes ? '<div class="sizes">' + sec.sizes.map(s => '<span>' + s + '</span>').join('') + '</div>' : '';
+  const rows = sec.items.map((it,i) =>
+    '<div class="row' + (it.best ? ' best' : '') + '" style="--i:' + i + '">' +
+      '<div class="no">' + (it.no || '') + '</div>' +
+      '<div class="tx"><div class="nm">' + it.nm +
+        (it.best ? '<span class="tag b">★ TOP</span>' : '') +
+        (it.veg  ? '<span class="tag v">VEGGIE</span>' : '') +
+      '</div>' + (it.ig ? '<div class="ig">' + it.ig + '</div>' : '') + '</div>' +
+      '<div class="pr">' + it.pr + '</div>' +
+      (it.pr2 !== undefined ? '<div class="pr two">' + it.pr2 + '</div>' : '') +
+    '</div>').join('');
+  return '<div class="sec"><div class="head"><span class="ico">' + sec.ico + '</span><h2>' + sec.title + '</h2>' +
+         sizes + '</div>' + rows + '</div>';
+}
+
+document.getElementById('c1').innerHTML = renderSection(S.pizzaA);
+document.getElementById('c2').innerHTML = renderSection(S.pizzaB) + renderSection(S.veg);
+document.getElementById('c3').innerHTML = renderSection(S.finger);
+document.getElementById('deal').innerHTML =
+  '<div class="head"><span class="ico">' + S.dips.ico + '</span><h2>' + S.dips.title + '</h2>' +
+  '<div class="note">' + S.dips.note + '</div></div>' +
+  '<div class="dipgrid">' + S.dips.items.map(function(it){
+    return '<div class="dip"><span>' + it.no + ' ' + it.nm + '</span><b>' + it.pr + '</b></div>'; }).join('') + '</div>';
+
+/* Die Einblendung läuft nur einmal beim Start – danach bleibt die Karte
+   ruhig stehen, das Laufband unten läuft dauerhaft weiter.
+   Die Seite lädt sich nie neu.                                            */
+
+/* ---------- Auto-Skalierung ---------- */
+function fit(){
+  const s = Math.min(innerWidth/1920, innerHeight/1080);
+  document.body.style.transform = 'scale(' + s + ')';
+}
+addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>
