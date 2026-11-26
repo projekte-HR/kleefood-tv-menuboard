@@ -199,11 +199,11 @@ var drehRichtung = +(merker('drehung') || 270);
 /* RANDFAKTOR – gegen Overscan.
    Fernseher schneiden am Rand ein paar Prozent weg, der Browser merkt davon
    nichts: er meldet die volle Auflösung, das TV zeigt aber weniger. Deshalb
-   wird die Bühne etwas kleiner gezeichnet und mittig gesetzt. 0,94 passt bei
+   wird die Bühne etwas kleiner gezeichnet und mittig gesetzt. 0,85 lässt reichlich Luft; passt bei
    den meisten Geräten; jedes TV ist anders, darum lässt es sich am Gerät
-   nachstellen: Taste "+" größer, Taste "-" kleiner, "0" zurück auf 0,94.
+   nachstellen: Taste "+" größer, Taste "-" kleiner, "0" zurück auf 0,85.
    Der Wert bleibt im Gerät gespeichert.                                    */
-var randFaktor = +(merker('rand') || 0.94);
+var randFaktor = +(merker('rand') || 0.85);
 
 function einpassen(){
   var stage = document.getElementById('stage');
@@ -235,7 +235,7 @@ function randAnzeigen(){
 }
 
 function randAendern(delta){
-  randFaktor = Math.min(1, Math.max(0.8, Math.round((randFaktor + delta) * 100) / 100));
+  randFaktor = Math.min(1, Math.max(0.6, Math.round((randFaktor + delta) * 100) / 100));
   merker('rand', randFaktor);
   einpassen();
   randAnzeigen();
@@ -278,7 +278,7 @@ function starten(seiten){
     /* Overscan nachstellen – auch über die Pfeiltasten der TV-Fernbedienung */
     else if (k === '+' || k === '=' || k === 'arrowup')   randAendern(+0.01);
     else if (k === '-' || k === '_' || k === 'arrowdown') randAendern(-0.01);
-    else if (k === '0'){ randFaktor = 0.94; merker('rand', 0.94); einpassen(); randAnzeigen(); }
+    else if (k === '0'){ randFaktor = 0.85; merker('rand', 0.85); einpassen(); randAnzeigen(); }
   });
 
   /* Alle 30 s nachziehen. Nötig, weil Browser Animationen drosseln, wenn die
