@@ -1,162 +1,187 @@
 /* ============================================================================
-   KLEEFOOD – GEMEINSAMES DESIGN FÜR ALLE DREI SCREENS
-   Look des gedruckten Aufstellers: Anthrazit, Rot, weiße Schrift,
-   Kategorien als rote Schrägbalken.
+   KLEEFOOD – NEON-NACHT
+   Gemeinsames Design für alle drei Screens.
 
-   Fire TV Stick: der Silk-Browser älterer Geräte ist alt. Deshalb bewusst
-   KEIN inset, KEIN flex-gap, KEIN place-items, KEIN mask-image, KEIN filter.
-   Bewegt wird ausschließlich mit transform und opacity.
+   Leuchten ausschließlich über STATISCHE box-shadow / text-shadow: die werden
+   einmal gezeichnet und kosten danach nichts. Bewegt wird nur mit transform
+   und opacity. Kein filter, kein inset, kein flex-gap, kein place-items,
+   kein mask-image – der Silk-Browser älterer Fire TV Sticks kennt das nicht.
    ========================================================================= */
 
 :root{
-  --bg:        #0e1013;
-  --bg-karte:  #15181c;
-  --rot:       #FF3B21;
-  --rot-tief:  #C0392B;
-  --gold:      #FF9F1C;
-  --gruen:     #3DDC84;        /* nur für die Veggie-Markierung */
-  --weiss:     #ffffff;
-  --grau:      rgba(255,255,255,.62);
-  --linie:     rgba(255,255,255,.09);
+  --nacht:   #05060a;
+  --panel:   #0a0d14;
+  --cyan:    #19E7FF;
+  --limone:  #D7FF3E;
+  --magenta: #FF2D95;
+  --weiss:   #ffffff;
+  --grau:    rgba(214,238,255,.58);
+  --linie:   rgba(25,231,255,.20);
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;}
 
-/* ---------------------------------------------------------------- Bühne */
+/* ----------------------------------------------------------------- Bühne */
 #stage{
   position:absolute;top:50%;left:50%;
   transform-origin:center center;overflow:hidden;
   font-family:'Poppins',system-ui,Arial,sans-serif;color:var(--weiss);
-  background:var(--bg);
+  background:
+    radial-gradient(60% 46% at 12% 0%,  rgba(25,231,255,.10), transparent 60%),
+    radial-gradient(54% 42% at 92% 100%,rgba(255,45,149,.10), transparent 60%),
+    var(--nacht);
   display:flex;flex-direction:column;
 }
-#stage.quer  {width:1920px;height:1080px;margin:-540px 0 0 -960px;padding:18px 34px 0;}
-#stage.hoch  {width:1080px;height:1920px;margin:-960px 0 0 -540px;padding:26px 38px 22px;}
+#stage.quer{width:1920px;height:1080px;margin:-540px 0 0 -960px;padding:20px 40px 0;}
+#stage.hoch{width:1080px;height:1920px;margin:-960px 0 0 -540px;padding:30px 40px 24px;}
 
-/* Tiefenebene 1: Farbwolken, driften sehr langsam */
-#wolken{
-  position:absolute;top:-6%;left:-6%;right:-6%;bottom:-6%;z-index:0;
-  background:
-    radial-gradient(52% 40% at 14% 2%,  rgba(255,59,33,.20), transparent 62%),
-    radial-gradient(46% 38% at 88% 96%, rgba(255,159,28,.14), transparent 62%),
-    radial-gradient(40% 32% at 70% 22%, rgba(255,59,33,.10), transparent 64%);
-  animation:drift 48s ease-in-out infinite alternate;
+/* Feines Raster im Hintergrund – steht still, gibt nur Tiefe */
+#gitter{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:0;opacity:.5;
+  background-image:
+    linear-gradient(rgba(25,231,255,.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(25,231,255,.055) 1px, transparent 1px);
+  background-size:84px 84px;
 }
-@keyframes drift{
-  from{transform:translate3d(-14px,-10px,0) scale(1.01);}
-  to  {transform:translate3d( 14px, 10px,0) scale(1.04);}
-}
-#stage > *:not(#wolken){position:relative;z-index:1;}
 
-/* ----------------------------------------------------------------- Kopf */
-header{display:flex;align-items:center;flex:none;height:92px;}
-header .logo{width:78px;height:78px;flex:none;border-radius:50%;object-fit:cover;margin-right:18px;}
+/* ------------------------------------------ Lichtwelle (Screen 1 → 2 → 3) */
+/* Ein einziges Element je Screen. Es fährt in den ersten 13 % des
+   12-Sekunden-Takts quer durchs Bild und wartet danach außerhalb. So trägt
+   eine einzige Animation Bewegung und Pause, und ein negatives
+   animation-delay aus der Uhrzeit genügt, um alle drei auszurichten.       */
+#welle{
+  position:absolute;top:-18%;left:0;width:46%;bottom:-18%;z-index:5;pointer-events:none;
+  background:linear-gradient(100deg,
+    rgba(25,231,255,0) 0%,
+    rgba(25,231,255,.13) 38%,
+    rgba(215,255,62,.22) 52%,
+    rgba(25,231,255,.13) 66%,
+    rgba(25,231,255,0) 100%);
+  transform:translate3d(-120%,0,0) skewX(-14deg);
+  animation:welle 12s linear infinite;
+}
+@keyframes welle{
+  0%   {transform:translate3d(-120%,0,0) skewX(-14deg);}
+  13%  {transform:translate3d(270%,0,0)  skewX(-14deg);}
+  100% {transform:translate3d(270%,0,0)  skewX(-14deg);}
+}
+
+#stage > *:not(#gitter):not(#welle):not(#punkte){position:relative;z-index:1;}
+
+/* ------------------------------------------------------------------ Kopf */
+header{display:flex;align-items:center;flex:none;height:96px;}
+header .logo{
+  width:80px;height:80px;flex:none;border-radius:50%;object-fit:cover;margin-right:20px;
+  box-shadow:0 0 0 2px rgba(25,231,255,.55), 0 0 26px rgba(25,231,255,.35);
+}
 .marke h1{
-  font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:.86;letter-spacing:4px;color:var(--weiss);
+  font-family:'Bebas Neue',sans-serif;font-size:66px;line-height:.86;letter-spacing:5px;color:var(--weiss);
+  text-shadow:0 0 14px rgba(25,231,255,.55), 0 0 42px rgba(25,231,255,.30);
 }
-.marke h1 em{font-style:normal;color:var(--rot);}
-.marke p{font-size:15px;letter-spacing:6px;text-transform:uppercase;color:var(--grau);margin-top:4px;}
-.kopf-rechts{margin-left:auto;text-align:right;font-family:'Montserrat',sans-serif;}
+.marke h1 em{font-style:normal;color:var(--cyan);}
+.marke p{font-size:14px;letter-spacing:7px;text-transform:uppercase;color:var(--grau);margin-top:6px;}
+
+.kopf-rechts{margin-left:auto;text-align:right;}
 .kopf-rechts .gross{
-  font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:3px;line-height:1;color:var(--weiss);
+  font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px;line-height:1;color:var(--cyan);
+  text-shadow:0 0 16px rgba(25,231,255,.55);
 }
-.kopf-rechts .gross em{font-style:normal;color:var(--rot);}
-.kopf-rechts .klein{font-size:17px;font-weight:800;letter-spacing:3px;color:var(--grau);margin-top:5px;}
-
-/* --------------------------------------------------------------- Raster */
-#raster{flex:1;min-height:0;display:flex;margin-top:6px;}
-.spalte{display:flex;flex-direction:column;min-height:0;min-width:0;}
-.spalte + .spalte{margin-left:18px;}
-.spalte > * + *{margin-top:14px;}
-
-.karte{
-  background:var(--bg-karte);
-  border:1.5px solid var(--linie);border-radius:18px;padding:14px 18px 12px;
-  display:flex;flex-direction:column;overflow:hidden;position:relative;min-height:0;
+.kopf-rechts .klein{
+  font-family:'Montserrat',sans-serif;font-size:17px;font-weight:900;letter-spacing:3px;
+  color:var(--grau);margin-top:7px;
 }
 
-/* Einblendung beim Start – läuft einmal, nicht dauerhaft */
-.an .karte  {animation:aufsteigen .7s cubic-bezier(.22,1,.36,1) calc(var(--c,0) * .12s) both;}
-.an .bild   {animation:aufsteigen .7s cubic-bezier(.22,1,.36,1) calc(var(--c,0) * .12s + .1s) both;}
-@keyframes aufsteigen{
-  from{opacity:0;transform:translate3d(0,38px,0);}
-  to  {opacity:1;transform:translate3d(0,0,0);}
+/* ---------------------------------------------------- Seiten im Gleichtakt */
+#seiten{position:relative;flex:1;min-height:0;margin-top:8px;}
+.seite{
+  position:absolute;top:0;left:0;right:0;bottom:0;
+  display:flex;opacity:0;visibility:hidden;transition:opacity .55s ease;
 }
+.seite.aktiv{opacity:1;visibility:visible;}
+.seite > * + *{margin-left:20px;}
 
-/* ------------------------------------------- Kategorie als roter Schrägbalken */
-.kopfzeile{display:flex;align-items:center;flex:none;margin-bottom:6px;}
-.block + .block .kopfzeile{margin-top:12px;}
-.balken{
-  background:var(--rot);transform:skewX(-11deg);padding:5px 20px;flex:none;
-  box-shadow:0 6px 16px rgba(255,59,33,.22);
+/* Neon-Tafel */
+.tafel{
+  flex:1 1 0%;min-width:0;display:flex;flex-direction:column;overflow:hidden;
+  background:var(--panel);border:2px solid var(--linie);border-radius:20px;padding:16px 22px 10px;
+  box-shadow:0 0 0 1px rgba(25,231,255,.10), 0 0 44px rgba(25,231,255,.10) inset;
 }
-.balken span{
-  display:block;transform:skewX(11deg);
-  font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2.5px;line-height:1.08;color:var(--weiss);
+.seite.aktiv .tafel{animation:hoch .6s cubic-bezier(.22,1,.36,1) both;}
+.seite.aktiv .tafel + .tafel{animation-delay:.1s;}
+@keyframes hoch{from{opacity:0;transform:translate3d(0,30px,0);} to{opacity:1;transform:none;}}
+
+/* --------------------------------------------------------- Kategorie-Kopf */
+.kopfzeile{display:flex;align-items:center;flex:none;margin-bottom:10px;}
+.block + .block .kopfzeile{margin-top:16px;}
+.neonschild{
+  flex:none;border:2px solid var(--cyan);border-radius:12px;padding:5px 22px;
+  box-shadow:0 0 18px rgba(25,231,255,.45), 0 0 34px rgba(25,231,255,.20) inset;
 }
-.an .balken{animation:wischen .6s cubic-bezier(.22,1,.36,1) calc(var(--c,0) * .12s + .15s) both;}
-@keyframes wischen{
-  from{opacity:0;transform:skewX(-11deg) translate3d(-26px,0,0);}
-  to  {opacity:1;transform:skewX(-11deg) translate3d(0,0,0);}
+.neonschild span{
+  font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:3px;line-height:1.1;color:var(--cyan);
+  text-shadow:0 0 14px rgba(25,231,255,.75);
 }
 .nummern{
-  font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:3px;
-  color:var(--grau);margin-left:14px;white-space:nowrap;
+  font-family:'Montserrat',sans-serif;font-size:13px;font-weight:900;letter-spacing:3px;
+  color:var(--grau);margin-left:16px;white-space:nowrap;
 }
-.strich{flex:1;height:2px;background:rgba(255,59,33,.35);margin-left:14px;}
-.groessen{display:flex;margin-left:14px;flex:none;}
+.strich{flex:1;height:2px;background:linear-gradient(90deg,rgba(25,231,255,.45),transparent);margin-left:16px;}
+.groessen{display:flex;margin-left:16px;flex:none;}
 .groessen span{
-  width:78px;text-align:right;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;
-  letter-spacing:1.5px;color:var(--rot);text-transform:uppercase;
+  width:104px;text-align:right;font-family:'Montserrat',sans-serif;font-size:14px;font-weight:900;
+  letter-spacing:2px;color:var(--cyan);text-transform:uppercase;
 }
-.groessen span + span{margin-left:10px;}
+.groessen span + span{margin-left:12px;}
 
 .hinweis{
-  font-size:13px;line-height:1.3;color:var(--grau);
-  border-left:3px solid var(--rot);padding-left:9px;margin:2px 0 6px;
+  font-size:15px;line-height:1.35;color:var(--grau);
+  border-left:3px solid var(--cyan);padding-left:11px;margin-bottom:8px;
 }
 .fuss{
-  font-family:'Montserrat',sans-serif;font-size:14px;font-weight:800;letter-spacing:1.5px;
-  color:var(--rot);padding-top:7px;
+  font-family:'Montserrat',sans-serif;font-size:17px;font-weight:900;letter-spacing:2px;
+  color:var(--limone);padding-top:10px;text-shadow:0 0 12px rgba(215,255,62,.5);
 }
 
-/* --------------------------------------------------------------- Gericht */
-.zeile{display:flex;align-items:center;padding:2px;position:relative;}
-.zeile + .zeile{border-top:1px solid rgba(255,255,255,.055);}
-.an .zeile{animation:einlaufen .45s ease-out calc(var(--c,0) * .12s + .25s + var(--i,0) * .035s) both;}
-@keyframes einlaufen{
-  from{opacity:0;transform:translate3d(0,16px,0);}
-  to  {opacity:1;transform:translate3d(0,0,0);}
-}
+/* ---------------------------------------------------------------- Gericht */
+.block{display:flex;flex-direction:column;flex:1 1 auto;min-height:0;}
+.zeile{display:flex;align-items:center;padding:5px 2px;position:relative;flex:1 1 auto;min-height:0;}
+.zeile + .zeile{border-top:1px solid rgba(25,231,255,.12);}
+.seite.aktiv .zeile{animation:rein .45s ease-out calc(.2s + var(--i,0) * .05s) both;}
+@keyframes rein{from{opacity:0;transform:translate3d(0,18px,0);} to{opacity:1;transform:none;}}
+
 .zeile .nr{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:17px;color:var(--rot);
-  width:30px;flex:none;margin-right:8px;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:var(--cyan);
+  width:38px;flex:none;margin-right:10px;
 }
 .zeile .text{flex:1;min-width:0;}
-.zeile .name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.8px;line-height:1.04;}
-.zeile .zutaten{font-size:13.5px;font-weight:300;color:var(--grau);line-height:1.18;margin-top:0;}
+.zeile .name{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:1px;line-height:1.02;}
+.zeile .zutaten{font-size:19px;font-weight:300;color:var(--grau);line-height:1.22;margin-top:2px;}
 .zeile .preis{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--rot);
-  width:78px;text-align:right;flex:none;white-space:nowrap;margin-left:10px;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:40px;color:var(--limone);
+  text-shadow:0 0 16px rgba(215,255,62,.45);
+  width:104px;text-align:right;flex:none;white-space:nowrap;margin-left:12px;
 }
-.zeile .preis.zwei{color:var(--weiss);}
+.zeile .preis.zwei{color:var(--weiss);text-shadow:0 0 14px rgba(255,255,255,.3);}
 
-.zeile.top{background:rgba(255,59,33,.10);border-radius:8px;box-shadow:inset 3px 0 0 var(--rot);}
-.zeile.top .nr{padding-left:5px;}
+.zeile.top{
+  background:rgba(255,45,149,.09);border-radius:10px;
+  box-shadow:inset 4px 0 0 var(--magenta), 0 0 26px rgba(255,45,149,.14);
+}
+.zeile.top .nr{color:var(--magenta);padding-left:6px;}
 
 .schild{
-  font-family:'Montserrat',sans-serif;font-size:11px;font-weight:900;letter-spacing:1.2px;
-  padding:2px 8px;border-radius:4px;margin-left:9px;vertical-align:middle;white-space:nowrap;
+  font-family:'Montserrat',sans-serif;font-size:13px;font-weight:900;letter-spacing:1.4px;
+  padding:3px 10px;border-radius:5px;margin-left:12px;vertical-align:middle;white-space:nowrap;
 }
-.schild.top{background:var(--rot);color:var(--weiss);}
-.schild.veg{border:1px solid var(--gruen);color:var(--gruen);}
-.schild.neu{background:var(--gold);color:#111;}
+.schild.top{background:var(--magenta);color:#fff;box-shadow:0 0 16px rgba(255,45,149,.6);}
+.schild.veg{border:1px solid var(--limone);color:var(--limone);}
+.schild.neu{background:var(--limone);color:#0a0d14;box-shadow:0 0 16px rgba(215,255,62,.6);}
 
-/* ------------------------------------------------------------ Bildfenster */
+/* ------------------------------------------------------------- Bildfenster */
 .bild{
-  position:relative;flex:none;border-radius:18px;overflow:hidden;
-  border:1.5px solid var(--linie);background:#000;
+  position:relative;flex:none;border-radius:18px;overflow:hidden;background:#000;
+  border:2px solid var(--linie);box-shadow:0 0 30px rgba(25,231,255,.14);
 }
 .bild .foto{
   position:absolute;top:0;left:0;right:0;bottom:0;
@@ -165,122 +190,155 @@ header .logo{width:78px;height:78px;flex:none;border-radius:50%;object-fit:cover
 }
 @keyframes atmen{
   from{transform:scale(1.02) translate3d(0,0,0);}
-  to  {transform:scale(1.09) translate3d(-10px,-6px,0);}
+  to  {transform:scale(1.10) translate3d(-12px,-7px,0);}
 }
 .bild .schatten{
   position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(0deg,rgba(10,12,14,.94) 0%,rgba(10,12,14,.10) 46%,transparent 70%);
+  background:linear-gradient(0deg,rgba(5,6,10,.95) 0%,rgba(5,6,10,.12) 48%,transparent 72%);
 }
-.bild .text{position:absolute;left:18px;right:18px;bottom:14px;display:flex;align-items:flex-end;}
-.bild .text .t{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;letter-spacing:2px;}
+.bild .text{position:absolute;left:20px;right:20px;bottom:16px;display:flex;align-items:flex-end;}
+.bild .text .t{
+  font-family:'Bebas Neue',sans-serif;font-size:44px;line-height:1;letter-spacing:2px;
+  text-shadow:0 0 18px rgba(25,231,255,.5);
+}
 .bild .text .t b{
-  display:block;font-family:'Poppins',sans-serif;font-weight:300;font-size:16px;
-  color:var(--grau);letter-spacing:0;margin-top:3px;
+  display:block;font-family:'Poppins',sans-serif;font-weight:300;font-size:17px;
+  color:var(--grau);letter-spacing:0;margin-top:4px;text-shadow:none;
 }
 .bild .text .p{
-  margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;
-  color:var(--weiss);background:var(--rot);padding:6px 18px;border-radius:10px;white-space:nowrap;
+  margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:34px;
+  color:#05060a;background:var(--limone);padding:7px 20px;border-radius:10px;white-space:nowrap;
+  box-shadow:0 0 26px rgba(215,255,62,.55);
 }
 
-/* --------------------------------------------------------- Schüler-Aktion */
+/* ----------------------------------------------------------- Schüler-Aktion */
 .aktion{
-  flex:none;display:flex;align-items:center;flex-wrap:wrap;
-  background:#f2ece2;color:#1a1a1a;border-radius:12px;padding:9px 16px;
+  flex:none;display:flex;align-items:center;flex-wrap:wrap;margin-top:12px;
+  border:2px solid var(--limone);border-radius:14px;padding:12px 18px;
+  background:rgba(215,255,62,.07);box-shadow:0 0 26px rgba(215,255,62,.18);
 }
-.aktion .k{font-family:'Montserrat',sans-serif;font-weight:900;font-size:12px;letter-spacing:2.5px;color:var(--rot-tief);}
-.aktion .w{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--rot-tief);margin:0 12px;}
-.aktion .p{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--rot-tief);}
-.aktion .i{min-width:100%;margin-top:2px;font-size:12.5px;color:#5a5a5a;}
+.aktion .k{font-family:'Montserrat',sans-serif;font-weight:900;font-size:14px;letter-spacing:3px;color:var(--limone);}
+.aktion .w{
+  font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px;color:var(--weiss);margin:0 16px;
+  text-shadow:0 0 14px rgba(215,255,62,.5);
+}
+.aktion .p{
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:34px;color:var(--limone);
+  text-shadow:0 0 16px rgba(215,255,62,.5);
+}
+.aktion .i{min-width:100%;margin-top:4px;font-size:15px;color:var(--grau);}
 
-/* --------------------------------------------------------------- Spar Menü */
-.sparkopf{display:flex;align-items:baseline;flex:none;margin-bottom:4px;}
-.sparkopf .t{font-family:'Bebas Neue',sans-serif;font-size:44px;letter-spacing:3px;line-height:1;}
-.sparkopf .t em{font-style:normal;color:var(--rot);}
+/* ---------------------------------------------------------------- Spar Menü */
+.sparkopf{display:flex;align-items:baseline;flex:none;margin-bottom:8px;}
+.sparkopf .t{
+  font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:3px;line-height:1;
+  text-shadow:0 0 16px rgba(25,231,255,.5);
+}
+.sparkopf .t em{font-style:normal;color:var(--cyan);}
 .sparkopf .ab{
-  margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;color:var(--rot);
+  margin-left:auto;font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:var(--limone);
+  text-shadow:0 0 14px rgba(215,255,62,.5);
 }
-.sparinfo{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--grau);margin-bottom:6px;}
-.sparzeile{display:flex;align-items:center;padding:7px 2px;border-top:1px solid rgba(255,255,255,.08);}
-.an .sparzeile{animation:einlaufen .45s ease-out calc(var(--c,0) * .12s + .35s + var(--i,0) * .07s) both;}
+.sparinfo{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--grau);margin-bottom:8px;}
+.sparzeile{display:flex;align-items:center;padding:10px 2px;border-top:1px solid rgba(25,231,255,.12);flex:1 1 auto;}
+.seite.aktiv .sparzeile{animation:rein .45s ease-out calc(.25s + var(--i,0) * .08s) both;}
 .sparzeile .text{flex:1;min-width:0;}
-.sparzeile .name{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1.5px;line-height:1.05;}
-.sparzeile .zutaten{font-size:14px;font-weight:300;color:var(--grau);line-height:1.25;margin-top:2px;}
+.sparzeile .name{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:1.5px;line-height:1.05;}
+.sparzeile .zutaten{font-size:17px;font-weight:300;color:var(--grau);line-height:1.25;margin-top:3px;}
 .sparzeile .preis{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:28px;color:var(--weiss);
-  background:var(--rot);padding:6px 16px;border-radius:10px;margin-left:12px;white-space:nowrap;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:34px;color:#05060a;
+  background:var(--limone);padding:7px 18px;border-radius:10px;margin-left:14px;white-space:nowrap;
+  box-shadow:0 0 24px rgba(215,255,62,.5);
 }
 
-/* ------------------------------------------------------- Dips, zweispaltig */
+/* --------------------------------------------------------- Dips, zweispaltig */
 .dipraster{display:flex;flex-wrap:wrap;}
-.dip{width:50%;display:flex;align-items:baseline;padding:4px 14px 4px 0;font-size:19px;color:rgba(255,255,255,.86);}
+.dip{width:50%;display:flex;align-items:baseline;padding:9px 18px 9px 0;font-size:26px;color:rgba(255,255,255,.9);}
 .dip span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.dip b{font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;color:var(--rot);margin-left:8px;}
+.dip b{
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:28px;color:var(--limone);margin-left:10px;
+  text-shadow:0 0 14px rgba(215,255,62,.45);
+}
 
-/* ------------------------------------------------------------------ Fuß */
-footer{flex:none;height:62px;display:flex;align-items:center;padding:9px 0 0;}
+/* ------------------------------------------------------------------- Fuß */
+footer{flex:none;height:66px;display:flex;align-items:center;padding:10px 0 0;}
 #laufband{
-  flex:1;height:44px;border-radius:10px;overflow:hidden;display:flex;align-items:center;
-  border:1.5px solid rgba(255,59,33,.32);background:rgba(255,59,33,.07);
+  flex:1;height:46px;border-radius:11px;overflow:hidden;display:flex;align-items:center;
+  border:2px solid rgba(25,231,255,.28);background:rgba(25,231,255,.05);
 }
 #laufband .band{display:flex;white-space:nowrap;animation:laufen 48s linear infinite;}
 #laufband .band span{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;letter-spacing:4px;
-  padding:0 48px;text-transform:uppercase;color:var(--weiss);
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:21px;letter-spacing:4px;
+  padding:0 50px;text-transform:uppercase;color:var(--cyan);text-shadow:0 0 12px rgba(25,231,255,.5);
 }
 @keyframes laufen{from{transform:translate3d(0,0,0);}to{transform:translate3d(-50%,0,0);}}
 
-/* ======================================================= Screen 3, Hochformat */
-#stage.hoch header{height:auto;display:block;text-align:center;}
-#stage.hoch header .logo{width:176px;height:176px;margin:0 auto 4px;display:block;}
-#stage.hoch .marke h1{font-size:86px;letter-spacing:5px;}
-#stage.hoch .marke p{font-size:19px;letter-spacing:8px;}
+/* Seitenpunkte */
+#punkte{position:absolute;right:44px;bottom:88px;z-index:6;display:flex;}
+#punkte i{display:block;width:30px;height:5px;border-radius:99px;background:rgba(25,231,255,.22);margin-left:8px;}
+#punkte i.an{background:var(--cyan);box-shadow:0 0 14px rgba(25,231,255,.8);}
 
-.hochtitel{flex:none;text-align:center;margin-top:4px;}
+/* ===================================================== Screen 3, Hochformat */
+#stage.hoch header{display:block;text-align:center;height:auto;}
+#stage.hoch header .logo{width:168px;height:168px;margin:0 auto 8px;display:block;}
+#stage.hoch .marke h1{font-size:84px;letter-spacing:6px;}
+#stage.hoch .marke p{font-size:18px;letter-spacing:9px;}
+
+.hochtitel{flex:none;text-align:center;margin-top:12px;}
 .hochtitel .ab{
-  display:inline-block;background:var(--rot);color:var(--weiss);border-radius:999px;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:6px;padding:8px 30px;
+  display:inline-block;border:2px solid var(--limone);color:var(--limone);border-radius:999px;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:24px;letter-spacing:6px;padding:8px 32px;
+  box-shadow:0 0 24px rgba(215,255,62,.3);
 }
-.hochtitel h2{font-family:'Bebas Neue',sans-serif;font-size:116px;letter-spacing:5px;line-height:.92;margin-top:8px;}
-.hochtitel p{font-size:27px;font-weight:300;color:var(--grau);margin-top:4px;}
-
-#menues{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:14px;}
-.menue{
-  flex:1;min-height:0;display:flex;align-items:stretch;overflow:hidden;
-  background:var(--bg-karte);border:2px solid var(--linie);border-radius:22px;position:relative;
+.hochtitel h2{
+  font-family:'Bebas Neue',sans-serif;font-size:118px;letter-spacing:6px;line-height:.92;margin-top:12px;
+  text-shadow:0 0 24px rgba(25,231,255,.55), 0 0 60px rgba(25,231,255,.25);
 }
-.menue + .menue{margin-top:14px;}
-.menue.hell{border-color:var(--rot);box-shadow:0 0 30px rgba(255,59,33,.20);}
-.an .menue{animation:aufsteigen .7s cubic-bezier(.22,1,.36,1) calc(var(--i,0) * .14s) both;}
+.hochtitel h2 em{font-style:normal;color:var(--cyan);}
+.hochtitel p{font-size:26px;font-weight:300;color:var(--grau);margin-top:6px;}
 
-.menue .foto{
-  width:430px;flex:none;position:relative;overflow:hidden;
+/* Ein Menü groß je Seite */
+.grossmenue{
+  flex:1;min-height:0;display:flex;flex-direction:column;
+  border:2px solid var(--linie);border-radius:24px;overflow:hidden;background:var(--panel);
+  box-shadow:0 0 50px rgba(25,231,255,.12);
+}
+.grossmenue .foto{
+  flex:1;min-height:0;position:relative;
   background-position:center;background-size:cover;background-repeat:no-repeat;
 }
-.menue .foto .blende{
-  position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(90deg,transparent 66%,rgba(21,24,28,.97) 100%);
-}
-.menue .nr{
-  position:absolute;left:16px;top:14px;z-index:2;width:66px;height:66px;border-radius:50%;
+.grossmenue .nr{
+  position:absolute;left:24px;top:22px;width:96px;height:96px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:1;
-  background:var(--rot);color:var(--weiss);box-shadow:0 6px 18px rgba(0,0,0,.5);
+  font-family:'Bebas Neue',sans-serif;font-size:66px;line-height:1;
+  color:#05060a;background:var(--cyan);box-shadow:0 0 34px rgba(25,231,255,.7);
 }
-.menue .inhalt{flex:1;min-width:0;padding:22px 26px;display:flex;flex-direction:column;justify-content:center;}
-.menue .name{font-family:'Bebas Neue',sans-serif;font-size:62px;line-height:.96;letter-spacing:2px;}
-.menue .zutaten{font-size:24px;font-weight:300;color:var(--grau);line-height:1.3;margin-top:8px;}
-.menue .preis{
-  margin-top:auto;align-self:flex-start;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:54px;color:var(--weiss);
-  background:var(--rot);padding:8px 28px;border-radius:14px;
+.grossmenue .neu{position:absolute;right:24px;top:24px;font-size:18px;padding:6px 16px;}
+.grossmenue .unten{flex:none;padding:24px 30px 28px;}
+.grossmenue .name{
+  font-family:'Bebas Neue',sans-serif;font-size:100px;line-height:.94;letter-spacing:3px;
+  text-shadow:0 0 26px rgba(25,231,255,.45);
 }
-.menue .neu{position:absolute;right:18px;top:16px;z-index:2;}
+.grossmenue .zutaten{font-size:29px;font-weight:300;color:var(--grau);line-height:1.3;margin-top:12px;}
+.grossmenue .preis{
+  display:inline-block;margin-top:18px;
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:72px;color:#05060a;
+  background:var(--limone);padding:10px 36px;border-radius:16px;
+  box-shadow:0 0 44px rgba(215,255,62,.55);
+}
 
-#hochfuss{flex:none;margin-top:12px;padding-top:12px;border-top:2px solid var(--linie);text-align:center;}
-#hochfuss .zeile1{display:flex;align-items:center;justify-content:center;font-size:23px;color:var(--grau);}
-#hochfuss .zeile1 b{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--weiss);margin-right:14px;}
-#hochfuss .zeile1 span{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;color:var(--weiss);
-  background:var(--rot);padding:4px 16px;border-radius:10px;margin-left:16px;
+#hochfuss{flex:none;margin-top:14px;padding-top:12px;border-top:2px solid var(--linie);text-align:center;}
+#hochfuss .zeile1{display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--grau);}
+#hochfuss .zeile1 b{
+  font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:2px;color:var(--limone);margin-right:14px;
+  text-shadow:0 0 14px rgba(215,255,62,.5);
 }
-#hochfuss .tel{font-family:'Montserrat',sans-serif;font-weight:900;font-size:27px;letter-spacing:2px;color:var(--rot);margin-top:9px;}
+#hochfuss .zeile1 span{
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;color:#05060a;
+  background:var(--limone);padding:4px 16px;border-radius:9px;margin-left:16px;
+}
+#hochfuss .tel{
+  font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:2px;color:var(--cyan);
+  margin-top:10px;text-shadow:0 0 14px rgba(25,231,255,.5);
+}
+#stage.hoch #punkte{position:relative;right:auto;bottom:auto;justify-content:center;margin-top:12px;}

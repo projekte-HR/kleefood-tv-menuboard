@@ -8,14 +8,13 @@
 </head>
 <body>
 
-<!-- SCREEN 2 (1920x1080) – Seite 2 des Aufstellers
-     Spalte 1  Pizza 65–73
-     Spalte 2  Pizza 74–82 · Vegetarisch
-     Spalte 3  Fingerfood · Dips
+<!-- SCREEN 2 (1920x1080) – Pizza & Veggie, vier Seiten im Gleichtakt
+     Die Lichtwelle erreicht diesen Screen 0,6 s nach Screen 1.
      Inhalte und Preise stehen in menu.js, das Design in board.css        -->
 
 <div id="stage" class="quer">
-  <div id="wolken"></div>
+  <div id="gitter"></div>
+  <div id="welle"></div>
 
   <header>
     <img class="logo" src="logo.jpg" alt="KleeFood">
@@ -24,34 +23,38 @@
       <p>Burger · Pizza · Fingerfood</p>
     </div>
     <div class="kopf-rechts">
-      <div class="gross">PIZZA <em>& VEGGIE</em></div>
+      <div class="gross">PIZZA &amp; VEGGIE</div>
       <div class="klein" id="tel"></div>
     </div>
   </header>
 
-  <div id="raster">
-    <div class="spalte" style="--c:0;flex:1 1 0%"><div class="karte" id="s1"></div></div>
-    <div class="spalte" style="--c:1;flex:1 1 0%"><div class="karte" id="s2"></div></div>
-    <div class="spalte" style="--c:2;flex:1 1 0%" id="s3"></div>
-  </div>
+  <div id="seiten"></div>
+  <div id="punkte"></div>
 
   <footer><div id="laufband"></div></footer>
 </div>
 
+<script>var SCREEN = 2;</script>
 <script src="menu.js"></script>
 <script src="board.js"></script>
 <script>
 document.getElementById('tel').textContent = TELEFON;
-
-document.getElementById('s1').innerHTML = block(MENU.pizzaA);
-document.getElementById('s2').innerHTML = block(MENU.pizzaB) + block(MENU.vegetarisch);
-document.getElementById('s3').innerHTML =
-  '<div class="karte">' + block(MENU.fingerfood) + '</div>' +
-  '<div class="karte">' + dipBlock(MENU.dips) + '</div>';
-
 document.getElementById('laufband').innerHTML = laufband(TICKER.rechts);
 
-starten();
+starten([
+  /* Seite 1 – Pizza 65 bis 73 */
+  tafel(block(MENU.pizzaA)),
+
+  /* Seite 2 – Pizza 74 bis 82 */
+  tafel(block(MENU.pizzaB)),
+
+  /* Seite 3 – Fingerfood */
+  tafel(block(MENU.fingerfood)),
+
+  /* Seite 4 – Vegetarisch und Dips */
+  tafel(block(MENU.vegetarisch)) +
+  tafel(dipBlock(MENU.dips))
+]);
 </script>
 </body>
 </html>

@@ -8,14 +8,13 @@
 </head>
 <body>
 
-<!-- SCREEN 1 (1920x1080) – Seite 1 des Aufstellers
-     Spalte 1  Smash Burger · Beilagen · Schüler-Aktion
-     Spalte 2  Hamburger 01–14 und 20
-     Spalte 3  Foto + Spar Menü
+<!-- SCREEN 1 (1920x1080) – Burger & Fries, vier Seiten im Gleichtakt
+     Die Lichtwelle startet hier und läuft weiter auf Screen 2 und 3.
      Inhalte und Preise stehen in menu.js, das Design in board.css        -->
 
 <div id="stage" class="quer">
-  <div id="wolken"></div>
+  <div id="gitter"></div>
+  <div id="welle"></div>
 
   <header>
     <img class="logo" src="logo.jpg" alt="KleeFood">
@@ -24,38 +23,40 @@
       <p>Burger · Pizza · Fingerfood</p>
     </div>
     <div class="kopf-rechts">
-      <div class="gross">BURGER <em>& FRIES</em></div>
+      <div class="gross">BURGER &amp; FRIES</div>
       <div class="klein" id="tel"></div>
     </div>
   </header>
 
-  <div id="raster">
-    <div class="spalte" style="--c:0;width:470px;flex:0 0 470px"><div class="karte" id="s1"></div></div>
-    <div class="spalte" style="--c:1;flex:1 1 auto"><div class="karte" id="s2"></div></div>
-    <div class="spalte" style="--c:2;width:560px;flex:0 0 560px" id="s3"></div>
-  </div>
+  <div id="seiten"></div>
+  <div id="punkte"></div>
 
   <footer><div id="laufband"></div></footer>
 </div>
 
+<script>var SCREEN = 1;</script>
 <script src="menu.js"></script>
 <script src="board.js"></script>
 <script>
 document.getElementById('tel').textContent = TELEFON;
-
-document.getElementById('s1').innerHTML =
-  block(MENU.smash) + block(MENU.beilagen) + aktionBlock();
-
-document.getElementById('s2').innerHTML =
-  block(MENU.hamburger);
-
-document.getElementById('s3').innerHTML =
-  bildBlock('fotos/hero.jpg', 'BURGER & FRIES', '100 % Rind · hausgemachte Saucen', 'ab 4,50 €', 250) +
-  '<div class="karte">' + sparBlock() + '</div>';
-
 document.getElementById('laufband').innerHTML = laufband(TICKER.links);
 
-starten();
+starten([
+  /* Seite 1 – Hamburger 01 bis 08 */
+  tafel(block(MENU.hamburger, 0, 8)),
+
+  /* Seite 2 – Hamburger 09 bis 14 und 20 */
+  tafel(block(MENU.hamburger, 8)),
+
+  /* Seite 3 – Smash Burger, Schüler-Aktion und das Foto */
+  tafel(block(MENU.smash) + aktionBlock()) +
+  tafel(bildBlock('fotos/hero.jpg', 'BURGER &amp; FRIES',
+                  '100 % Rind · hausgemachte Saucen', 'ab 4,50 €', 760)),
+
+  /* Seite 4 – Beilagen und Spar Menü */
+  tafel(block(MENU.beilagen)) +
+  tafel(sparBlock())
+]);
 </script>
 </body>
 </html>

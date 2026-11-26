@@ -8,13 +8,14 @@
 </head>
 <body>
 
-<!-- SCREEN 3 (1080x1920, Hochformat) – die vier Spar Menüs
-     Liefert der TV ein Querformat-Signal, dreht sich die Bühne automatisch
-     um 270°. Taste "R" kehrt die Drehrichtung um und merkt sich das.
+<!-- SCREEN 3 (1080x1920, Hochformat) – je Seite ein Spar Menü groß
+     Die Lichtwelle erreicht diesen Screen 1,2 s nach Screen 1.
+     Querformat-Signal? Dann dreht sich die Bühne auf 270°, Taste "R" kehrt um.
      Inhalte und Preise stehen in menu.js, das Design in board.css        -->
 
 <div id="stage" class="hoch">
-  <div id="wolken"></div>
+  <div id="gitter"></div>
+  <div id="welle"></div>
 
   <header>
     <img class="logo" src="logo.jpg" alt="KleeFood">
@@ -26,11 +27,12 @@
 
   <div class="hochtitel">
     <div class="ab" id="ab"></div>
-    <h2>SPAR MENÜS</h2>
+    <h2>SPAR <em>MENÜS</em></h2>
     <p id="info"></p>
   </div>
 
-  <div id="menues"></div>
+  <div id="seiten"></div>
+  <div id="punkte"></div>
 
   <div id="hochfuss">
     <div class="zeile1" id="aktion"></div>
@@ -38,18 +40,23 @@
   </div>
 </div>
 
+<script>var SCREEN = 3;</script>
 <script src="menu.js"></script>
 <script src="board.js"></script>
 <script>
 document.getElementById('ab').textContent   = SPAR.ab.toUpperCase();
 document.getElementById('info').textContent = SPAR.info;
 document.getElementById('tel').textContent  = TELEFON;
-document.getElementById('menues').innerHTML = menueKarten();
 document.getElementById('aktion').innerHTML =
-  '<b>' + AKTION.titel + '</b>' + AKTION.was.charAt(0) + AKTION.was.slice(1).toLowerCase() +
-  ' ' + AKTION.info + '<span>' + AKTION.preis + '</span>';
+  '<b>' + AKTION.titel + '</b>Pommes ' + AKTION.info + '<span>' + AKTION.preis + '</span>';
 
-starten();
+/* Je Seite ein Menü, bildschirmfüllend */
+starten([
+  grossesMenue(0),
+  grossesMenue(1),
+  grossesMenue(2),
+  grossesMenue(3)
+]);
 </script>
 </body>
 </html>

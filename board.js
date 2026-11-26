@@ -1,39 +1,23 @@
 /* ============================================================================
    KLEEFOOD – GEMEINSAME LOGIK FÜR ALLE DREI SCREENS
 
-   Aufgaben:
-     1. Listen, Bildfenster, Spar Menü und Dips aufbauen (aus menu.js)
-     2. Bühne auf das tatsächliche TV-Signal skalieren, Screen 3 drehen
-     3. GLEICHTAKT: alle Dauer-Animationen hängen an der Uhrzeit, dadurch
-        laufen die drei TVs im selben Rhythmus, ohne miteinander zu reden
+     1. Bausteine aus menu.js zu Tafeln zusammensetzen
+     2. Seiten im Gleichtakt umblättern – die Seitennummer kommt aus der
+        Uhrzeit, nicht aus einem Timer ab Ladezeit. Dadurch zeigen alle drei
+        Geräte dieselbe Seite und blättern in derselben Sekunde um.
+     3. LICHTWELLE: läuft von Screen 1 über Screen 2 nach Screen 3, als wären
+        die drei Bildschirme eine Fläche. Der Versatz kommt aus SCREEN.
+     4. Bühne auf das TV-Signal skalieren, Screen 3 drehen
    ========================================================================= */
 
-/* --------------------------------------------------------------- Gleichtakt */
-/* Grundtakt in Sekunden. Alle Dauer-Animationen sind Teiler oder Vielfache
-   davon, damit sie gemeinsam wieder am Anfang stehen.                        */
-var TAKT = 24;
+var SEITE_S         = 12;    // Sekunden je Seite
+var WELLE_VERSATZ_S = 0.6;   // Vorsprung von Screen zu Screen
+var WELLE_TAKT_S    = 12;    // muss zur animation-duration von #welle passen
 
-/* Setzt bei jeder Dauer-Animation ein negatives animation-delay, das der
-   aktuellen Uhrzeit entspricht. Zwei Geräte, die um 14:07:03 laufen, stehen
-   damit an derselben Stelle der Animation – egal wann sie gestartet sind. */
-function gleichtakt(){
-  var jetzt = Date.now() / 1000;
-  var dauern = { drift: 48, atmen: 24, laufen: 48 };   // muss zu board.css passen
-  var auswahl = [
-    ['#wolken',        'drift'],
-    ['.bild .foto',    'atmen'],
-    ['#laufband .band','laufen']
-  ];
-  for (var a = 0; a < auswahl.length; a++){
-    var knoten = document.querySelectorAll(auswahl[a][0]);
-    var dauer  = dauern[auswahl[a][1]];
-    for (var b = 0; b < knoten.length; b++){
-      knoten[b].style.animationDelay = '-' + (jetzt % dauer).toFixed(2) + 's';
-    }
-  }
-}
+/* SCREEN wird in der jeweiligen HTML-Datei gesetzt: 1, 2 oder 3 */
+if (typeof SCREEN === 'undefined') { var SCREEN = 1; }
 
-/* ------------------------------------------------------------ Bausteine */
+/* ------------------------------------------------------------- Bausteine */
 function schilder(it){
   return (it.top ? '<span class="schild top">★ TOP</span>' : '') +
          (it.veg ? '<span class="schild veg">VEGGIE</span>' : '');
@@ -51,16 +35,18 @@ function zeile(it, i){
          '</div>';
 }
 
-/* Eine Kategorie mit rotem Schrägbalken, Nummernbereich und Liste */
-function block(sec){
+/* Eine Kategorie. "von" und "bis" schneiden einen Ausschnitt heraus,
+   damit eine lange Liste über mehrere Seiten laufen kann.                  */
+function block(sec, von, bis){
+  var items = sec.items.slice(von || 0, bis === undefined ? sec.items.length : bis);
   var rechts = sec.groessen
     ? '<div class="groessen"><span>' + sec.groessen.join('</span><span>') + '</span></div>'
     : '<div class="strich"></div>';
   var zeilen = '';
-  for (var i = 0; i < sec.items.length; i++) zeilen += zeile(sec.items[i], i);
+  for (var i = 0; i < items.length; i++) zeilen += zeile(items[i], i);
   return '<div class="block">' +
            '<div class="kopfzeile">' +
-             '<div class="balken"><span>' + sec.titel + '</span></div>' +
+             '<div class="neonschild"><span>' + sec.titel + '</span></div>' +
              (sec.nummern ? '<div class="nummern">' + sec.nummern + '</div>' : '') +
              rechts +
            '</div>' +
@@ -78,7 +64,7 @@ function dipBlock(sec){
   }
   return '<div class="block">' +
            '<div class="kopfzeile">' +
-             '<div class="balken"><span>' + sec.titel + '</span></div>' +
+             '<div class="neonschild"><span>' + sec.titel + '</span></div>' +
              '<div class="nummern">' + sec.nummern + '</div><div class="strich"></div>' +
            '</div>' +
            '<div class="dipraster">' + felder + '</div>' +
@@ -111,7 +97,6 @@ function sparBlock(){
          '<div class="sparinfo">' + SPAR.info + '</div>' + zeilen;
 }
 
-/* Bildfenster mit Beschriftung */
 function bildBlock(bild, titel, unter, preis, hoehe){
   return '<div class="bild" style="height:' + hoehe + 'px">' +
            '<div class="foto" style="background-image:url(' + bild + BILD_VERSION + ')"></div>' +
@@ -121,33 +106,87 @@ function bildBlock(bild, titel, unter, preis, hoehe){
          '</div>';
 }
 
-/* Die vier Spar Menüs für Screen 3 */
-function menueKarten(){
-  var html = '';
-  for (var i = 0; i < SPAR.items.length; i++){
-    var m = SPAR.items[i];
-    html += '<div class="menue' + (i === 0 ? ' hell' : '') + '" style="--i:' + i + '">' +
-              '<div class="foto" style="background-image:url(' + m.img + BILD_VERSION + ')">' +
-                '<div class="blende"></div><div class="nr">' + m.no + '</div>' +
-              '</div>' +
-              (m.neu ? '<span class="schild neu neu">NEU</span>' : '') +
-              '<div class="inhalt">' +
-                '<div class="name">' + m.nm + '</div>' +
-                '<div class="zutaten">' + m.ig + '</div>' +
-                '<div class="preis">' + m.pr + '</div>' +
-              '</div>' +
-            '</div>';
-  }
-  return html;
+/* Ein Spar Menü bildschirmfüllend – für Screen 3 */
+function grossesMenue(i){
+  var m = SPAR.items[i];
+  return '<div class="grossmenue">' +
+           '<div class="foto" style="background-image:url(' + m.img + BILD_VERSION + ')">' +
+             '<div class="nr">' + m.no + '</div>' +
+             (m.neu ? '<span class="schild neu neu">NEU</span>' : '') +
+           '</div>' +
+           '<div class="unten">' +
+             '<div class="name">' + m.nm + '</div>' +
+             '<div class="zutaten">' + m.ig + '</div>' +
+             '<div class="preis">' + m.pr + '</div>' +
+           '</div>' +
+         '</div>';
 }
+
+function tafel(inhalt){ return '<div class="tafel">' + inhalt + '</div>'; }
 
 function laufband(text){
   return '<div class="band"><span>' + text + '</span><span>' + text + '</span></div>';
 }
 
-/* ------------------------------------------- Bühne skalieren und drehen */
-/* Querformat-Signal bei einem hochkant montierten TV -> Bühne drehen.
-   Taste "R" kehrt die Drehrichtung um, die Wahl wird gemerkt.            */
+/* ------------------------------------------------ Seiten und Gleichtakt */
+var seitenKnoten = [], punkteKnoten = [], seitenAnzahl = 0, festeSeite = null;
+
+/* Seitennummer allein aus der Uhrzeit – deshalb überall dieselbe. */
+function seiteJetzt(){
+  if (festeSeite !== null) return festeSeite;
+  return Math.floor(Date.now() / 1000 / SEITE_S) % seitenAnzahl;
+}
+
+function zeigeSeite(){
+  var n = seiteJetzt();
+  for (var i = 0; i < seitenKnoten.length; i++){
+    var an = (i === n);
+    seitenKnoten[i].className = 'seite' + (an ? ' aktiv' : '');
+    if (punkteKnoten[i]) punkteKnoten[i].className = an ? 'an' : '';
+  }
+}
+
+/* Nicht alle 12 s ab Ladezeit, sondern immer auf die nächste volle
+   Seitengrenze der Uhr – sonst driften die Geräte auseinander. */
+function naechsterWechsel(){
+  var ms = SEITE_S * 1000 - (Date.now() % (SEITE_S * 1000));
+  setTimeout(function(){ zeigeSeite(); naechsterWechsel(); }, ms + 30);
+}
+
+/* Eine Animation auf die Uhrzeit setzen.
+
+   Wichtig: ein nachträglich gesetztes animation-delay verschiebt die Phase,
+   es korrigiert sie nicht – gerechnet wird ab dem Start der Animation, nicht
+   ab jetzt. Deshalb wird die Animation zuerst neu gestartet (Reflow) und
+   erst dann das Delay gesetzt. So stimmt die Phase auch beim Nachjustieren.
+   Steht die Animation bereits richtig, ist nichts zu sehen.                */
+function ausrichten(el, dauer, versatz){
+  var phase = ((Date.now() / 1000 - (versatz || 0)) % dauer + dauer) % dauer;
+  el.style.animation = 'none';
+  void el.offsetWidth;                 // erzwingt den Neustart
+  el.style.animation = '';
+  el.style.animationDelay = '-' + phase.toFixed(2) + 's';
+}
+
+/* Die Lichtwelle startet auf Screen 2 um 0,6 s und auf Screen 3 um 1,2 s
+   später als auf Screen 1 – dadurch wandert sie sichtbar nach rechts. */
+function welleAusrichten(){
+  var welle = document.getElementById('welle');
+  if (!welle) return;
+  ausrichten(welle, WELLE_TAKT_S, (SCREEN - 1) * WELLE_VERSATZ_S);
+}
+
+/* Die übrigen Dauer-Animationen ebenfalls an die Uhr hängen */
+function gleichtakt(){
+  welleAusrichten();
+  var paare = [['.bild .foto', 24], ['.grossmenue .foto', 24], ['#laufband .band', 48]];
+  for (var a = 0; a < paare.length; a++){
+    var knoten = document.querySelectorAll(paare[a][0]);
+    for (var b = 0; b < knoten.length; b++) ausrichten(knoten[b], paare[a][1], 0);
+  }
+}
+
+/* --------------------------------------------- Bühne skalieren und drehen */
 function merker(wert){
   try {
     if (wert === undefined) return localStorage.getItem('kleefood-drehung');
@@ -167,12 +206,31 @@ function einpassen(){
   stage.style.transform = 'rotate(' + drehen + 'deg) scale(' + s + ')';
 }
 
-/* ------------------------------------------------------------- Start */
-function starten(){
-  var stage = document.getElementById('stage');
+/* ------------------------------------------------------------------ Start */
+/* seiten: Liste von HTML-Stücken, eines je Seite.                          */
+function starten(seiten){
+  var behaelter = document.getElementById('seiten');
+  var punkte    = document.getElementById('punkte');
+  seitenAnzahl  = seiten.length;
+
+  var html = '', p = '';
+  for (var i = 0; i < seiten.length; i++){
+    html += '<div class="seite">' + seiten[i] + '</div>';
+    p    += '<i></i>';
+  }
+  behaelter.innerHTML = html;
+  if (punkte) punkte.innerHTML = p;
+  seitenKnoten = behaelter.children;
+  punkteKnoten = punkte ? punkte.children : [];
+
+  /* Zum Prüfen einer einzelnen Seite: ?seite=0 bis 3 hält sie fest */
+  var m = location.search.match(/[?&]seite=(\d+)/);
+  if (m) festeSeite = Math.min(+m[1], seitenAnzahl - 1);
+
+  zeigeSeite();
   einpassen();
   gleichtakt();
-  stage.className += ' an';          // Einblendung einmal laufen lassen
+  if (festeSeite === null) naechsterWechsel();
 
   addEventListener('resize', einpassen);
   addEventListener('keydown', function(e){
@@ -183,7 +241,11 @@ function starten(){
     }
   });
 
-  /* Die Uhr läuft weiter, die Animationen laufen endlos – nach einer Stunde
-     einmal nachjustieren, damit kleine Abweichungen nicht auflaufen. */
-  setInterval(gleichtakt, 3600000);
+  /* Alle 30 s nachziehen. Nötig, weil Browser Animationen drosseln, wenn die
+     Seite im Hintergrund liegt – danach liefe sie sonst der Uhr hinterher.
+     Steht alles richtig, ist das Nachziehen unsichtbar. */
+  setInterval(gleichtakt, 30000);
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) gleichtakt();
+  });
 }
