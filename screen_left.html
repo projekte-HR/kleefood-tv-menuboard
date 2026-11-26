@@ -2,19 +2,20 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>KLEEFOOD – Screen 1 – Burger & Fries</title>
+<title>KLEEFOOD – Screen 1 – Burger &amp; Fries</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="board.css">
 </head>
 <body>
 
-<!-- SCREEN 1 (1920x1080) – Burger & Fries, vier Seiten im Gleichtakt
-     Die Lichtwelle startet hier und läuft weiter auf Screen 2 und 3.
-     Inhalte und Preise stehen in menu.js, das Design in board.css        -->
+<!-- SCREEN 1 (1920x1080) – Burger, Smash, Beilagen
+     Magazin-Aufbau: links ein großes Foto, rechts die Liste in zwei Spalten.
+     Dieser Screen läuft für sich, unabhängig von den anderen beiden.
+     Inhalte und Preise stehen in menu.js, das Aussehen in board.css       -->
 
 <div id="stage" class="quer">
-  <div id="gitter"></div>
-  <div id="welle"></div>
+  <div id="glut"></div>
+  <div id="streifen"></div>
 
   <header>
     <img class="logo" src="logo.jpg" alt="KleeFood">
@@ -27,6 +28,7 @@
       <div class="klein" id="tel"></div>
     </div>
   </header>
+  <div class="kopflinie"><i></i></div>
 
   <div id="seiten"></div>
   <div id="punkte"></div>
@@ -34,7 +36,7 @@
   <footer><div id="laufband"></div></footer>
 </div>
 
-<script>var SCREEN = 1;</script>
+<script>var SEITE_S = 13;</script>
 <script src="menu.js"></script>
 <script src="board.js"></script>
 <script>
@@ -43,19 +45,20 @@ document.getElementById('laufband').innerHTML = laufband(TICKER.links);
 
 starten([
   /* Seite 1 – Hamburger 01 bis 08 */
-  tafel(block(MENU.hamburger, 0, 8)),
+  seite(foto('fotos/hero.jpg', 'HAMBURGER', '100 % Rind · hausgemachte Saucen', 'ab 4,50 €'),
+        block(MENU.hamburger, 0, 8)),
 
-  /* Seite 2 – Hamburger 09 bis 14 und 20 */
-  tafel(block(MENU.hamburger, 8)),
+  /* Seite 2 – Hamburger 09 bis 20 */
+  seite(foto('fotos/menu2.jpg', 'DOUBLE SMASH', 'Zwei Patties · Cheddar · Pommes', 'ab 6,00 €'),
+        block(MENU.hamburger, 8)),
 
-  /* Seite 3 – Smash Burger, Schüler-Aktion und das Foto */
-  tafel(block(MENU.smash) + aktionBlock()) +
-  tafel(bildBlock('fotos/hero.jpg', 'BURGER &amp; FRIES',
-                  '100 % Rind · hausgemachte Saucen', 'ab 4,50 €', 760)),
+  /* Seite 3 – Smash Burger und die Schüler-Aktion */
+  seite(foto('fotos/menu1.jpg', 'SMASH BURGER', 'Frisch auf der Platte gepresst', 'ab 4,50 €'),
+        blockEinspaltig(MENU.smash) + aktionBlock()),
 
-  /* Seite 4 – Beilagen und Spar Menü */
-  tafel(block(MENU.beilagen)) +
-  tafel(sparBlock())
+  /* Seite 4 – Beilagen */
+  seite(foto('fotos/menu3.jpg', 'BEILAGEN', 'Pommes, Wedges & mehr', 'ab 3,00 €'),
+        block(MENU.beilagen))
 ]);
 </script>
 </body>

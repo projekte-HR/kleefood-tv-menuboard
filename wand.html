@@ -90,22 +90,11 @@ h1 em{font-style:normal;color:#E73329;}
 
 <div class="takt">
   <h2>WAS HIER ZU SEHEN IST</h2>
-  <div class="zeile"><b>Lichtwelle</b>läuft alle 12 Sekunden von Screen 1 über Screen 2 nach Screen 3 – 0,6 Sekunden Versatz je Screen</div>
-  <div class="zeile"><b>Seiten</b>alle drei blättern in derselben Sekunde um, vier Seiten je Screen, ein Durchlauf dauert 48 Sekunden</div>
-  <div class="zeile"><b>Gesteuert</b>allein über die Uhrzeit – die Geräte reden nicht miteinander</div>
-  <div class="zeile"><b>Jetzt</b><span id="uhr"></span></div>
+  <div class="zeile"><b>Aufbau</b>links ein großes Foto, rechts die Liste in zwei Spalten – wie eine aufgeschlagene Speisekarte</div>
+  <div class="zeile"><b>Bewegung</b>Foto zoomt und wandert, Glanz läuft darüber, Glut driftet im Hintergrund, Zeilen laufen beim Blättern nacheinander ein</div>
+  <div class="zeile"><b>Seiten</b>vier je Screen. Jeder Screen blättert für sich: Screen 1 alle 13 s, Screen 2 alle 15 s, Screen 3 alle 11 s</div>
+  <div class="zeile"><b>Unabhängig</b>die drei Geräte reden nicht miteinander – fällt eins aus, stört das die anderen nicht</div>
 </div>
 
-<script>
-/* Kleine Taktanzeige, damit man den Wechsel kommen sieht */
-function tick(){
-  var s = Date.now() / 1000;
-  var seite = Math.floor(s / 12) % 4 + 1;
-  var rest  = (12 - (s % 12)).toFixed(1);
-  document.getElementById('uhr').textContent =
-    'Seite ' + seite + ' von 4 · nächster Wechsel in ' + rest + ' s';
-}
-tick(); setInterval(tick, 100);
-</script>
 </body>
 </html>

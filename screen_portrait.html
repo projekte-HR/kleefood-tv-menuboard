@@ -8,14 +8,15 @@
 </head>
 <body>
 
-<!-- SCREEN 3 (1080x1920, Hochformat) – je Seite ein Spar Menü groß
-     Die Lichtwelle erreicht diesen Screen 1,2 s nach Screen 1.
+<!-- SCREEN 3 (1080x1920, Hochformat) – die Spar Menüs
+     Magazin-Aufbau hochkant: oben das große Foto, darunter die übrigen Menüs.
+     Dieser Screen läuft für sich, unabhängig von den anderen beiden.
      Querformat-Signal? Dann dreht sich die Bühne auf 270°, Taste "R" kehrt um.
-     Inhalte und Preise stehen in menu.js, das Design in board.css        -->
+     Inhalte und Preise stehen in menu.js, das Aussehen in board.css       -->
 
 <div id="stage" class="hoch">
-  <div id="gitter"></div>
-  <div id="welle"></div>
+  <div id="glut"></div>
+  <div id="streifen"></div>
 
   <header>
     <img class="logo" src="logo.jpg" alt="KleeFood">
@@ -40,7 +41,7 @@
   </div>
 </div>
 
-<script>var SCREEN = 3;</script>
+<script>var SEITE_S = 11;</script>
 <script src="menu.js"></script>
 <script src="board.js"></script>
 <script>
@@ -50,12 +51,12 @@ document.getElementById('tel').textContent  = TELEFON;
 document.getElementById('aktion').innerHTML =
   '<b>' + AKTION.titel + '</b>Pommes ' + AKTION.info + '<span>' + AKTION.preis + '</span>';
 
-/* Je Seite ein Menü, bildschirmfüllend */
+/* Je Seite ein Menü groß, die übrigen klein darunter */
 starten([
-  grossesMenue(0),
-  grossesMenue(1),
-  grossesMenue(2),
-  grossesMenue(3)
+  menueSeite(0),
+  menueSeite(1),
+  menueSeite(2),
+  menueSeite(3)
 ]);
 </script>
 </body>
