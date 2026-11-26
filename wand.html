@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>KLEEFOOD – alle drei Screens nebeneinander</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<style>
+/* ============================================================================
+   WAND-ANSICHT – zeigt die drei Screens so, wie sie im Laden hängen.
+   Jeder Screen läuft hier als echte Seite in einem Rahmen, nicht als Bild:
+   Seitenwechsel und Lichtwelle sind also live zu sehen. Die Welle wandert
+   von links nach rechts durch alle drei.
+   Nur zum Anschauen – auf den TVs wird weiterhin die jeweilige Seite direkt
+   aufgerufen.
+   ========================================================================= */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+  min-height:100vh;background:#0D0F12;color:#fff;
+  font-family:'Poppins',system-ui,Arial,sans-serif;padding:28px 24px 40px;
+  background-image:
+    radial-gradient(60% 46% at 12% 0%,  rgba(231,51,41,.12), transparent 60%),
+    radial-gradient(54% 42% at 92% 100%,rgba(255,110,71,.10), transparent 60%);
+}
+h1{
+  font-family:'Bebas Neue',sans-serif;font-size:50px;letter-spacing:5px;text-align:center;
+  text-shadow:0 0 18px rgba(231,51,41,.5);
+}
+h1 em{font-style:normal;color:#E73329;}
+.unter{text-align:center;color:rgba(236,226,220,.56);font-size:14px;letter-spacing:4px;
+  text-transform:uppercase;margin-top:6px;}
+
+.wand{display:flex;align-items:flex-start;justify-content:center;margin-top:30px;}
+.platz{margin:0 11px;}
+.rahmen{
+  position:relative;overflow:hidden;border-radius:12px;background:#000;
+  border:2px solid rgba(231,51,41,.3);box-shadow:0 0 40px rgba(231,51,41,.14);
+}
+.rahmen iframe{border:0;display:block;transform-origin:top left;}
+.quer  .rahmen{width:640px;height:360px;}            /* 1920x1080 auf ein Drittel */
+.quer  iframe{width:1920px;height:1080px;transform:scale(0.3333);}
+.hoch  .rahmen{width:240px;height:427px;}            /* 1080x1920 auf 22 %        */
+.hoch  iframe{width:1080px;height:1920px;transform:scale(0.2222);}
+
+.beschriftung{text-align:center;margin-top:10px;}
+.beschriftung b{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:#E73329;}
+.beschriftung span{display:block;font-size:12.5px;color:rgba(236,226,220,.56);margin-top:2px;}
+.beschriftung a{display:inline-block;margin-top:6px;font-size:12px;color:rgba(236,226,220,.45);text-decoration:none;}
+.beschriftung a:hover{color:#FF6E47;}
+
+.takt{
+  max-width:1000px;margin:34px auto 0;border:2px solid rgba(231,51,41,.26);border-radius:14px;
+  padding:16px 22px;background:#14181d;
+}
+.takt .zeile{display:flex;align-items:center;font-size:15px;color:rgba(236,226,220,.75);padding:5px 0;}
+.takt .zeile b{font-family:'Montserrat',sans-serif;font-weight:900;color:#FF6E47;width:120px;flex:none;}
+.takt h2{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:8px;color:#fff;}
+#uhr{font-family:'Montserrat',sans-serif;font-weight:900;color:#E73329;}
+</style>
+</head>
+<body>
+
+<h1>KLEE<em>FOOD</em> – DIE WAND</h1>
+<p class="unter">Alle drei Screens live nebeneinander</p>
+
+<div class="wand">
+  <div class="platz quer">
+    <div class="rahmen"><iframe src="screen_left.html" title="Screen 1"></iframe></div>
+    <div class="beschriftung">
+      <b>SCREEN 1</b><span>Burger · Smash · Beilagen · Spar Menü</span>
+      <a href="screen_left.html" target="_blank">einzeln öffnen</a>
+    </div>
+  </div>
+
+  <div class="platz quer">
+    <div class="rahmen"><iframe src="screen_right.html" title="Screen 2"></iframe></div>
+    <div class="beschriftung">
+      <b>SCREEN 2</b><span>Pizza · Fingerfood · Veggie · Dips</span>
+      <a href="screen_right.html" target="_blank">einzeln öffnen</a>
+    </div>
+  </div>
+
+  <div class="platz hoch">
+    <div class="rahmen"><iframe src="screen_portrait.html" title="Screen 3"></iframe></div>
+    <div class="beschriftung">
+      <b>SCREEN 3</b><span>Spar Menüs · hochkant</span>
+      <a href="screen_portrait.html" target="_blank">einzeln öffnen</a>
+    </div>
+  </div>
+</div>
+
+<div class="takt">
+  <h2>WAS HIER ZU SEHEN IST</h2>
+  <div class="zeile"><b>Lichtwelle</b>läuft alle 12 Sekunden von Screen 1 über Screen 2 nach Screen 3 – 0,6 Sekunden Versatz je Screen</div>
+  <div class="zeile"><b>Seiten</b>alle drei blättern in derselben Sekunde um, vier Seiten je Screen, ein Durchlauf dauert 48 Sekunden</div>
+  <div class="zeile"><b>Gesteuert</b>allein über die Uhrzeit – die Geräte reden nicht miteinander</div>
+  <div class="zeile"><b>Jetzt</b><span id="uhr"></span></div>
+</div>
+
+<script>
+/* Kleine Taktanzeige, damit man den Wechsel kommen sieht */
+function tick(){
+  var s = Date.now() / 1000;
+  var seite = Math.floor(s / 12) % 4 + 1;
+  var rest  = (12 - (s % 12)).toFixed(1);
+  document.getElementById('uhr').textContent =
+    'Seite ' + seite + ' von 4 · nächster Wechsel in ' + rest + ' s';
+}
+tick(); setInterval(tick, 100);
+</script>
+</body>
+</html>
