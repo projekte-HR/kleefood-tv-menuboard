@@ -187,14 +187,23 @@ function gleichtakt(){
 }
 
 /* --------------------------------------------- Bühne skalieren und drehen */
-function merker(wert){
+function merker(schluessel, wert){
   try {
-    if (wert === undefined) return localStorage.getItem('kleefood-drehung');
-    localStorage.setItem('kleefood-drehung', wert);
+    if (wert === undefined) return localStorage.getItem('kleefood-' + schluessel);
+    localStorage.setItem('kleefood-' + schluessel, wert);
   } catch (e) { return null; }
 }
 
-var drehRichtung = +(merker() || 270);
+var drehRichtung = +(merker('drehung') || 270);
+
+/* RANDFAKTOR – gegen Overscan.
+   Fernseher schneiden am Rand ein paar Prozent weg, der Browser merkt davon
+   nichts: er meldet die volle Auflösung, das TV zeigt aber weniger. Deshalb
+   wird die Bühne etwas kleiner gezeichnet und mittig gesetzt. 0,94 passt bei
+   den meisten Geräten; jedes TV ist anders, darum lässt es sich am Gerät
+   nachstellen: Taste "+" größer, Taste "-" kleiner, "0" zurück auf 0,94.
+   Der Wert bleibt im Gerät gespeichert.                                    */
+var randFaktor = +(merker('rand') || 0.94);
 
 function einpassen(){
   var stage = document.getElementById('stage');
@@ -202,8 +211,34 @@ function einpassen(){
   var drehen = (hoch && innerWidth >= innerHeight) ? drehRichtung : 0;
   var b = hoch ? 1080 : 1920, h = hoch ? 1920 : 1080;
   if (drehen) { var t = b; b = h; h = t; }
-  var s = Math.min(innerWidth / b, innerHeight / h);
+  var s = Math.min(innerWidth / b, innerHeight / h) * randFaktor;
   stage.style.transform = 'rotate(' + drehen + 'deg) scale(' + s + ')';
+}
+
+/* Zeigt den eingestellten Wert kurz an, damit man beim Nachstellen sieht,
+   wo man steht. */
+function randAnzeigen(){
+  var el = document.getElementById('randwert');
+  if (!el){
+    el = document.createElement('div');
+    el.id = 'randwert';
+    el.style.cssText = 'position:fixed;left:50%;top:50%;margin:-40px 0 0 -120px;' +
+      'width:240px;text-align:center;font:700 34px Montserrat,Arial,sans-serif;' +
+      'color:#fff;background:rgba(0,0,0,.82);border:2px solid #E73329;' +
+      'border-radius:14px;padding:16px 0;z-index:99;';
+    document.body.appendChild(el);
+  }
+  el.textContent = 'Rand ' + Math.round(randFaktor * 100) + ' %';
+  el.style.display = 'block';
+  clearTimeout(randAnzeigen.t);
+  randAnzeigen.t = setTimeout(function(){ el.style.display = 'none'; }, 1800);
+}
+
+function randAendern(delta){
+  randFaktor = Math.min(1, Math.max(0.8, Math.round((randFaktor + delta) * 100) / 100));
+  merker('rand', randFaktor);
+  einpassen();
+  randAnzeigen();
 }
 
 /* ------------------------------------------------------------------ Start */
@@ -234,11 +269,16 @@ function starten(seiten){
 
   addEventListener('resize', einpassen);
   addEventListener('keydown', function(e){
-    if (e.key && e.key.toLowerCase() === 'r'){
+    var k = e.key ? e.key.toLowerCase() : '';
+    if (k === 'r'){
       drehRichtung = (drehRichtung === 270) ? 90 : 270;
-      merker(drehRichtung);
+      merker('drehung', drehRichtung);
       einpassen();
     }
+    /* Overscan nachstellen – auch über die Pfeiltasten der TV-Fernbedienung */
+    else if (k === '+' || k === '=' || k === 'arrowup')   randAendern(+0.01);
+    else if (k === '-' || k === '_' || k === 'arrowdown') randAendern(-0.01);
+    else if (k === '0'){ randFaktor = 0.94; merker('rand', 0.94); einpassen(); randAnzeigen(); }
   });
 
   /* Alle 30 s nachziehen. Nötig, weil Browser Animationen drosseln, wenn die
