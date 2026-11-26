@@ -4,203 +4,52 @@
 <meta charset="UTF-8">
 <title>KLEEFOOD – Screen 3 – Spar Menüs</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-<style>
-/* =======================================================================
-   KLEEFOOD – SCREEN 3: SPAR MENÜS (1080x1920, Hochformat)
-   Menü-Tafel im Fast-Food-Stil: drei Menüs, jedes mit Bild, Inhalt und Preis.
-
-   Für einen um 90° gedrehten TV:
-     Querformat-Signal -> Bühne dreht sich automatisch, Taste "R" kehrt um
-     Hochformat-Signal -> nur skalieren
-
-   Fire TV Stick: KEINE Videos, keine Dauer-Animationen, keine Filter.
-   Nur drei lokale Bilder (zusammen rund 300 KB).
-   ======================================================================= */
-
-:root{
-  --bg:#111417;
-  --red:#FF3B21;        /* Rot aus dem KleeFood-Logo */
-  --gold:#FF9F1C;
-  --white:#fff; --muted:rgba(255,255,255,.66); --line:rgba(255,255,255,.10);
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;}
-
-#stage{
-  position:absolute;top:50%;left:50%;
-  width:1080px;height:1920px;margin:-960px 0 0 -540px;
-  transform-origin:center center;overflow:hidden;
-  font-family:'Poppins',system-ui,sans-serif;color:var(--white);
-  background:
-    radial-gradient(70% 34% at 50% 0%,   rgba(255,59,33,.16), transparent 62%),
-    radial-gradient(80% 30% at 50% 100%, rgba(255,159,28,.13), transparent 62%),
-    var(--bg);
-  display:flex;flex-direction:column;padding:38px 40px 30px;
-}
-
-/* ---------- Kopf ---------- */
-#top{flex:none;text-align:center;}
-#logo{
-  width:210px;height:210px;object-fit:cover;margin:0 auto;display:block;
-  border-radius:50%;              /* runder Zuschnitt statt Maske – deutlich günstiger */
-}
-#kicker{
-  display:inline-block;margin-top:2px;padding:10px 34px;border-radius:999px;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:26px;letter-spacing:7px;
-  background:var(--red);color:#fff;
-}
-#title{
-  font-family:'Bebas Neue',sans-serif;font-size:132px;line-height:.9;letter-spacing:5px;margin-top:14px;
-  color:var(--white);
-}
-#sub{font-size:30px;font-weight:300;color:var(--muted);margin-top:6px;}
-
-/* ---------- Menü-Karten ---------- */
-#menus{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:26px;}
-.menu + .menu{margin-top:22px;}          /* statt flex-gap: laeuft auch auf aelteren Browsern */
-
-.menu{
-  flex:1;min-height:0;display:flex;align-items:stretch;overflow:hidden;
-  background:linear-gradient(180deg,rgba(23,28,32,.96),rgba(17,20,23,.96));
-  border:2px solid var(--line);border-radius:26px;position:relative;
-}
-.menu{transition:border-color .6s ease, box-shadow .6s ease;}
-.menu.top{border-color:var(--gold);box-shadow:0 0 34px rgba(255,159,28,.22);}
-
-.menu .pic{
-  width:470px;flex:none;position:relative;overflow:hidden;
-  background-position:center;background-size:cover;background-repeat:no-repeat;
-}
-.menu .pic::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;
-  background:linear-gradient(90deg,transparent 68%,rgba(17,20,23,.96) 100%);}
-
-.menu .no{
-  position:absolute;left:18px;top:16px;z-index:2;
-  width:74px;height:74px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Bebas Neue',sans-serif;font-size:52px;line-height:1;
-  background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.5);
-}
-
-.menu .txt{flex:1;min-width:0;padding:24px 26px;display:flex;flex-direction:column;justify-content:center;}
-.menu .nm{font-family:'Bebas Neue',sans-serif;font-size:66px;line-height:.94;letter-spacing:2px;}
-.menu .ig{font-size:25px;font-weight:300;color:var(--muted);line-height:1.35;margin-top:12px;}
-
-.menu .price{
-  margin-top:auto;align-self:flex-start;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:58px;color:#0b0f11;
-  background:var(--gold);padding:10px 34px;border-radius:18px;
-}
-
-.badge{
-  position:absolute;right:20px;top:18px;z-index:2;
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;
-  background:var(--gold);color:#0b0f11;padding:7px 18px;border-radius:999px;
-}
-
-/* Einblendung – läuft einmal, nicht dauerhaft */
-.play .menu{animation:up .7s cubic-bezier(.22,1,.36,1) calc(var(--i)*.14s) both;}
-@keyframes up{from{opacity:0;transform:translateY(46px);} to{opacity:1;transform:none;}}
-.play #top{animation:up .7s cubic-bezier(.22,1,.36,1) both;}
-
-/* ---------- Fuß ---------- */
-#foot{
-  flex:none;margin-top:24px;padding-top:20px;border-top:2px solid var(--line);text-align:center;
-}
-#foot .kids{
-  display:flex;align-items:center;justify-content:center;
-  font-size:26px;font-weight:500;color:var(--muted);margin-bottom:14px;
-}
-#foot .kids b{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:2px;color:var(--white);margin-right:14px;}
-#foot .kids span{
-  font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:#0b0f11;
-  background:var(--gold);padding:5px 18px;border-radius:12px;margin-left:16px;
-}
-#foot .a{font-family:'Montserrat',sans-serif;font-weight:900;font-size:30px;color:var(--gold);letter-spacing:2px;}
-#foot .b{font-size:24px;font-weight:500;color:var(--muted);margin-top:8px;}
-</style>
+<link rel="stylesheet" href="board.css">
 </head>
 <body>
 
-<div id="stage" class="play">
+<!-- SCREEN 3 (1080x1920, Hochformat) – die vier Spar Menüs
+     Liefert der TV ein Querformat-Signal, dreht sich die Bühne automatisch
+     um 270°. Taste "R" kehrt die Drehrichtung um und merkt sich das.
+     Inhalte und Preise stehen in menu.js, das Design in board.css        -->
 
-  <div id="top">
-    <img id="logo" src="logo.jpg?v=3" alt="KleeFood">
-    <div id="kicker">AB 11,90 €</div>
-    <div id="title">SPAR MENÜS</div>
-    <div id="sub">täglich 11 – 23 Uhr · auch zum Mitnehmen</div>
+<div id="stage" class="hoch">
+  <div id="wolken"></div>
+
+  <header>
+    <img class="logo" src="logo.jpg" alt="KleeFood">
+    <div class="marke">
+      <h1>KLEE<em>FOOD</em></h1>
+      <p>Burger · Pizza · Fingerfood</p>
+    </div>
+  </header>
+
+  <div class="hochtitel">
+    <div class="ab" id="ab"></div>
+    <h2>SPAR MENÜS</h2>
+    <p id="info"></p>
   </div>
 
-  <div id="menus"></div>
+  <div id="menues"></div>
 
-  <div id="foot">
-    <div class="kids"><b>SCHÜLER-AKTION</b> Pommes bis 17 Uhr, gegen Schülerausweis <span>2,00 €</span></div>
-    <div class="a">TEL. 0511 569 575 67</div>
+  <div id="hochfuss">
+    <div class="zeile1" id="aktion"></div>
+    <div class="tel" id="tel"></div>
   </div>
 </div>
 
+<script src="menu.js"></script>
+<script src="board.js"></script>
 <script>
-/* =======================================================================
-   INHALTE – die drei Spar Menüs.
-   Bilder liegen lokal im Ordner fotos/ (zusammen rund 300 KB).
-   ======================================================================= */
-/* Versionsnummer an den Bildpfaden: erzwingt nach einem Bildtausch das
-   Neuladen, sonst zeigt der Browser auf dem Stick das alte Bild aus dem
-   Cache. Bei jedem Bildwechsel einfach hochzaehlen.                      */
-const V = "?v=3";
+document.getElementById('ab').textContent   = SPAR.ab.toUpperCase();
+document.getElementById('info').textContent = SPAR.info;
+document.getElementById('tel').textContent  = TELEFON;
+document.getElementById('menues').innerHTML = menueKarten();
+document.getElementById('aktion').innerHTML =
+  '<b>' + AKTION.titel + '</b>' + AKTION.was.charAt(0) + AKTION.was.slice(1).toLowerCase() +
+  ' ' + AKTION.info + '<span>' + AKTION.preis + '</span>';
 
-const MENUS = [
-  { no:"1", nm:"BURGER",       ig:"Burger nach Wahl · Pommes · 0,33 l Softdrink",
-    price:"13,90 €", img:"fotos/menu1.jpg", top:true },
-  { no:"2", nm:"DOUBLE SMASH", ig:"2× Smash Burger nach Wahl · Pommes · 0,33 l",
-    price:"13,90 €", img:"fotos/menu2.jpg" },
-  { no:"3", nm:"FALAFEL",      ig:"Falafel Rolle · Pommes · 0,33 l Softdrink",
-    price:"12,90 €", img:"fotos/menu3.jpg" },
-  { no:"4", nm:"CRISPY MENÜ",  ig:"3 Stück Crispy · Pommes · Getränk  ·  mit Smash Burger 13,90 €",
-    price:"11,90 €", img:"fotos/menu4.jpg", badge:"NEU" }
-];
-
-const menus = document.getElementById('menus');
-menus.innerHTML = MENUS.map((m,i) =>
-  '<div class="menu' + (m.top ? ' top' : '') + '" style="--i:' + i + '">' +
-    '<div class="pic" style="background-image:url(' + m.img + V + ')"><div class="no">' + m.no + '</div></div>' +
-    (m.badge ? '<div class="badge">' + m.badge + '</div>' : '') +
-    '<div class="txt">' +
-      '<div class="nm">' + m.nm + '</div>' +
-      '<div class="ig">' + m.ig + '</div>' +
-      '<div class="price">' + m.price + '</div>' +
-    '</div>' +
-  '</div>').join('');
-
-/* Dauerschleife: der goldene Rahmen wandert alle 6 Sekunden von Menü zu
-   Menü. Es wird nur eine Klasse umgehängt – die Tafel selbst bleibt stehen
-   und die Seite lädt sich nie neu.                                        */
-const stage = document.getElementById('stage');
-const cards = [...document.querySelectorAll('.menu')];
-let hi = 0;
-setInterval(() => {
-  hi = (hi + 1) % cards.length;
-  cards.forEach((c,n) => c.classList.toggle('top', n === hi));
-}, 6000);
-
-/* ---------- Drehung & Skalierung ----------
-   Querformat-Signal -> 90° drehen · Hochformat-Signal -> nur skalieren
-   Taste "R" schaltet die Drehrichtung um.                                */
-function store(v){ try{ if(v===undefined) return localStorage.getItem('kleefood-rot2');
-                        localStorage.setItem('kleefood-rot2', v); }catch(e){ return null; } }
-let dir = +(store() || 270);        // 270 = andere Drehrichtung, Taste "R" schaltet um
-
-function fit(){
-  const rot = innerWidth >= innerHeight ? dir : 0;
-  const w = rot ? 1920 : 1080, h = rot ? 1080 : 1920;
-  const s = Math.min(innerWidth / w, innerHeight / h);
-  stage.style.transform = 'rotate(' + rot + 'deg) scale(' + s + ')';
-}
-addEventListener('resize', fit);
-addEventListener('keydown', e => {
-  if (e.key.toLowerCase() === 'r'){ dir = dir === 270 ? 90 : 270; store(dir); fit(); }
-});
-fit();
+starten();
 </script>
 </body>
 </html>

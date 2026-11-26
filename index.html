@@ -3,37 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <title>KLEEFOOD TV-Menüboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  body{min-height:100vh;display:grid;place-items:center;background:#111417;color:#fff;
-       font-family:'Poppins',sans-serif;padding:40px;
-       background-image:radial-gradient(60% 50% at 20% 0%,rgba(0,230,118,.18),transparent 65%),
-                        radial-gradient(60% 50% at 85% 10%,rgba(255,159,28,.15),transparent 65%);}
-  h1{font-family:'Bebas Neue',sans-serif;font-size:78px;letter-spacing:6px;
-     background:linear-gradient(92deg,#fff,#00E676 55%,#FF9F1C);-webkit-background-clip:text;
-     background-clip:text;color:transparent;text-align:center}
-  p{text-align:center;color:rgba(255,255,255,.6);letter-spacing:3px;text-transform:uppercase;font-size:14px;margin-top:6px}
-  .links{display:flex;gap:24px;margin-top:44px;flex-wrap:wrap;justify-content:center}
-  a{display:block;padding:28px 46px;border-radius:20px;text-decoration:none;color:#fff;
-    border:2px solid rgba(0,230,118,.45);background:rgba(23,28,32,.8);transition:.3s}
-  a:hover{transform:translateY(-6px);border-color:#00E676;box-shadow:0 0 40px rgba(0,230,118,.35)}
-  a b{font-family:'Bebas Neue',sans-serif;font-size:38px;letter-spacing:3px;display:block}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:#0e1013;color:#fff;font-family:'Poppins',system-ui,Arial,sans-serif;padding:40px;
+       background-image:radial-gradient(52% 40% at 16% 2%,rgba(255,59,33,.20),transparent 62%),
+                        radial-gradient(46% 38% at 86% 96%,rgba(255,159,28,.14),transparent 62%)}
+  .mitte{text-align:center}
+  img.logo{width:132px;height:132px;border-radius:50%;object-fit:cover;margin-bottom:18px}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:76px;letter-spacing:5px;line-height:1}
+  h1 em{font-style:normal;color:#FF3B21}
+  p.unter{color:rgba(255,255,255,.6);letter-spacing:5px;text-transform:uppercase;font-size:14px;margin-top:6px}
+  .links{display:flex;flex-wrap:wrap;justify-content:center;margin-top:40px}
+  a{display:block;padding:24px 34px;border-radius:16px;text-decoration:none;color:#fff;
+    border:2px solid rgba(255,59,33,.4);background:#15181c;margin:10px;min-width:260px;
+    transition:transform .3s ease,border-color .3s ease}
+  a:hover{transform:translateY(-6px);border-color:#FF3B21}
+  a b{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;display:block}
   a span{font-size:14px;color:rgba(255,255,255,.6)}
-  .hint{margin-top:38px;font-size:13px;color:rgba(255,255,255,.45);text-align:center;text-transform:none;letter-spacing:0}
+  .hinweis{margin-top:34px;font-size:13px;color:rgba(255,255,255,.45);line-height:1.7}
 </style>
 </head>
 <body>
-<div>
-  <h1>KLEEFOOD TV-MENÜBOARD</h1>
-  <p>Burger • Pizza • Fingerfood</p>
+<div class="mitte">
+  <img class="logo" src="logo.jpg" alt="KleeFood">
+  <h1>KLEE<em>FOOD</em> TV-MENÜBOARD</h1>
+  <p class="unter">Burger · Pizza · Fingerfood</p>
+
   <div class="links">
-    <a href="screen_left.html"><b>SCREEN 1</b><span>Burger, Smash, Kids &amp; Pizza 65–76</span></a>
-    <a href="screen_right.html"><b>SCREEN 2</b><span>Pizza 77–81, Fingerfood &amp; Beilagen</span></a>
-    <a href="screen_portrait.html"><b>SCREEN 3</b><span>Gerichte · Hochformat</span></a>
-    <a href="uebergaenge.html"><b>ÜBERGÄNGE</b><span>6 Varianten zur Auswahl</span></a>
+    <a href="screen_left.html"><b>SCREEN 1</b><span>Burger, Smash, Beilagen &amp; Spar Menü</span></a>
+    <a href="screen_right.html"><b>SCREEN 2</b><span>Pizza, Fingerfood, Veggie &amp; Dips</span></a>
+    <a href="screen_portrait.html"><b>SCREEN 3</b><span>Spar Menüs · Hochformat</span></a>
   </div>
-  <p class="hint">Auf dem TV im Browser öffnen und mit F11 in den Vollbildmodus wechseln.</p>
+
+  <p class="hinweis">
+    Auf dem TV öffnen und mit F11 in den Vollbildmodus wechseln.<br>
+    Alle Preise stehen in <b>menu.js</b> — eine Änderung dort gilt für alle drei Screens.<br>
+    Die drei Screens laufen im Gleichtakt: ihre Animationen richten sich nach der Uhrzeit.
+  </p>
 </div>
 </body>
 </html>
